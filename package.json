@@ -1,0 +1,73 @@
+{
+  "name": "dsa-web-app",
+  "description": "Web application for DSA (Direct Selling Agent) inside MMK LAP product (Loan Against Property)",
+  "version": "0.1.5",
+  "keywords": [
+    "lap",
+    "dsa",
+    "agent",
+    "react",
+    "material"
+  ],
+  "license": "UNLICENSED",
+  "private": true,
+  "author": {
+    "name": "Anton Karpenko",
+    "email": "anton.karpenko@mMyMoneyKarma.com",
+    "url": "https://MyMoneyKarma.com"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "dev": "npm install -s && react-scripts start",
+    "build": "react-scripts build",
+    "type-check": "tsc",
+    "code-format": "node_modules/.bin/prettier src --write",
+    "test": "react-scripts test"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "dependencies": {
+    "@directus/sdk-js": "9.0.0-rc.32",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
+    "axios": "^0.21.1",
+    "clsx": "^1.1.1",
+    "date-fns": "^2.16.1",
+    "eslint-config-react-app": "^6.0.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.1",
+    "typescript": "^4.1.3",
+    "validate.js": "^0.13.1",
+    "web-vitals": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.1.7",
+    "@types/jest": "^26.0.19",
+    "@types/node": "^12.19.15",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "@testing-library/jest-dom": "^5.11.8",
+    "@testing-library/react": "^11.2.2",
+    "@testing-library/user-event": "^12.6.0",
+    "prettier": "^2.2.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
