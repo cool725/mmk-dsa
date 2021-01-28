@@ -12,6 +12,9 @@ RUN npm install --no-audit --quiet
 
 COPY . .
 
+ARG REACT_APP_API
+ENV REACT_APP_API ${REACT_APP_API}
+
 FROM runner as builder
 
 RUN npm run build

@@ -4,7 +4,7 @@ pipelines:
       - step:
           script: # Modify the commands below to build your repository.
             - docker version
-            - docker build -t testing-mmk-dsa --build-arg BUILD_VERSION=${BITBUCKET_COMMIT} .
+            - docker build -t testing-mmk-dsa --build-arg REACT_APP_API=https://lap-testing.mymoneykarma.com --build-arg BUILD_VERSION=${BITBUCKET_COMMIT} .
 
             - pipe: atlassian/aws-ecr-push-image:1.2.2
               variables:
