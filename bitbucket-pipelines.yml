@@ -1,0 +1,32 @@
+pipelines:
+  branches:
+    develop:
+      - step:
+          script: # Modify the commands below to build your repository.
+            - docker version
+            - docker build -t testing-mmk-dsa --build-arg BUILD_VERSION=${BITBUCKET_COMMIT} .
+
+            - pipe: atlassian/aws-ecr-push-image:1.1.3
+              variables:
+                AWS_ACCESS_KEY_ID: $AWS_ECR_TESTING_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_ECR_TESTING_SECRET_KEY
+                AWS_DEFAULT_REGION: $AWS_ECR_REGION
+                IMAGE_NAME: testing-mmk-dsa
+                TAGS: 'latest'
+
+            - pipe: atlassian/trigger-pipeline:4.1.7
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                REPOSITORY: 'mmk-platform'
+                BRANCH_NAME: 'develop'
+                CUSTOM_PIPELINE_NAME: 'deploy-mmk-web-testing'
+
+          services:
+            - docker
+          caches:
+            - docker
+definitions:
+  services:
+    docker:
+      memory: 2048

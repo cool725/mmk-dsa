@@ -1,0 +1,14 @@
+.git
+.idea
+.DS_Store
+
+build
+BUILD
+dist
+node_modules
+logs
+.logs
+
+npm-debug.log
+.env
+local.env
