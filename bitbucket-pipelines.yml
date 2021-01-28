@@ -14,7 +14,7 @@ pipelines:
                 IMAGE_NAME: testing-mmk-dsa
                 TAGS: 'latest'
 
-            - pipe: atlassian/trigger-pipeline:4.1.7
+            - pipe: atlassian/trigger-pipeline:4.2.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
