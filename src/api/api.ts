@@ -1,6 +1,8 @@
 import directus from './directus';
 import * as auth from './auth';
 import * as info from './info';
+import * as dsa from './dsa';
+import * as data from './data';
 
 const api = {
   // Object instances
@@ -11,6 +13,8 @@ const api = {
   // API "modules"
   auth,
   info,
+  data,
+  dsa,
 };
 
 export default api;

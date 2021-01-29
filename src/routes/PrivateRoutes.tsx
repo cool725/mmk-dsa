@@ -1,5 +1,5 @@
 import { Route, Switch } from 'react-router-dom';
-import { Loan, User } from '../views';
+import { DsaApplication, User } from '../views';
 import SharedRoutes from './SharedRoutes';
 import { PrivateLayout } from '../components/Layout';
 
@@ -12,7 +12,7 @@ const PrivateRoutes = () => {
     <PrivateLayout>
       <Switch>
         <Route path="/user" component={User} />
-        <Route path="/loan" component={Loan} />
+        <Route path="/dsa/application/" component={DsaApplication} />
         <SharedRoutes />
       </Switch>
     </PrivateLayout>

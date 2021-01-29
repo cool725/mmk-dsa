@@ -1,5 +1,6 @@
 import { Route } from 'react-router-dom';
 import AboutRoutes from '../views/About';
+import DevTools from '../views/DevTools';
 import LegalRoutes from '../views/Legal';
 
 /**
@@ -8,6 +9,7 @@ import LegalRoutes from '../views/Legal';
 const SharedRoutes: any = () => {
   const renderRoutesAsArray = () => [
     <Route key="about" path="/about" component={AboutRoutes} />,
+    <Route key="dev" path="/dev" component={DevTools} />,
     <Route key="legal" path="/legal" component={LegalRoutes} />,
   ];
 

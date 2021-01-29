@@ -85,8 +85,8 @@ export function useAppForm({ validationSchema, initialValues = {} }: UseAppFormP
   // Validation by 'validate.js' on every formState.values change
   useEffect(() => {
     const errors = validate(formState.values, validationSchema);
-    setFormState((formState) => ({
-      ...formState,
+    setFormState((currentFormState) => ({
+      ...currentFormState,
       isValid: errors ? false : true,
       errors: errors || {},
     }));
@@ -94,7 +94,7 @@ export function useAppForm({ validationSchema, initialValues = {} }: UseAppFormP
 
   // Event to call on every Input change. Note: the "name" props of the Input control must be set!
   const onFieldChange = useCallback((event) => {
-    event.persist(); // Todo: Do we need this in React 17 ?
+    // event.persist(); // Todo: Do we need this in React 17 ?
 
     const name = event.target?.name;
     const value =

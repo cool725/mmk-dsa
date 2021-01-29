@@ -95,7 +95,7 @@ const SideBar: React.FC<Props> = ({ anchor, className, open, variant, items, onC
             <Divider />
           </>
         )}
-       
+
         <SideBarNavigation className={classes.nav} items={items} showIcons />
         <Divider />
 

@@ -1,33 +1,81 @@
 import api from '../api';
 import { localStorageSet, localStorageGet, localStorageDelete } from '../../utils/localStorage';
 
-const TOKEN_KEY = 'token';
+const ACCESS_TOKEN_KEY = 'token';
+const REFRESH_TOKEN_KEY = 'directus_refresh_token'; // Note: Directus SDK uses 'directus_refresh_token' key
+const EXPIRED_AT_KEY = 'tokenExpiresAt';
 
 /**
- * Sets new access token into api.directus and saves it in localStorage
- * @param {string|null} newToken - new token value
+ * Removes token from "directus api" and all auth data from the local storage
  */
-export function saveToken(newToken = api.directus.auth.token) {
-  if (api.directus.auth.token !== newToken) {
-    api.directus.auth.token = newToken;
-  }
-  localStorageSet(TOKEN_KEY, api.directus.auth.token);
+export function clearAuthData() {
+  api.directus.auth.token = null;
+  localStorageDelete(ACCESS_TOKEN_KEY);
+  localStorageDelete(REFRESH_TOKEN_KEY);
+  localStorageDelete(EXPIRED_AT_KEY);
+  clearRefreshTimeout();
 }
 
 /**
- * Sets new access token into api.directus and saves it in localStorage
- * @returns {string|null} auth token loaded form Local Storage
+ * Apples new "access token" into "directus api" and saves it in the local storage
+ * @param {string|null|undefined} newToken - new token value
+ */
+export function saveToken(newToken: string | null | undefined = api.directus.auth.token) {
+  if (api.directus.auth.token !== newToken) {
+    api.directus.auth.token = newToken;
+  }
+  localStorageSet(ACCESS_TOKEN_KEY, api.directus.auth.token);
+}
+
+/**
+ * Loads "access token" from the local storage and sets it into "directus api"
  */
 export function loadToken() {
-  api.directus.auth.token = localStorageGet(TOKEN_KEY);
+  api.directus.auth.token = localStorageGet(ACCESS_TOKEN_KEY);
   return api.directus.auth.token;
 }
 
 /**
- * Removes access token from api.directus and from localStorage
+ * Saves given "refresh token" in the local storage
+ * @param {string|null|undefined} newRefreshToken - new refresh token value
  */
-export function removeToken() {
-  api.directus.auth.token = null;
-  localStorageDelete(TOKEN_KEY);
-  localStorageDelete('directus_refresh_token'); // Also clean Directus refresh token
+export function saveRefreshToken(newRefreshToken: string | null | undefined) {
+  localStorageSet(REFRESH_TOKEN_KEY, newRefreshToken);
+}
+
+/**
+ * Loads "refresh token" from the local storage
+ */
+export function loadRefreshToken() {
+  return localStorageGet(REFRESH_TOKEN_KEY);
+}
+
+/**
+ * Loads "token expiration date" from the local storage
+ */
+export function tokenExpireAt() {
+  return localStorageGet(EXPIRED_AT_KEY);
+}
+
+/**
+ * The "timer" to refresh token before it expires
+ */
+let _timeout_refresh_token = 0;
+
+export function clearRefreshTimeout() {
+  if (_timeout_refresh_token) {
+    clearTimeout(_timeout_refresh_token);
+  }
+}
+
+export function setRefreshTimeout(interval = 15 * 60 * 1000) {
+  clearRefreshTimeout();
+  localStorageSet(EXPIRED_AT_KEY, new Date(Date.now() + interval).toISOString()); // Add 'tokenExpiresAt' as normal data string
+  _timeout_refresh_token = setTimeout(
+    () => {
+      console.warn('Refreshing access token by timeout...');
+      api.auth.refresh();
+    },
+    interval - 10000 // 10 second before the end);
+  ) as any;
 }

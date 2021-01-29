@@ -1,4 +1,4 @@
-import { SyntheticEvent, useCallback } from 'react';
+import { SyntheticEvent, useCallback, useState, useEffect } from 'react';
 import {
   Grid,
   TextField,
@@ -13,8 +13,6 @@ import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppIconButton, AppLink } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 const VALIDATE_FORM_SIGNUP = {
   nameFirst: {
@@ -178,6 +176,7 @@ const SignupView = () => {
                       <AppIconButton
                         aria-label="toggle password visibility"
                         icon={showPassword ? 'visibilityon' : 'visibilityoff'}
+                        title={showPassword ? 'Hide Password' : 'Show Password'}
                         onClick={handleShowPasswordClick}
                         onMouseDown={eventPreventDefault}
                       />
@@ -202,8 +201,8 @@ const SignupView = () => {
                 control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
                 label={
                   <>
-                    You must agree with <AppLink to="/legal/terms">Terms of Use</AppLink> and{' '}
-                    <AppLink to="/legal/privacy">Privacy Policy</AppLink> to use our service
+                    You must agree with <AppLink to="/legal/terms" openInNewTab>Terms of Use</AppLink> and{' '}
+                    <AppLink to="/legal/privacy" openInNewTab>Privacy Policy</AppLink> to use our service *
                   </>
                 }
               />

@@ -55,13 +55,15 @@ const UserInfo = ({ className, showAvatar = false, user: propsUser, ...restOfPro
       }
       setUser(currentUser);
     }
-
     fetchCurrentUserInfo();
+    return () => {
+      setUser(null); // Cleanup when component is/will not mounted
+    };
   }, [state, dispatch]);
 
   const fullName = [user?.first_name || '', user?.last_name || ''].join(' ').trim();
   const srcAvatar = user?.avatar as string;
-  const userPhoneOrEmail = user?.phone || user?.email as string;
+  const userPhoneOrEmail = user?.phone || (user?.email as string);
 
   return (
     <div {...restOfProps} className={clsx(classes.root, className)}>

@@ -1,5 +1,6 @@
 import DirectusSDK from '@directus/sdk-js';
 import { localStorageGet, localStorageSet } from '../utils/localStorage';
+
 /**
  * Storage for Directus auth token(s), should be compatible with AuthStorage type
  * type AuthStorage = {
@@ -9,7 +10,7 @@ import { localStorageGet, localStorageSet } from '../utils/localStorage';
  */
 class DirectusStorage {
   async getItem(key: string) {
-    // console.log(`DirectusStorage.getItem(${key})`)
+    console.log(`DirectusStorage.getItem(${key})`)
     return await localStorageGet(key);
   }
 
@@ -29,8 +30,10 @@ const directus = new DirectusSDK(API_URL, {
     storage: new DirectusStorage(), // Storage adapter where refresh tokens are stored in JSON mode
     // mode: 'cookie', // What login mode to use. One of `json`, `cookie`
     mode: 'json', // What login mode to use. One of `json`, `cookie`
-    // autoRefresh: true, // Whether or not to automatically refresh the access token on login
+    // autoRefresh: true, // Note: Not working :( Whether or not to automatically refresh the access token on login. 
   },
 });
+
+// Dirty fix:  directus.auth.refresh = refreshByAxios; // Replace not working method with our one
 
 export default directus;

@@ -1,9 +1,11 @@
-import { SyntheticEvent } from 'react';
-import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/core';
+import { SyntheticEvent, useCallback, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Grid, TextField, Card, CardHeader, CardContent, InputAdornment } from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
-import { AppButton, AppLink } from '../../../components';
-import { useAppForm, SHARED_CONTROL_PROPS } from '../../../utils/form';
+import { AppButton, AppLink, AppIconButton } from '../../../components';
+import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
+
 
 const VALIDATE_FORM_LOGIN_EMAIL = {
   email: {
@@ -34,18 +36,23 @@ const LoginEmailView = () => {
     validationSchema: VALIDATE_FORM_LOGIN_EMAIL,
     initialValues: { email: '', password: '' } as FormStateValues,
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [, dispatch] = useAppStore();
+  const history = useHistory();
 
-  const handleFormSubmit = async (event: SyntheticEvent) => {
+  const handleShowPasswordClick = useCallback(() => {
+    setShowPassword((oldValue) => !oldValue);
+  }, []);
+
+  const handleFormSubmit = useCallback(async (event: SyntheticEvent) => {
     event.preventDefault();
-    // console.log('onSubmit() - formState.values:', formState.values);
 
     const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
-    // console.warn('api.auth.loginWithEmail() - result:', result);
     if (!result) return; // Unsuccessful login
 
     dispatch({ type: 'LOG_IN' });
-  };
+    history.push('/');
+  }, [dispatch, formState.values, history]);
 
   return (
     <Grid container direction="column">
@@ -67,6 +74,7 @@ const LoginEmailView = () => {
               />
               <TextField
                 required
+                type={showPassword ? 'text' : 'password'}
                 label="Password"
                 name="password"
                 // value={(formState.values as FormStateValues)['password']}
@@ -75,6 +83,19 @@ const LoginEmailView = () => {
                 helperText={fieldGetError('password') || ' ' /*|| 'Enter password'*/}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <AppIconButton
+                        aria-label="toggle password visibility"
+                        icon={showPassword ? 'visibilityon' : 'visibilityoff'}
+                        title={showPassword ? 'Hide Password' : 'Show Password'}
+                        onClick={handleShowPasswordClick}
+                        onMouseDown={eventPreventDefault}
+                      />
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Grid container justify="center" alignItems="center">
                 <AppButton type="submit" disabled={!formState.isValid}>

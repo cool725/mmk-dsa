@@ -1,9 +1,10 @@
-import { SyntheticEvent } from 'react';
-import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/core';
+import { SyntheticEvent, useCallback, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Grid, TextField, Card, CardHeader, CardContent,  InputAdornment} from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
-import { AppButton, AppLink } from '../../../components';
-import { useAppForm, SHARED_CONTROL_PROPS } from '../../../utils/form';
+import { AppButton, AppLink, AppIconButton } from '../../../components';
+import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
 
 
 const VALIDATE_FORM_LOGIN_PHONE = {
@@ -42,9 +43,15 @@ const LoginPhoneView = () => {
     validationSchema: VALIDATE_FORM_LOGIN_PHONE,
     initialValues: { phone: '', pin: '' } as FormStateValues,
   });
+  const [showPin, setShowPin] = useState(false);
   const [, dispatch] = useAppStore();
+  const history = useHistory();
 
-  const handleFormSubmit = async (event: SyntheticEvent) => {
+  const handleShowPinClick = useCallback(() => {
+    setShowPin((oldValue) => !oldValue);
+  }, []);
+
+  const handleFormSubmit = useCallback(async (event: SyntheticEvent) => {
     event.preventDefault();
     console.log('onSubmit() - formState.values:', formState.values);
 
@@ -53,7 +60,8 @@ const LoginPhoneView = () => {
     if (!result) return; // Unsuccessful login
 
     dispatch({ type: 'LOG_IN' });
-  };
+    history.push('/');
+  }, [dispatch, formState.values, history]);
 
   return (
     <Grid container direction="column">
@@ -74,6 +82,7 @@ const LoginPhoneView = () => {
               />
               <TextField
                 required
+                type={showPin ? 'text' : 'password'}
                 label="PIN Code"
                 name="pin"
                 value={(formState.values as FormStateValues).pin}
@@ -81,6 +90,19 @@ const LoginPhoneView = () => {
                 helperText={fieldGetError('pin') || ' ' /*|| 'Enter PIN'*/}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <AppIconButton
+                        aria-label="toggle password visibility"
+                        icon={showPin ? 'visibilityon' : 'visibilityoff'}
+                        title={showPin ? 'Hide PIN Code' : 'Show PIN Code'}
+                        onClick={handleShowPinClick}
+                        onMouseDown={eventPreventDefault}
+                      />
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Grid container justify="center" alignItems="center">
                 <AppButton type="submit" disabled={!formState.isValid}>
