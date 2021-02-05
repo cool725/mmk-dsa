@@ -182,7 +182,7 @@ const DsaApplicationView = () => {
       event.preventDefault();
       console.log('onSubmit() - formState.values:', formState.values);
 
-      const apiResult = await api.dsa.new(formState.values);
+      const apiResult = await api.dsa.create(formState.values);
       console.log('apiResult:', apiResult);
 
       dispatch({ type: 'NEW_DSA', payload: formState.values });

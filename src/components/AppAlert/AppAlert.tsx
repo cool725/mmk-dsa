@@ -7,6 +7,7 @@ const APP_ALERT_VARIANT = 'standard'; // 'filled' | 'outlined' | 'standard'
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
 }));
@@ -27,7 +28,7 @@ const AppAlert: React.FC<MuiAlertProps> = ({
   return (
     <MuiAlert
       className={classRoot}
-      //   ity={severity}
+      severity={severity}
       variant={variant}
       onClose={onClose}
       {...restOfProps}

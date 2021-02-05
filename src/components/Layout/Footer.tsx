@@ -9,7 +9,7 @@ interface Props {
 export const Footer: React.FC<Props> = ({ isAuthenticated }) => {
   return (
     <Typography variant="caption">
-      Copyright &copy; 2020
+      Copyright &copy; 2021
     </Typography>
   );
 };

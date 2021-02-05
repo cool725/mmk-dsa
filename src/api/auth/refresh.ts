@@ -20,6 +20,7 @@ export async function refreshByAxios() {
   } catch (error) {
     console.error(METHOD, error);
     clearAuthData();
+    window.location.href = '/'; // Reload Application
   }
   return null;
 }
@@ -34,6 +35,7 @@ export async function refreshByDirectus() {
   } catch (error) {
     console.error(METHOD, error);
     clearAuthData();
+    window.location.href = '/'; // Reload Application
   }
   return null;
 }

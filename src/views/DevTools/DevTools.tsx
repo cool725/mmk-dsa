@@ -1,13 +1,18 @@
 import React, { useCallback } from 'react';
 import { Grid, Card, CardContent, CardHeader, CardActions } from '@material-ui/core';
-import { AppButton } from '../../components';
 import { api } from '../../api';
+import { AppButton } from '../../components';
+import CustomData from './CustomData';
+import CustomFiles from './CustomFiles';
+import Files from './Files';
 
 /**
  * Renders "Dev Tools" view
  * url: /dev/*
  */
 const DevTools = () => {
+  // const [fileSample, setFileSample] = useState();
+
   const handleServerInfoClick = useCallback(async () => {
     const serverInfo = await api.info.server();
 
@@ -41,23 +46,18 @@ url: ${api?.url}
           </CardActions>
         </Card>
       </Grid>
+
+
       <Grid item xs={12} md={6}>
-        <Card>
-          <CardHeader title="Custom Data" subheader={'CRUD for "custom_data" collection'} />
-          <CardContent>Bla bla bla</CardContent>
-          <CardActions>
-            <AppButton
-              onClick={() =>
-                api.data.create({ text: Math.random().toString(), data: { filed1: 'field1', filed2: 'field2' } })
-              }
-            >
-              Create
-            </AppButton>
-            <AppButton onClick={() => api.data.read()}>Read</AppButton>
-            <AppButton onClick={() => api.data.update(2, {text: 'updated'})}>Update</AppButton>
-            <AppButton onClick={() => api.data.delete(3)}>Delete</AppButton>
-          </CardActions>
-        </Card>
+        <Files />
+      </Grid>
+
+      <Grid item xs={12} md={6}>
+        <CustomData />
+      </Grid>
+
+      <Grid item xs={12} md={6}>
+        <CustomFiles />
       </Grid>
     </Grid>
   );

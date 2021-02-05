@@ -1,8 +1,7 @@
 import { useAppStore } from '../store';
 import PublicRoutes from './PublicRoutes';
 import PrivateRoutes from './PrivateRoutes';
-import { tokenExpireAt } from '../api/auth/utils';
-import api from '../api';
+import { isUserStillLoggedIn } from '../api/auth/utils';
 
 /**
  * Renders routes depending Logged or Anonymous users
@@ -14,14 +13,11 @@ const AllRoutes = () => {
 
   // Check isn't token expired?
   if (isAuthenticated) {
-    const dateValue = tokenExpireAt();
-    const expireAt = new Date(dateValue).getTime();
-    if (expireAt <= Date.now()) {
-      // Token already expired, logout!
-      api.auth.logout();
-      dispatch({ type: 'LOG_OUT' }); 
-      isAuthenticated = false; 
+    const isLogged = isUserStillLoggedIn();
+    if (!isLogged) {
+      dispatch({ type: 'LOG_OUT' });
     }
+    isAuthenticated = isLogged;
   }
 
   // console.log('AllRoutes() - isAuthenticated:', isAuthenticated);

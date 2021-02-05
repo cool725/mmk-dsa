@@ -61,6 +61,11 @@ const SIDE_BAR_PRIVATE_ITEMS: Array<LinkToPage> = [
     icon: 'home',
   },
   {
+    title: 'DSA Application',
+    href: '/dsa/application',
+    icon: 'edit',
+  },
+  {
     title: 'Profile',
     href: '/user',
     icon: 'account',
@@ -69,6 +74,11 @@ const SIDE_BAR_PRIVATE_ITEMS: Array<LinkToPage> = [
     title: 'About',
     href: '/about',
     icon: 'info',
+  },
+  {
+    title: 'Dev Tools',
+    href: '/dev',
+    icon: 'settings',
   },
 ];
 
