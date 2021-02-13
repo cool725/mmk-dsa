@@ -11,6 +11,7 @@ import { localStorageGet } from '../utils/localStorage';
 export interface IAppState {
   darkMode: boolean;
   isAuthenticated: boolean;
+  verifiedPhone?: string;
   isEmailConfirmed?: boolean;
   currentUser?: Partial<IUserInfo> | undefined | null;
 }

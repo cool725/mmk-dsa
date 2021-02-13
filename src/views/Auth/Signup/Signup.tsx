@@ -13,6 +13,7 @@ import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppIconButton, AppLink } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
+import { useHistory } from 'react-router-dom';
 
 const VALIDATE_FORM_SIGNUP = {
   nameFirst: {
@@ -64,6 +65,7 @@ interface FormStateValues {
  * url: /auth/signup/*
  */
 const SignupView = () => {
+  const [state, dispatch] = useAppStore();
   const [validationSchema, setValidationSchema] = useState<any>({
     ...VALIDATE_FORM_SIGNUP,
     ...VALIDATE_EXTENSION,
@@ -74,16 +76,21 @@ const SignupView = () => {
       nameFirst: '',
       nameLast: '',
       email: '',
-      phone: '',
+      phone: state.verifiedPhone,
       password: '',
       confirmPassword: '',
     } as FormStateValues,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [agree, setAgree] = useState(false);
-  const [, dispatch] = useAppStore();
+  const history = useHistory();
 
   useEffect(() => {
+    // If the Phone was not verified, redirect to "Phone Verification" view
+    if (!state.verifiedPhone) {
+      return history.push('/auth/signup/verify-phone');
+    }
+
     let newSchema;
     if (showPassword) {
       newSchema = VALIDATE_FORM_SIGNUP; // Validation without .confirmPassword
@@ -91,7 +98,7 @@ const SignupView = () => {
       newSchema = { ...VALIDATE_FORM_SIGNUP, ...VALIDATE_EXTENSION }; // Full validation
     }
     setValidationSchema(newSchema);
-  }, [showPassword]);
+  }, [showPassword, history, state.verifiedPhone]);
 
   const handleShowPasswordClick = useCallback(() => {
     setShowPassword((oldValue) => !oldValue);
@@ -120,9 +127,34 @@ const SignupView = () => {
       <Grid item>
         <form onSubmit={handleFormSubmit}>
           <Card>
-            <CardHeader title="Sign Up" />
+            <CardHeader title="Sign Up - Personal data" />
             <CardContent>
+              {state.verifiedPhone ? (
+                // No editor when Phone is already verified
+                <TextField
+                  disabled
+                  label="Verified Phone"
+                  name="phone"
+                  value={state.verifiedPhone}
+                  helperText=" "
+                  {...SHARED_CONTROL_PROPS}
+                />
+              ) : (
+                // Allow to enter Phone
+                <TextField
+                  autoFocus={Boolean(!state.verifiedPhone)} // Select "Phone" field in case phone was NOT verified
+                  required
+                  label="Phone"
+                  name="phone"
+                  value={(formState.values as FormStateValues).phone}
+                  error={fieldHasError('phone')}
+                  helperText={fieldGetError('phone') || ' ' /*|| 'Enter mobile phone number'*/}
+                  onChange={onFieldChange}
+                  {...SHARED_CONTROL_PROPS}
+                />
+              )}
               <TextField
+                autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
                 label="First Name"
                 name="nameFirst"
                 value={(formState.values as FormStateValues).nameFirst}
@@ -137,16 +169,6 @@ const SignupView = () => {
                 value={(formState.values as FormStateValues).nameLast}
                 error={fieldHasError('nameLast')}
                 helperText={fieldGetError('nameLast') || ' ' /*|| 'Enter your last name'*/}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                required
-                label="Phone"
-                name="phone"
-                value={(formState.values as FormStateValues).phone}
-                error={fieldHasError('phone')}
-                helperText={fieldGetError('phone') || ' ' /*|| 'Enter mobile phone number'*/}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
@@ -201,8 +223,15 @@ const SignupView = () => {
                 control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
                 label={
                   <>
-                    You must agree with <AppLink to="/legal/terms" openInNewTab>Terms of Use</AppLink> and{' '}
-                    <AppLink to="/legal/privacy" openInNewTab>Privacy Policy</AppLink> to use our service *
+                    You must agree with{' '}
+                    <AppLink to="/legal/terms" openInNewTab>
+                      Terms of Use
+                    </AppLink>{' '}
+                    and{' '}
+                    <AppLink to="/legal/privacy" openInNewTab>
+                      Privacy Policy
+                    </AppLink>{' '}
+                    to use our service *
                   </>
                 }
               />
