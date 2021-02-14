@@ -6,7 +6,7 @@ const METHOD = 'fileRead()';
 export async function fileReadByDirectus(key: PrimaryKey, query?: Query) {
   try {
     const { data } = await api.directus.files.read(key, query);
-    console.log(METHOD, '- data:', data);
+    console.warn(METHOD, '- data:', data);
     return data;
   } catch (error) {
     console.error(METHOD, error);

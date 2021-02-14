@@ -5,11 +5,7 @@ interface TimeoutHandler<T> {
   clearTimeout: (timeout: T | undefined) => void;
 }
 type CancelTimer = () => void;
-type UseTimeout = (
-  callback: () => void,
-  timeout: number,
-  deps?: unknown[]
-) => CancelTimer;
+type UseTimeout = (callback: () => void, timeout: number, deps?: unknown[]) => CancelTimer;
 
 const defaultTimeoutHandler: TimeoutHandler<number> = {
   setTimeout: (fn: () => void, timeout: number) => window.setTimeout(fn, timeout),

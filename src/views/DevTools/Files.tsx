@@ -10,7 +10,7 @@ import { SHARED_CONTROL_PROPS } from '../../utils/form';
 const Files = () => {
   const [id, setId] = useState('');
   const [fileName, setFileName] = useState('');
-  const [fileData, setFileData] = useState();
+  const [fileData, setFileData] = useState<Blob>();
   const [result, setResult] = useState<string | null | undefined>();
   const [error, setError] = useState<string | null | undefined>();
 
@@ -33,6 +33,8 @@ const Files = () => {
     console.log('target.files:', target?.files);
     setFileName(target?.files?.[0]?.name);
 
+    if (!target?.files?.[0]) return; // Thats all for now, no file was selected.
+
     const fileReader = new FileReader();
     fileReader.readAsDataURL(target?.files?.[0]);
 
@@ -44,8 +46,8 @@ const Files = () => {
 
   const handleCreate = useCallback(async () => {
     const payload = {
-      data: fileData,
       filename_download: fileName,
+      data: fileData,
     };
     const data = await api.file.create(payload);
     if (data) {

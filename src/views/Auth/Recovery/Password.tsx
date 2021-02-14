@@ -22,7 +22,7 @@ interface Props {
 /**
  * Renders "Recover Password" view for Login flow
  * url: /uth/recovery/password
- * @param {string} [props.email] - pre-populated email in case the user already enters it 
+ * @param {string} [props.email] - pre-populated email in case the user already enters it
  */
 const LoginEmailView = ({ email = '' }: Props) => {
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({

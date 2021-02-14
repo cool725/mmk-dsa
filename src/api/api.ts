@@ -7,13 +7,14 @@ import * as info from './info';
 import * as customData from './customData';
 import * as customFile from './customFile';
 
-
 const api = {
   // Object instances
   directus,
   axios: directus?.axios,
   url: directus?.url || directus?.axios?.defaults?.baseURL,
-  token: directus.auth.token,
+  get token() {
+    return directus.auth.token;
+  },
   // API "modules"
   auth,
   otp,
@@ -22,7 +23,6 @@ const api = {
   file,
   dsa,
   info,
-
 };
 
 export default api;

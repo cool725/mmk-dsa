@@ -50,7 +50,7 @@ const VerifyPhoneView = () => {
   const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState<string>();
   const otpInputRef = useRef<HTMLDivElement>();
-  const history = useHistory()
+  const history = useHistory();
 
   useTimeout(
     () => {
@@ -69,7 +69,7 @@ const VerifyPhoneView = () => {
       values: {
         ...formState.values,
         otp: '',
-      }
+      },
     });
 
     const phone = (formState.values as FormStateValues).phone;
@@ -93,14 +93,14 @@ const VerifyPhoneView = () => {
 
       const phone = (formState.values as FormStateValues).phone;
       const otp = (formState.values as FormStateValues).otp;
-      const apiResult = true || await api.otp.verify({ phone, otp });
+      const apiResult = true || (await api.otp.verify({ phone, otp }));
       if (!apiResult) {
         setWaiting(false);
         setError(`Code ${otp} is not valid for ${phone} phone`);
         return;
       }
 
-      dispatch({ type: 'PHONE_VERIFIED', payload: phone });
+      dispatch({ type: 'SET_VERIFIED_PHONE', payload: phone });
       history.push('/auth/signup/data'); // Open next "Signup" view
     },
     [dispatch, history, formState.values]

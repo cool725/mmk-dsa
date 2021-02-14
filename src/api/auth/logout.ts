@@ -19,7 +19,7 @@ export async function logoutByAxios() {
 
 export async function logoutByDirectus() {
   try {
-    await api.directus.auth.logout(); // Note: returns 400 with message: ""refresh_token" is required in either the JSON payload or Cookie" message  
+    await api.directus.auth.logout(); // Note: returns 400 with message: ""refresh_token" is required in either the JSON payload or Cookie" message
   } catch (error) {
     console.error(METHOD, error);
   } finally {

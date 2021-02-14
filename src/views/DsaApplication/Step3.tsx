@@ -1,54 +1,55 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 
 const VALIDATE_FORM = {
-  address_line_1: {
+  individual_id_proof_type: {
     presence: { allowEmpty: false },
     type: 'string',
   },
-  address_line_2: {
+  individual_id_proof_image: {
     type: 'string',
-  },
-  pin_code: {
-    presence: { allowEmpty: false },
-    type: 'string', //TODO: Is if ZIP code? Length or Pattern
   },
 
-  city: {
+  pan_number: {
+    presence: { allowEmpty: false },
     type: 'string',
+    length: {
+      maximum: 10,
+      // message: 'must be exactly 10 characters',
+    },
   },
-  state: {
+  pan_card_image: {
     type: 'string',
   },
 };
 
 interface FormStateValues {
-  address_line_1: string;
-  address_line_2: string;
-  pin_code: string;
-  city: string;
-  state: string;
+  pan_number: string;
+  pan_card_image: string;
+
+  individual_id_proof_type: string;
+  individual_id_proof_image: string;
 }
 
 /**
- * Renders "Step 2" view for "DSA Application" flow
- * url: /dsa/2
+ * Renders "Step 3" view for "DSA Application" flow
+ * url: /dsa/3
  */
-const DsaStep2View = () => {
+const DsaStep3View = () => {
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
-      address_line_1: '',
-      address_line_2: '',
-      pin_code: '',
-      city: '',
-      state: '',
+      pan_number: '',
+      pan_card_image: '',
+
+      individual_id_proof_type: '',
+      individual_id_proof_image: '',
     } as FormStateValues,
   });
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,7 @@ const DsaStep2View = () => {
     // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
+      const email = state.verifiedEmail || state.currentUser?.email || '';
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
@@ -74,11 +76,8 @@ const DsaStep2View = () => {
         ...oldFormState,
         values: {
           ...oldFormState.values,
-          address_line_1: apiData?.address_line_1 || '',
-          address_line_2: apiData?.address_line_2 || '',
-          pin_code: apiData?.pin_code || '',
-          city: apiData?.city || '',
-          state: apiData?.state || '',
+          pan_number: apiData?.pan_number || '',
+          individual_id_proof_type: apiData?.individual_id_proof_type || '',
         },
       }));
     }
@@ -87,7 +86,7 @@ const DsaStep2View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState, email]); // Note: Don't put formState as dependency here !!!
+  }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -115,8 +114,8 @@ const DsaStep2View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 3 });
-      history.push('/dsa/3'); // Navigate to next Step
+      dispatch({ type: 'SET_DSA_STEP', payload: 4 });
+      history.push('/dsa/4'); // Navigate to next Step
     },
     [dispatch, formState.values, history, dsaId, email]
   );
@@ -130,59 +129,58 @@ const DsaStep2View = () => {
       <Grid item>
         <form onSubmit={handleFormSubmit}>
           <Card>
-            <CardHeader title="DSA Application - Step 2" subheader="Address Info" />
+            <CardHeader title="DSA Application - Step 3" subheader="KYC details" />
             <CardContent>
               <TextField
                 required
                 disabled={inputDisabled}
-                label="Address Line 1"
-                name="address_line_1"
-                value={(formState.values as FormStateValues).address_line_1}
-                error={fieldHasError('address_line_1')}
-                helperText={fieldGetError('address_line_1') || ' '}
+                label="PAN Number"
+                name="pan_number"
+                value={(formState.values as FormStateValues).pan_number}
+                error={fieldHasError('pan_number')}
+                helperText={fieldGetError('pan_number') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
-              <TextField
-                disabled={inputDisabled}
-                label="Address Line 2"
-                name="address_line_2"
-                value={(formState.values as FormStateValues).address_line_2}
-                error={fieldHasError('address_line_2')}
-                helperText={fieldGetError('address_line_2') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
+              <AppButton>Upload PAN Card Image</AppButton>
+              <input
+                disabled // Note: Temporary
+                hidden
+                id="pan_card_image"
+                name="pan_card_image"
+                type="file"
+                // onChange={handleFileUploadChange}
               />
+
+              <br />
+              <br />
+              <Divider />
+              <br />
+
               <TextField
                 required
                 disabled={inputDisabled}
-                label="PIN code"
-                name="pin_code"
-                value={(formState.values as FormStateValues).pin_code}
-                error={fieldHasError('pin_code')}
-                helperText={fieldGetError('pin_code') || ' '}
+                select
+                label="ID Proof (please provide any one)"
+                name="individual_id_proof_type"
+                value={(formState.values as FormStateValues).individual_id_proof_type}
+                error={fieldHasError('individual_id_proof_type')}
+                helperText={fieldGetError('individual_id_proof_type') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                disabled={inputDisabled}
-                label="City"
-                name="city"
-                value={(formState.values as FormStateValues).city}
-                error={fieldHasError('city')}
-                helperText={fieldGetError('city') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                disabled={inputDisabled}
-                label="State"
-                name="state"
-                value={(formState.values as FormStateValues).state}
-                error={fieldHasError('state')}
-                helperText={fieldGetError('state') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
+              >
+                <MenuItem value="aadhaar_card">Aadhaar card</MenuItem>
+                <MenuItem value="voter_id">Voter ID</MenuItem>
+                <MenuItem value="passport">Passport</MenuItem>
+              </TextField>
+              <AppButton>Upload ID Document Image</AppButton>
+              <input
+                disabled // Note: Temporary
+                hidden
+                id="individual_id_proof_image"
+                name="individual_id_proof_image"
+                type="file"
+                // onChange={handleFileUploadChange}
               />
 
               <br />
@@ -209,4 +207,4 @@ const DsaStep2View = () => {
   );
 };
 
-export default DsaStep2View;
+export default DsaStep3View;

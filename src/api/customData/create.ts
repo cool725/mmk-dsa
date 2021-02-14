@@ -10,7 +10,7 @@ const METHOD = 'dataCreate()';
 //     const res = await api.axios.post(ENDPOINT, data);
 //     if ([200, 201, 204].includes(res?.status)) {
 //       const { data } = res;
-//       console.log(METHOD, '- data:', data);
+//       console.warn(METHOD, '- data:', data);
 //       return data;
 //     }
 //   } catch (error) {
@@ -21,8 +21,8 @@ const METHOD = 'dataCreate()';
 
 export async function dataCreateByDirectus(payload: Payload | Payload[], query?: Query) {
   try {
-    const { data } = await api.directus.items(COLLECTION).create(payload, query );
-    console.log(METHOD, '- data:', data);
+    const { data } = await api.directus.items(COLLECTION).create(payload, query);
+    console.warn(METHOD, '- data:', data);
     return data;
   } catch (error) {
     console.error(METHOD, error);

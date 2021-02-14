@@ -1,28 +1,33 @@
 import { api } from '..';
 import { Payload, PrimaryKey, Query } from '@directus/sdk-js/dist/types/types';
-import { COLLECTION } from './utils';
+import { COLLECTION, ENDPOINT } from './utils';
 
-// const ENDPOINT = 'data/update';
-const METHOD = 'customDataUpdate()';
+const METHOD = 'dsaUpdate()';
 
-// export async function customDataUpdateByAxios(payload: object) {
-//   try {
-//     const res = await api.axios.post(ENDPOINT, payload);
-//     if ([200, 201, 204].includes(res?.status)) {
-//       const { data } = res;
-//       console.log(METHOD, '- data:', data);
-//       return data;
-//     }
-//   } catch (error) {
-//     console.error(METHOD, error);
-//   }
-//   return undefined;
-// }
+export async function dsaUpdateByAxios(key: string | number, payload: any | any[], query?: any) {
+  const data = {
+    ...payload,
+  };
+  const config = {
+    params: query,
+  };
+  try {
+    const res = await api.axios.patch(`${ENDPOINT}/${key}`, data, config);
+    if ([200, 201, 204].includes(res?.status)) {
+      const { data } = res;
+      console.warn(METHOD, '- data:', data);
+      return data;
+    }
+  } catch (error) {
+    console.error(METHOD, error);
+  }
+  return undefined;
+}
 
-export async function customDataUpdateByDirectus(key: PrimaryKey, payload: Payload, query?: Query) {
+export async function dsaUpdateByDirectus(key: PrimaryKey, payload: Payload, query?: Query) {
   try {
     const { data } = await api.directus.items(COLLECTION).update(key, payload, query);
-    console.log(METHOD, '- data:', data);
+    console.warn(METHOD, '- data:', data);
     return data;
   } catch (error) {
     console.error(METHOD, error);
@@ -30,5 +35,5 @@ export async function customDataUpdateByDirectus(key: PrimaryKey, payload: Paylo
   return undefined;
 }
 
-// export default customDataUpdateByAxios;
-export default customDataUpdateByDirectus;
+export default dsaUpdateByAxios;
+// export default dsaUpdateByDirectus;

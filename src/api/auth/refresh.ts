@@ -1,3 +1,4 @@
+import { AuthResponse } from '@directus/sdk-js/dist/types/handlers';
 import { api } from '..';
 import { loadRefreshToken, clearAuthData, saveRefreshToken, saveToken, setRefreshTimeout } from './utils';
 
@@ -27,8 +28,9 @@ export async function refreshByAxios() {
 
 export async function refreshByDirectus() {
   try {
-    const { data } = await api.directus.auth.refresh();
-    console.warn(METHOD, '- token expires in', +data.expires / 1000 / 60, 'minutes');
+    const res = await api.directus.auth.refresh();
+    const data = res?.data as AuthResponse;
+    console.warn(METHOD, '- token expires in', +data?.expires / 1000 / 60, 'minutes');
     saveToken();
     setRefreshTimeout(data?.expires);
     return data;

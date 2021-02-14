@@ -12,13 +12,14 @@ export interface IAppState {
   darkMode: boolean;
   isAuthenticated: boolean;
   verifiedPhone?: string;
-  isEmailConfirmed?: boolean;
+  verifiedEmail?: string;
   currentUser?: Partial<IUserInfo> | undefined | null;
+  dsaStep: number;
 }
 const initialAppState: IAppState = {
   darkMode: false, // Overridden by useMediaQuery('(prefers-color-scheme: dark)') in AppStore
   isAuthenticated: false, // Overridden in AppStore by checking auth token
-  isEmailConfirmed: false,
+  dsaStep: -1,
 };
 
 /**

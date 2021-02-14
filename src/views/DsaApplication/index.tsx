@@ -1,18 +1,32 @@
 import { Route, Switch } from 'react-router-dom';
-import DsaApplicationStep1 from './Step1';
-import DsaApplicationStep2 from './Step2';
-import DsaApplicationFull from './Full'
+import DsaStep1 from './Step1';
+import DsaStep2 from './Step2';
+import DsaStep3 from './Step3';
+import DsaStep4 from './Step4';
+import DsaStep5 from './Step5';
+import DsaStep6 from './Step6';
+import DsaApplicationFull from './Full';
+import DsaComplete from './Complete';
 
 /**
  * Routes for "Dsa Application" flow
- * url: /dsa/application/*
+ * url: /dsa/*
  */
 const DsaApplicationRoutes = () => {
   return (
     <Switch>
-      <Route path="/dsa/application/1/" component={DsaApplicationStep1} />
-      <Route path="/dsa/application/2/" component={DsaApplicationStep2} />
-      <Route component={DsaApplicationFull} />
+      <Route path="/dsa/full" component={DsaApplicationFull} />
+
+      <Route path="/dsa/1" component={DsaStep1} />
+      <Route path="/dsa/2" component={DsaStep2} />
+      <Route path="/dsa/3" component={DsaStep3} />
+      <Route path="/dsa/4" component={DsaStep4} />
+      <Route path="/dsa/5" component={DsaStep5} />
+      <Route path="/dsa/6" component={DsaStep6} />
+
+      <Route path="/dsa/complete" component={DsaComplete} />
+
+      <Route component={DsaStep1} />
     </Switch>
   );
 };

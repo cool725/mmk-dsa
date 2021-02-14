@@ -1,9 +1,10 @@
-import { SyntheticEvent, useCallback } from 'react';
-import { Grid, TextField, Card, CardHeader, CardContent, MenuItem } from '@material-ui/core';
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider, Typography } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { AppButton } from '../../components';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { AppButton, AppAlert } from '../../components';
 
 const VALIDATE_FORM = {
   entity_type: {
@@ -12,192 +13,136 @@ const VALIDATE_FORM = {
   entity_name: {
     type: 'string',
   },
-  entity_primary_contact_first_name: {
+  first_name: {
     type: 'string',
+    presence: { allowEmpty: false },
   },
-  entity_primary_contact_last_name: {
+  last_name: {
     type: 'string',
-  },
-  designation: {
-    type: 'string',
-  },
-
-  individual_first_name: {
-    type: 'string',
-  },
-  individual_last_name: {
-    type: 'string',
-  },
-  individual_id_proof_type: {
-    type: 'string', // TODO: Change to enum, maybe we should move it to another screen
-  },
-  individual_id_proof_image: {
-    type: 'string', // TODO: Change URL or file, maybe we should move it to another screen
-  },
-};
-/* 
-  mobile_number: {
-    // presence: true,
-    format: {
-      pattern: '[- .+()0-9]+',
-      // flags: "i",
-      message: 'should contain numbers',
-    },
-  },
-  mobile_number_secondary: {
-    // presence: true,
-    format: {
-      pattern: '[- .+()0-9]+',
-      // flags: "i",
-      message: 'should contain numbers',
-    },
-  },
-  email: {
-    //    presence: true,
-    email: true,
-  },
-
-  address_line_1: {
-    type: 'string',
-  },
-  address_line_2: {
-    type: 'string',
-  },
-  city: {
-    type: 'string',
-  },
-  state: {
-    type: 'string',
-  },
-
-  pin_code: {
-    type: 'string', //TODO: Is if ZIP code? Length or Pattern
-  },
-
-  pan_number: {
-    type: 'string',
-    length: {
-      maximum: 10,
-      // message: 'must be exactly 10 characters',
-    },
-  },
-  pan_card_image: {
-    type: 'string', // TODO: Change URL or file, maybe we should move it to another screen
-  },
-
-  gst_number: {
-    type: 'string', // TODO: Length or Pattern?
-  },
-  gst_registration_image: {
-    type: 'string', // TODO: Change URL or file, maybe we should move it to another screen
+    presence: { allowEmpty: false },
   },
 };
 
-*/
 interface FormStateValues {
-  entity_type: string; // TODO: Change to enum
+  entity_type: string;
   entity_name: string;
-  entity_primary_contact_first_name: string;
-  entity_primary_contact_last_name: string;
-  designation: string;
-
-  individual_first_name: string;
-  individual_last_name: string;
-  individual_id_proof_type: string; // TODO: Change to enum, maybe we should move it to another screen
-  individual_id_proof_image: string; // TODO: Change URL or file, maybe we should move it to another screen
-
-  mobile_number: string;
-  mobile_number_secondary: string;
-  email: string;
-
-  address_line_1: string;
-  address_line_2: string;
-  city: string;
-  state: string;
-  pin_code: string;
-
-  pan_number: string;
-  pan_card_image: string;
-
-  gst_number: string;
-  gst_registration_image: string;
-
-  bank_name: string;
-  ifsc_code: string;
-
-  cancelled_cheque_image: string;
-  cancelled_cheque_has_applicant_name: boolean;
-
-  account_passbook_page_image: string;
+  first_name: string;
+  last_name: string;
 }
 
 /**
- * Renders "Dda Application Form" view
- * url: /dsa-application/*
+ * Renders "Step 1" view for "DSA Application" flow
+ * url: /dsa/1
  */
-const DsaApplicationView = () => {
-  const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
+const DsaStep1View = () => {
+  const [state, dispatch] = useAppStore();
+  const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
-      entity_type: 'individual',
+      entity_type: '',
       entity_name: '',
-      entity_primary_contact_first_name: '',
-      entity_primary_contact_last_name: '',
-      designation: '',
-
-      individual_first_name: '',
-      individual_last_name: '',
-      individual_id_proof_type: '',
-      individual_id_proof_image: '',
-
-      mobile_number: '',
-      mobile_number_secondary: '',
-      email: '',
-
-      address_line_1: '',
-      address_line_2: '',
-      city: '',
-      state: '',
-      pin_code: '',
-
-      pan_number: '',
-      pan_card_image: '',
-
-      gst_number: '',
-      gst_registration_image: '',
-
-      bank_name: '',
-      ifsc_code: '',
-
-      cancelled_cheque_image: '',
-      cancelled_cheque_has_applicant_name: false,
-
-      account_passbook_page_image: '',
+      first_name: '',
+      last_name: '',
     } as FormStateValues,
   });
-  const [, dispatch] = useAppStore();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>();
+  const [dsaId, setDsaId] = useState<string>();
+  const history = useHistory();
+  const phone = state.verifiedPhone || state.currentUser?.phone || '';
+  const email = state.verifiedEmail || state.currentUser?.email || '';
+
+  useEffect(() => {
+    // Load previous data form API
+    let componentMounted = true; // Set "component is live" flag
+    async function fetchData() {
+      if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
+
+      const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
+      if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      setLoading(false);
+      if (!apiData) return; // No data from API, do nothing
+
+      setDsaId(apiData.id);
+      setFormState((oldFormState) => ({
+        ...oldFormState,
+        values: {
+          ...oldFormState.values,
+          entity_type: apiData?.entity_type || '',
+          entity_name: apiData?.entity_name || '',
+          first_name:
+            (apiData?.entity_type === 'individual'
+              ? apiData?.individual_first_name
+              : apiData?.entity_primary_contact_first_name) || '',
+          last_name:
+            (apiData?.entity_type === 'individual'
+              ? apiData?.individual_last_name
+              : apiData?.entity_primary_contact_last_name) || '',
+        },
+      }));
+    }
+    fetchData(); // Call API asynchronously
+
+    return () => {
+      componentMounted = false; // Remove "component is live" flag
+    };
+  }, [state, setFormState, email]); // Note: Don't put formState as dependency here !!!
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
-      console.log('onSubmit() - formState.values:', formState.values);
+      // console.log('onSubmit() - formState.values:', formState.values);
+      setLoading(true); // Don't allow to change data anymore
 
-      const apiResult = await api.dsa.create(formState.values);
-      console.log('apiResult:', apiResult);
+      const values = formState.values as FormStateValues;
+      const payload: Record<string, any> = {
+        entity_type: values.entity_type,
+        entity_name: values.entity_name,
+        individual_first_name: values.first_name,
+        individual_last_name: values.last_name,
+        entity_primary_contact_first_name: values.first_name,
+        entity_primary_contact_last_name: values.last_name,
+        mobile_number: phone,
+        email: email,
+      };
 
-      dispatch({ type: 'NEW_DSA', payload: formState.values });
+      let apiResult;
+      if (!dsaId) {
+        // Create new record
+        apiResult = await api.dsa.create(payload);
+      } else {
+        // Update existing record
+        apiResult = await api.dsa.update(dsaId, payload);
+      }
+      // console.log('apiResult:', apiResult);
+      if (!apiResult) {
+        setLoading(false);
+        setError('Can not update data via API. Verify you connection to the Internet and try agin later.');
+        return;
+      }
+
+      dispatch({ type: 'SET_DSA_STEP', payload: 2 });
+      history.push('/dsa/2'); // Navigate to next Step
     },
-    [dispatch, formState.values]
+    [dispatch, formState.values, history, dsaId, phone, email]
   );
+
+  const handleCloseError = useCallback(() => setError(undefined), []);
+
+  const inputDisabled = loading || Boolean(error);
 
   return (
     <Grid container direction="column">
       <Grid item>
         <form onSubmit={handleFormSubmit}>
           <Card>
-            <CardHeader title="DSA Application - Step 1" />
+            <CardHeader title="DSA Application - Step 1" subheader="Business details" />
             <CardContent>
               <TextField
+                autoFocus
+                required
+                disabled={inputDisabled}
                 select
                 label="Type of Entity"
                 name="entity_type"
@@ -211,75 +156,87 @@ const DsaApplicationView = () => {
                 <MenuItem value="company">Company</MenuItem>
                 <MenuItem value="partnership">Partnership</MenuItem>
               </TextField>
+              {(formState.values as FormStateValues).entity_type !== 'individual' && (
+                <>
+                  <TextField
+                    required
+                    disabled={inputDisabled}
+                    label={
+                      (formState.values as FormStateValues).entity_type === 'partnership'
+                        ? 'Partnership Name'
+                        : 'Company Name'
+                    }
+                    name="entity_name"
+                    value={(formState.values as FormStateValues).entity_name}
+                    error={fieldHasError('entity_name')}
+                    helperText={fieldGetError('entity_name') || ' '}
+                    onChange={onFieldChange}
+                    {...SHARED_CONTROL_PROPS}
+                  />
+                  <br />
+                  <br />
+                  <Divider />
+                  <br />
+
+                  <Typography variant="h6">Primary Contact</Typography>
+                  <br />
+                </>
+              )}
+
               <TextField
-                label="Name of Entity"
-                name="entity_name"
-                value={(formState.values as FormStateValues).entity_name}
-                error={fieldHasError('entity_name')}
-                helperText={fieldGetError('entity_name') || ' '}
+                required
+                disabled={inputDisabled}
+                label="First Name"
+                name="first_name"
+                value={(formState.values as FormStateValues).first_name}
+                error={fieldHasError('first_name')}
+                helperText={fieldGetError('first_name') || ' '}
+                onChange={onFieldChange}
+                {...SHARED_CONTROL_PROPS}
+              />
+              <TextField
+                required
+                disabled={inputDisabled}
+                label="Last Name"
+                name="last_name"
+                value={(formState.values as FormStateValues).last_name}
+                error={fieldHasError('last_name')}
+                helperText={fieldGetError('last_name') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
 
               <TextField
-                label="Primary Contact - First Name"
-                name="entity_primary_contact_first_name"
-                value={(formState.values as FormStateValues).entity_primary_contact_first_name}
-                error={fieldHasError('entity_primary_contact_first_name')}
-                helperText={fieldGetError('entity_primary_contact_first_name') || ' '}
-                onChange={onFieldChange}
+                disabled
+                label={state.verifiedPhone ? 'Verified Phone' : 'Phone'}
+                name="phone"
+                value={phone}
+                helperText=" "
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
-                label="Primary Contact - Last Name"
-                name="entity_primary_contact_last_name"
-                value={(formState.values as FormStateValues).entity_primary_contact_last_name}
-                error={fieldHasError('entity_primary_contact_last_name')}
-                helperText={fieldGetError('entity_primary_contact_last_name') || ' '}
-                onChange={onFieldChange}
+                disabled
+                label={state.verifiedPhone ? 'Verified Email' : 'Email'}
+                name="email"
+                value={email}
+                helperText=" "
                 {...SHARED_CONTROL_PROPS}
               />
 
-              <TextField
-                label="Designation"
-                name="designation"
-                value={(formState.values as FormStateValues).designation}
-                error={fieldHasError('designation')}
-                helperText={fieldGetError('designation') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
+              <br />
+              <br />
+              <Divider />
+              <br />
 
-              <TextField
-                select
-                label="ID Document Type"
-                name="individual_id_proof_type"
-                value={(formState.values as FormStateValues).individual_id_proof_type}
-                error={fieldHasError('individual_id_proof_type')}
-                helperText={fieldGetError('individual_id_proof_type') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              >
-                <MenuItem value="aadhaar_card">Aadhaar card</MenuItem>
-                <MenuItem value="voter_id">Voter ID</MenuItem>
-                <MenuItem value="passport">Passport</MenuItem>
-              </TextField>
-
-              <TextField
-                type="file"
-                // label="ID Document Image"
-                name="individual_id_proof_image"
-                value={(formState.values as FormStateValues).individual_id_proof_image}
-                error={fieldHasError('individual_id_proof_image')}
-                helperText={fieldGetError('individual_id_proof_image') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
-              <AppButton>Upload ID Document Image</AppButton>
+              {error ? (
+                <AppAlert severity="error" onClose={handleCloseError}>
+                  {error}
+                </AppAlert>
+              ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={!formState.isValid}>
-                  Confirm and Submit
+                <AppButton type="submit" disabled={inputDisabled || !formState.isValid}>
+                  Confirm and Continue
                 </AppButton>
               </Grid>
             </CardContent>
@@ -290,4 +247,4 @@ const DsaApplicationView = () => {
   );
 };
 
-export default DsaApplicationView;
+export default DsaStep1View;

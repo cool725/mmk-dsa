@@ -6,7 +6,6 @@ import { useAppStore } from '../../../store';
 import { AppButton, AppLink, AppIconButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
 
-
 const VALIDATE_FORM_LOGIN_EMAIL = {
   email: {
     presence: true,
@@ -44,15 +43,18 @@ const LoginEmailView = () => {
     setShowPassword((oldValue) => !oldValue);
   }, []);
 
-  const handleFormSubmit = useCallback(async (event: SyntheticEvent) => {
-    event.preventDefault();
+  const handleFormSubmit = useCallback(
+    async (event: SyntheticEvent) => {
+      event.preventDefault();
 
-    const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
-    if (!result) return; // Unsuccessful login
+      const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
+      if (!result) return; // Unsuccessful login
 
-    dispatch({ type: 'LOG_IN' });
-    history.push('/');
-  }, [dispatch, formState.values, history]);
+      dispatch({ type: 'LOG_IN' });
+      history.push('/');
+    },
+    [dispatch, formState.values, history]
+  );
 
   return (
     <Grid container direction="column">
@@ -125,7 +127,6 @@ const LoginEmailView = () => {
                   Refresh
                 </AppButton>
               </Grid> */}
-              
             </CardContent>
           </Card>
         </form>

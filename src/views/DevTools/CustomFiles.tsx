@@ -44,8 +44,8 @@ const CustomFiles = () => {
 
   const handleCreate = useCallback(async () => {
     const payload = {
-      data: fileData,
-      filename_download: fileName,
+      fileData,
+      fileName,
     };
     const data = await api.customFile.create(payload);
     if (data) {
@@ -54,7 +54,7 @@ const CustomFiles = () => {
       setId(String(data?.id));
     } else {
       setResult(null);
-      delete payload.data;
+      delete payload.fileData;
       setError('Can not create: ' + JSON.stringify(payload));
     }
   }, [fileData, fileName]);

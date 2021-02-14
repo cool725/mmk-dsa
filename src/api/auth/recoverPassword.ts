@@ -17,4 +17,3 @@ export async function recoverPasswordByDirectus({ email }: IRecoverPassword) {
 }
 
 export default recoverPasswordByDirectus;
-

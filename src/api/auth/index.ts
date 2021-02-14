@@ -1,4 +1,4 @@
-import signup from './signup'
+import signup from './signup';
 import loginWithEmail from './loginWithEmail';
 import loginWithPhone from './loginWithPhone';
 import logout from './logout';

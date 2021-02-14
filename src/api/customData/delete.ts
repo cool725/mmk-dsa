@@ -9,7 +9,7 @@ const METHOD = 'dataDelete()';
 //   try {
 //     const res = await api.axios.delete(ENDPOINT, query);
 //     if (res?.status < 400) {
-//       console.log(METHOD, '- query:', query);
+//       console.warn(METHOD, '- query:', query);
 //       return true
 //     }
 //   } catch (error) {
@@ -21,7 +21,7 @@ const METHOD = 'dataDelete()';
 export async function dataDeleteByDirectus(key: PrimaryKey) {
   try {
     await api.directus.items(COLLECTION).delete(key);
-    console.log(METHOD, '- key:', key);
+    console.warn(METHOD, '- key:', key);
     return true;
   } catch (error) {
     console.error(METHOD, error);

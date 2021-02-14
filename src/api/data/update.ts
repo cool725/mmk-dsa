@@ -20,7 +20,7 @@ export async function dataUpdateByAxios(data: object) {
 export async function dataUpdateByDirectus(key: PrimaryKey, data: object) {
   try {
     const res = await api.directus.items(COLLECTION).update(key, data);
-    console.log(METHOD, '- res:', res);
+    console.warn(METHOD, '- res:', res);
     return true;
     // if ([200, 204].includes(res?.status) ) {
     //   return true;

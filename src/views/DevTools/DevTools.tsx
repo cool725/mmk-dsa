@@ -5,6 +5,7 @@ import { AppButton } from '../../components';
 import CustomData from './CustomData';
 import CustomFiles from './CustomFiles';
 import Files from './Files';
+import { useAppStore } from '../../store';
 
 /**
  * Renders "Dev Tools" view
@@ -12,6 +13,7 @@ import Files from './Files';
  */
 const DevTools = () => {
   // const [fileSample, setFileSample] = useState();
+  const [, dispatch] = useAppStore();
 
   const handleServerInfoClick = useCallback(async () => {
     const serverInfo = await api.info.server();
@@ -43,10 +45,10 @@ url: ${api?.url}
             </AppButton>
             <AppButton onClick={() => api.auth.refresh()}>Refresh Token</AppButton>
             <AppButton onClick={() => api.auth.logout()}>Logout User</AppButton>
+            <AppButton onClick={() => dispatch({ type: 'LOG_OUT' })}>Soft Logout</AppButton>
           </CardActions>
         </Card>
       </Grid>
-
 
       <Grid item xs={12} md={6}>
         <Files />

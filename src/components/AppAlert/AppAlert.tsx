@@ -25,15 +25,7 @@ const AppAlert: React.FC<MuiAlertProps> = ({
   const classes = useStyles();
   const classRoot = clsx(classes.root, className);
 
-  return (
-    <MuiAlert
-      className={classRoot}
-      severity={severity}
-      variant={variant}
-      onClose={onClose}
-      {...restOfProps}
-    />
-  );
+  return <MuiAlert className={classRoot} severity={severity} variant={variant} onClose={onClose} {...restOfProps} />;
 };
 
 export default AppAlert;

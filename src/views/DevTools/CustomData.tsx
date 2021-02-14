@@ -60,8 +60,8 @@ const CustomData = () => {
 
   const handleDelete = useCallback(async () => {
     const result = await api.customData.delete(id);
-    
-    if (result)  {
+
+    if (result) {
       setError(null);
       setResult('Successfully delete record id: "' + id + '"');
       setId('');

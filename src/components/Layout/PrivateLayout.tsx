@@ -62,7 +62,7 @@ const SIDE_BAR_PRIVATE_ITEMS: Array<LinkToPage> = [
   },
   {
     title: 'DSA Application',
-    href: '/dsa/application',
+    href: '/dsa',
     icon: 'edit',
   },
   {

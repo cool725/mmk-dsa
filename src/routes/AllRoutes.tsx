@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
+import api from '../api';
+import { isUserStillLoggedIn } from '../api/auth/utils';
 import { useAppStore } from '../store';
 import PublicRoutes from './PublicRoutes';
 import PrivateRoutes from './PrivateRoutes';
-import { isUserStillLoggedIn } from '../api/auth/utils';
 
 /**
  * Renders routes depending Logged or Anonymous users
@@ -9,19 +11,28 @@ import { isUserStillLoggedIn } from '../api/auth/utils';
  */
 const AllRoutes = () => {
   const [state, dispatch] = useAppStore();
-  let { isAuthenticated } = state;
 
-  // Check isn't token expired?
-  if (isAuthenticated) {
+  useEffect(() => {
+    // Check isn't token expired?
     const isLogged = isUserStillLoggedIn();
-    if (!isLogged) {
-      dispatch({ type: 'LOG_OUT' });
-    }
-    isAuthenticated = isLogged;
-  }
+    // console.log('isLogged:', isLogged)
 
-  // console.log('AllRoutes() - isAuthenticated:', isAuthenticated);
-  return isAuthenticated ? <PrivateRoutes /> : <PublicRoutes />;
+    if (state.isAuthenticated && !isLogged) {
+      // Token was expired, logout immediately!
+      console.warn('Token was expired, logout immediately!');
+      api.auth.logout();
+      dispatch({ type: 'LOG_OUT' }); // Maybe not need due to reloading App in api.auth.logout()
+      return; // Thats all for now, the App will be completely re-rendered soon
+    }
+
+    if (isLogged && !state.isAuthenticated) {
+      // Valid token is present but we are not logged in somehow, lets fix it
+      dispatch({ type: 'LOG_IN' });
+    }
+  }, [state.isAuthenticated, dispatch]); // Effect for every state.isAuthenticated change actually
+
+  console.log('AllRoutes() - isAuthenticated:', state.isAuthenticated);
+  return state.isAuthenticated ? <PrivateRoutes /> : <PublicRoutes />;
 };
 
 export default AllRoutes;

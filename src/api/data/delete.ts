@@ -9,7 +9,7 @@ export async function dataDeleteByAxios(query: object | undefined) {
   try {
     const res = await api.axios.delete(ENDPOINT, query);
     if (res?.status < 400) {
-      return true
+      return true;
     }
   } catch (error) {
     console.error(METHOD, error);

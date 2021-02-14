@@ -7,11 +7,7 @@ interface Props {
   isAuthenticated?: boolean;
 }
 export const Footer: React.FC<Props> = ({ isAuthenticated }) => {
-  return (
-    <Typography variant="caption">
-      Copyright &copy; 2021
-    </Typography>
-  );
+  return <Typography variant="caption">Copyright &copy; 2021</Typography>;
 };
 
 export default Footer;

@@ -20,7 +20,7 @@ export async function dataReadByAxios(query: object | undefined) {
 export async function dataReadByDirectus(query?: Query) {
   try {
     const { data } = await api.directus.items(COLLECTION).read(query as Query);
-    console.log(METHOD, '- data:', data);
+    console.warn(METHOD, '- data:', data);
     return data;
   } catch (error) {
     console.error(METHOD, error);

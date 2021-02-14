@@ -23,7 +23,7 @@ const UserView = () => {
             <AppButton
               onClick={async () => {
                 const currentUser = await api.info.me();
-                console.log('currentUser:', currentUser)
+                console.log('currentUser:', currentUser);
                 dispatch({ type: 'SET_CURRENT_USER', currentUser });
               }}
             >

@@ -11,8 +11,9 @@ const PrivateRoutes = () => {
   return (
     <PrivateLayout>
       <Switch>
+        <Route path="/" exact component={DsaApplication} />
         <Route path="/user" component={User} />
-        <Route path="/dsa/application/" component={DsaApplication} />
+        <Route path="/dsa" component={DsaApplication} />
         <SharedRoutes />
       </Switch>
     </PrivateLayout>

@@ -10,11 +10,21 @@ import { IAppState } from './AppStore';
 const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
   console.log('AppReducer() - action:', action);
   switch (action.type || action.action) {
-    case 'PHONE_VERIFIED': 
+    case 'SET_DSA_STEP':
+      return {
+        ...state,
+        dsaStep: action?.dsaStep || action?.payload?.dsaStep || action?.payload,
+      };
+    case 'SET_VERIFIED_PHONE':
       return {
         ...state,
         verifiedPhone: action?.phone || action?.payload.phone || action?.payload,
-      }
+      };
+    case 'SET_VERIFIED_EMAIL':
+      return {
+        ...state,
+        verifiedEmail: action?.email || action?.payload.email || action?.payload,
+      };
     case 'SET_CURRENT_USER':
       return {
         ...state,

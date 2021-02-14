@@ -62,7 +62,9 @@ const UserInfo = ({ className, showAvatar = false, user: propsUser, ...restOfPro
   }, [state, dispatch]);
 
   const fullName = [user?.first_name || '', user?.last_name || ''].join(' ').trim();
-  const srcAvatar = user?.avatar as string;
+  const srcAvatar = user?.avatar
+    ? `${process.env.REACT_APP_API}/assets/${user?.avatar}?key=system-small-cover&access_token=${api.token}`
+    : undefined;
   const userPhoneOrEmail = user?.phone || (user?.email as string);
 
   return (

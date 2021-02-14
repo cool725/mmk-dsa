@@ -19,7 +19,7 @@ export async function dataCreateByAxios(data: object) {
 export async function dataCreateByDirectus(data: object) {
   try {
     const res = await api.directus.items(COLLECTION).create(data);
-    console.log(METHOD, '- res:', res);
+    console.warn(METHOD, '- res:', res);
     return true;
     // if ([200, 204].includes(res?.status) ) {
     //   return true;

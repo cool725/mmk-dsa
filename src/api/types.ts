@@ -20,18 +20,17 @@ export interface IUserInfo {
   token: string | null;
   // custom
   phone: string | null;
-  is_employee: boolean,
+  is_employee: boolean;
   managed_by: string | null;
 }
 export interface ISignupCredentials {
   nameFirst?: string;
   nameLast?: string;
   email: string;
-  phone: string
+  phone: string;
   password: string;
   otp?: string;
 }
-
 
 // from '@directus/sdk-js/dist/types/handlers/auth';
 export interface ILoginByEmailCredentials {

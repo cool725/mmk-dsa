@@ -1,4 +1,3 @@
-
 const PrivacyView = () => {
   return <div>Privacy will be here...</div>;
 };

@@ -1,11 +1,10 @@
 import { SyntheticEvent, useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent,  InputAdornment} from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, InputAdornment } from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppLink, AppIconButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
-
 
 const VALIDATE_FORM_LOGIN_PHONE = {
   phone: {
@@ -51,17 +50,20 @@ const LoginPhoneView = () => {
     setShowPin((oldValue) => !oldValue);
   }, []);
 
-  const handleFormSubmit = useCallback(async (event: SyntheticEvent) => {
-    event.preventDefault();
-    console.log('onSubmit() - formState.values:', formState.values);
+  const handleFormSubmit = useCallback(
+    async (event: SyntheticEvent) => {
+      event.preventDefault();
+      console.log('onSubmit() - formState.values:', formState.values);
 
-    const result = await api.auth.loginWithPhone(formState.values as FormStateValues);
-    console.warn('api.auth.loginWithPhone() - result:', result);
-    if (!result) return; // Unsuccessful login
+      const result = await api.auth.loginWithPhone(formState.values as FormStateValues);
+      console.warn('api.auth.loginWithPhone() - result:', result);
+      if (!result) return; // Unsuccessful login
 
-    dispatch({ type: 'LOG_IN' });
-    history.push('/');
-  }, [dispatch, formState.values, history]);
+      dispatch({ type: 'LOG_IN' });
+      history.push('/');
+    },
+    [dispatch, formState.values, history]
+  );
 
   return (
     <Grid container direction="column">

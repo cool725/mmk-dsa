@@ -7,7 +7,7 @@ const METHOD = 'newDsaApplication()';
 export async function newDsaApplicationByAxios(data: object) {
   try {
     const res = await api.axios.post(ENDPOINT, data);
-    if ([200, 204].includes(res?.status) ) {
+    if ([200, 204].includes(res?.status)) {
       return true;
     }
   } catch (error) {
@@ -19,7 +19,7 @@ export async function newDsaApplicationByAxios(data: object) {
 export async function newDsaApplicationByDirectus(data: object) {
   try {
     const res = await api.directus.items(COLLECTION).create(data);
-    console.log('res:', res)
+    console.log('res:', res);
     return true;
     // if ([200, 204].includes(res?.status) ) {
     //   return true;

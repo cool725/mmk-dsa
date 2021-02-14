@@ -1,54 +1,71 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, Divider, FormControlLabel, Checkbox } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 
 const VALIDATE_FORM = {
-  address_line_1: {
+  bank_name: {
     presence: { allowEmpty: false },
     type: 'string',
   },
-  address_line_2: {
+  bank_branch_name: {
+    presence: { allowEmpty: false },
     type: 'string',
   },
-  pin_code: {
+  bank_account: {
     presence: { allowEmpty: false },
-    type: 'string', //TODO: Is if ZIP code? Length or Pattern
+    type: 'string',
+  },
+  ifsc_code: {
+    presence: { allowEmpty: false },
+    type: 'string',
   },
 
-  city: {
+  cancelled_cheque_image: {
     type: 'string',
   },
-  state: {
+  cancelled_cheque_has_applicant_name: {
+    type: 'boolean',
+  },
+
+  account_passbook_page_image: {
     type: 'string',
   },
 };
 
 interface FormStateValues {
-  address_line_1: string;
-  address_line_2: string;
-  pin_code: string;
-  city: string;
-  state: string;
+  bank_name: string;
+  bank_branch_name: string;
+  bank_account: string;
+  ifsc_code: string;
+
+  cancelled_cheque_image: string;
+  cancelled_cheque_has_applicant_name: boolean;
+
+  account_passbook_page_image: string;
 }
 
 /**
- * Renders "Step 2" view for "DSA Application" flow
- * url: /dsa/2
+ * Renders "Step 5" view for "DSA Application" flow
+ * url: /dsa/5
  */
-const DsaStep2View = () => {
+const DsaStep5View = () => {
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
-      address_line_1: '',
-      address_line_2: '',
-      pin_code: '',
-      city: '',
-      state: '',
+      bank_name: '',
+      bank_branch_name: '',
+      bank_account: '',
+      ifsc_code: '',
+
+      cancelled_cheque_image: '',
+      cancelled_cheque_has_applicant_name: false,
+
+      account_passbook_page_image: '',
     } as FormStateValues,
   });
   const [loading, setLoading] = useState(true);
@@ -61,6 +78,7 @@ const DsaStep2View = () => {
     // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
+      const email = state.verifiedEmail || state.currentUser?.email || '';
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
@@ -74,11 +92,15 @@ const DsaStep2View = () => {
         ...oldFormState,
         values: {
           ...oldFormState.values,
-          address_line_1: apiData?.address_line_1 || '',
-          address_line_2: apiData?.address_line_2 || '',
-          pin_code: apiData?.pin_code || '',
-          city: apiData?.city || '',
-          state: apiData?.state || '',
+          bank_name: apiData?.bank_name || '',
+          bank_branch_name: apiData?.bank_branch_name || '',
+          bank_account: apiData?.bank_account || '',
+          ifsc_code: apiData?.ifsc_code || '',
+
+          cancelled_cheque_image: apiData?.cancelled_cheque_image || '',
+          cancelled_cheque_has_applicant_name: apiData?.cancelled_cheque_has_applicant_name || false,
+
+          account_passbook_page_image: apiData?.account_passbook_page_image || '',
         },
       }));
     }
@@ -87,7 +109,7 @@ const DsaStep2View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState, email]); // Note: Don't put formState as dependency here !!!
+  }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -115,8 +137,8 @@ const DsaStep2View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 3 });
-      history.push('/dsa/3'); // Navigate to next Step
+      dispatch({ type: 'SET_DSA_STEP', payload: 6 });
+      history.push('/dsa/6'); // Navigate to next Step
     },
     [dispatch, formState.values, history, dsaId, email]
   );
@@ -130,59 +152,94 @@ const DsaStep2View = () => {
       <Grid item>
         <form onSubmit={handleFormSubmit}>
           <Card>
-            <CardHeader title="DSA Application - Step 2" subheader="Address Info" />
+            <CardHeader title="DSA Application - Step 5" subheader="Bank details - Your payout will be send there" />
             <CardContent>
               <TextField
                 required
                 disabled={inputDisabled}
-                label="Address Line 1"
-                name="address_line_1"
-                value={(formState.values as FormStateValues).address_line_1}
-                error={fieldHasError('address_line_1')}
-                helperText={fieldGetError('address_line_1') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                disabled={inputDisabled}
-                label="Address Line 2"
-                name="address_line_2"
-                value={(formState.values as FormStateValues).address_line_2}
-                error={fieldHasError('address_line_2')}
-                helperText={fieldGetError('address_line_2') || ' '}
+                label="Bank Name"
+                name="bank_name"
+                value={(formState.values as FormStateValues).bank_name}
+                error={fieldHasError('bank_name')}
+                helperText={fieldGetError('bank_name') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
                 required
                 disabled={inputDisabled}
-                label="PIN code"
-                name="pin_code"
-                value={(formState.values as FormStateValues).pin_code}
-                error={fieldHasError('pin_code')}
-                helperText={fieldGetError('pin_code') || ' '}
+                label="Bank Branch Name"
+                name="bank_branch_name"
+                value={(formState.values as FormStateValues).bank_branch_name}
+                error={fieldHasError('bank_branch_name')}
+                helperText={fieldGetError('bank_branch_name') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
+                required
                 disabled={inputDisabled}
-                label="City"
-                name="city"
-                value={(formState.values as FormStateValues).city}
-                error={fieldHasError('city')}
-                helperText={fieldGetError('city') || ' '}
+                label="Bank Account"
+                name="bank_account"
+                value={(formState.values as FormStateValues).bank_account}
+                error={fieldHasError('bank_account')}
+                helperText={fieldGetError('bank_account') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
+
               <TextField
+                required
                 disabled={inputDisabled}
-                label="State"
-                name="state"
-                value={(formState.values as FormStateValues).state}
-                error={fieldHasError('state')}
-                helperText={fieldGetError('state') || ' '}
+                label="IFSC Code"
+                name="ifsc_code"
+                value={(formState.values as FormStateValues).ifsc_code}
+                error={fieldHasError('ifsc_code')}
+                helperText={fieldGetError('ifsc_code') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
+              />
+
+              <br />
+              <br />
+              <Divider />
+              <br />
+
+              <AppButton>Upload Cancelled Check Image</AppButton>
+              <input
+                disabled // Note: Temporary
+                hidden
+                id="cancelled_cheque_image"
+                name="cancelled_cheque_image"
+                type="file"
+                // onChange={handleFileUploadChange}
+              />
+              <br />
+              <br />
+              <FormControlLabel
+                label="Cheque has applicant name"
+                control={
+                  <Checkbox
+                    name="cancelled_cheque_has_applicant_name"
+                    checked={(formState.values as FormStateValues).cancelled_cheque_has_applicant_name}
+                    onChange={onFieldChange}
+                  />
+                }
+              />
+
+              <br />
+              <br />
+              <Divider />
+              <br />
+
+              <AppButton>Upload Passbook account details page</AppButton>
+              <input
+                disabled // Note: Temporary
+                hidden
+                id="account_passbook_page_image"
+                name="account_passbook_page_image"
+                type="file"
+                // onChange={handleFileUploadChange}
               />
 
               <br />
@@ -209,4 +266,4 @@ const DsaStep2View = () => {
   );
 };
 
-export default DsaStep2View;
+export default DsaStep5View;
