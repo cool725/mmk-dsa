@@ -14,8 +14,9 @@ const VALIDATE_FORM = {
     type: 'string',
   },
   referrer_mobile_number: {
+    type: 'string',
     format: {
-      pattern: '[- .+()0-9]+',
+      pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
       message: 'should contain numbers',
     },
   },
@@ -118,6 +119,7 @@ const DsaStep6View = () => {
   }, []);
 
   const inputDisabled = loading || Boolean(error);
+  const referrerDisabled = inputDisabled || !(formState.values as FormStateValues).was_referred;
 
   return (
     <Grid container direction="column">
@@ -130,6 +132,7 @@ const DsaStep6View = () => {
                 label="Did anybody refer you to MMK?"
                 control={
                   <Checkbox
+                    disabled={inputDisabled}
                     name="was_referred"
                     checked={(formState.values as FormStateValues).was_referred}
                     onChange={onFieldChange}
@@ -137,7 +140,7 @@ const DsaStep6View = () => {
                 }
               />
               <TextField
-                disabled={inputDisabled}
+                disabled={referrerDisabled}
                 label="Name of referrer"
                 name="referrer_name"
                 value={(formState.values as FormStateValues).referrer_name}
@@ -147,7 +150,7 @@ const DsaStep6View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
-                disabled={inputDisabled}
+                disabled={referrerDisabled}
                 label="Referrers mobile number"
                 name="referrer_mobile_number"
                 value={(formState.values as FormStateValues).referrer_mobile_number}
