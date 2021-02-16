@@ -18,11 +18,12 @@ const VALIDATE_FORM = {
     presence: { allowEmpty: false },
     type: 'string', //TODO: Is if ZIP code? Length or Pattern
   },
-
   city: {
+    presence: { allowEmpty: false },
     type: 'string',
   },
   state: {
+    presence: { allowEmpty: false },
     type: 'string',
   },
 };
@@ -165,6 +166,7 @@ const DsaStep2View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
+                required
                 disabled={inputDisabled}
                 label="City"
                 name="city"
@@ -175,6 +177,7 @@ const DsaStep2View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
+                required
                 disabled={inputDisabled}
                 label="State"
                 name="state"
