@@ -5,6 +5,7 @@ import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
+import { useFormStyles } from './styles';
 
 const VALIDATE_FORM = {
   entity_type: {
@@ -35,6 +36,7 @@ interface FormStateValues {
  * url: /dsa/1
  */
 const DsaStep1View = () => {
+  const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
@@ -133,9 +135,9 @@ const DsaStep1View = () => {
   const inputDisabled = loading || Boolean(error);
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="DSA Application - Step 1" subheader="Business details" />
             <CardContent>
@@ -241,9 +243,9 @@ const DsaStep1View = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

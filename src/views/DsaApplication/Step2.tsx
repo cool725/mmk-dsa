@@ -5,6 +5,7 @@ import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
+import { useFormStyles } from './styles';
 
 const VALIDATE_FORM = {
   address_line_1: {
@@ -41,6 +42,7 @@ interface FormStateValues {
  * url: /dsa/2
  */
 const DsaStep2View = () => {
+  const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
@@ -127,9 +129,9 @@ const DsaStep2View = () => {
   const inputDisabled = loading || Boolean(error);
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="DSA Application - Step 2" subheader="Address Info" />
             <CardContent>
@@ -206,9 +208,9 @@ const DsaStep2View = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

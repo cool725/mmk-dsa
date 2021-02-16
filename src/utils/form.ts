@@ -5,6 +5,7 @@ import { ObjectPropByName } from './type';
 // Same props to style Input, TextField, and so on across the Application
 export const SHARED_CONTROL_PROPS = {
   variant: 'outlined',
+  margin: 'normal', // 'dense', 'none'
   fullWidth: true,
 } as const;
 

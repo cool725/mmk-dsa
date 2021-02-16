@@ -204,9 +204,9 @@ const DsaApplicationFullForm = () => {
   );
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item xs={12} md={6}>
           <Card>
             <CardHeader title="DSA Application - Full Form" />
             <CardContent>
@@ -491,9 +491,9 @@ const DsaApplicationFullForm = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

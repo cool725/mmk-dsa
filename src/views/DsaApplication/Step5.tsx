@@ -5,6 +5,7 @@ import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
+import { useFormStyles } from './styles';
 
 const VALIDATE_FORM = {
   bank_name: {
@@ -53,6 +54,7 @@ interface FormStateValues {
  * url: /dsa/5
  */
 const DsaStep5View = () => {
+  const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
@@ -148,9 +150,9 @@ const DsaStep5View = () => {
   const inputDisabled = loading || Boolean(error);
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="DSA Application - Step 5" subheader="Bank details - Your payout will be send there" />
             <CardContent>
@@ -260,9 +262,9 @@ const DsaStep5View = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

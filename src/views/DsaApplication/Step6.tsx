@@ -5,6 +5,7 @@ import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert, AppLink } from '../../components';
+import { useFormStyles } from './styles';
 
 const VALIDATE_FORM = {
   was_referred: {
@@ -33,6 +34,7 @@ interface FormStateValues {
  * url: /dsa/6
  */
 const DsaStep6View = () => {
+  const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
@@ -122,9 +124,9 @@ const DsaStep6View = () => {
   const referrerDisabled = inputDisabled || !(formState.values as FormStateValues).was_referred;
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="DSA Application - Step 6" subheader="All Done!" />
             <CardContent>
@@ -192,9 +194,9 @@ const DsaStep6View = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 
