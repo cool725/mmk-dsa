@@ -60,10 +60,7 @@ const VerifyPhoneView = () => {
     [waiting]
   );
 
-  const handleRequestOptClick = useCallback(async () => {
-    setError(undefined);
-    setWaiting(true); // Set the .waiting flag, it starts useTimeout()
-    // Clean up "OTP Code" field from previously entered codes
+  function resetOtp() {
     setFormState({
       ...formState,
       values: {
@@ -71,9 +68,15 @@ const VerifyPhoneView = () => {
         otp: '',
       },
     });
+  }
+
+  const handleRequestOptClick = useCallback(async () => {
+    setError(undefined);
+    setWaiting(true); // Set the .waiting flag, it starts useTimeout() 
+    resetOtp(); // Clean up "OTP Code" field from previously entered code
 
     const phone = (formState.values as FormStateValues).phone;
-    const apiResult = true || (await api.otp.request(phone));
+    const apiResult = await api.otp.request(phone);
     if (!apiResult) {
       setWaiting(false);
       setError(`Cannot send SMS to ${phone}`);
@@ -93,7 +96,7 @@ const VerifyPhoneView = () => {
 
       const phone = (formState.values as FormStateValues).phone;
       const otp = (formState.values as FormStateValues).otp;
-      const apiResult = true || (await api.otp.verify({ phone, otp }));
+      const apiResult = await api.otp.verify({ phone, otp });
       if (!apiResult) {
         setWaiting(false);
         setError(`Code ${otp} is not valid for ${phone} phone`);
@@ -106,7 +109,10 @@ const VerifyPhoneView = () => {
     [dispatch, history, formState.values]
   );
 
-  const handleCloseError = useCallback(() => setError(undefined), []);
+  const handleCloseError = useCallback(() => {
+    setError(undefined);
+    resetOtp(); // Clean up "OTP Code" field from previously entered code
+  }, []);
 
   const fieldPhoneInvalid = (formState.values as FormStateValues).phone === '' || fieldHasError('phone');
   const buttonCodeDisabled = waiting || fieldPhoneInvalid;

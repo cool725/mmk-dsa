@@ -1,6 +1,6 @@
 import { api } from '..';
 
-const ENDPOINT = 'otp/verify';
+const ENDPOINT = '/custom/sms/otp/verify';
 const METHOD = 'otpVerify()';
 
 interface IOtpVerifyCredentials {
@@ -11,8 +11,9 @@ interface IOtpVerifyCredentials {
 export async function otpVerify({ phone, otp }: IOtpVerifyCredentials) {
   try {
     const phoneOnlyNumbers = phone.replace(/\D/g, '');
-    const res = await api.axios.post(ENDPOINT, { phone: phoneOnlyNumbers, otp });
-    if (res?.status === 200 && res?.data?.status === 'ok') {
+    const res = await api.axios.post(ENDPOINT, { phone: phoneOnlyNumbers, code: otp });
+    console.warn(METHOD, '- res:', res);
+    if (res?.status === 200 /*&& res?.data?.status === 'ok'*/) {
       return true;
     }
   } catch (error) {
