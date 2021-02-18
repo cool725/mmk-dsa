@@ -207,34 +207,7 @@ const DsaStep5View = () => {
               <Divider />
               <br />
 
-              <AppButton>Upload Cancelled Check Image</AppButton>
-              <input
-                disabled // Note: Temporary
-                hidden
-                id="cancelled_cheque_image"
-                name="cancelled_cheque_image"
-                type="file"
-                // onChange={handleFileUploadChange}
-              />
-              <br />
-              <br />
-              <FormControlLabel
-                label="Cheque has applicant name"
-                control={
-                  <Checkbox
-                    name="cancelled_cheque_has_applicant_name"
-                    checked={(formState.values as FormStateValues).cancelled_cheque_has_applicant_name}
-                    onChange={onFieldChange}
-                  />
-                }
-              />
-
-              <br />
-              <br />
-              <Divider />
-              <br />
-
-              <AppButton>Upload Passbook account details page</AppButton>
+              <AppButton>Upload Cheque or Passbook image with your name on it</AppButton>
               <input
                 disabled // Note: Temporary
                 hidden
