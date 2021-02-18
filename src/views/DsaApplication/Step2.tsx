@@ -16,8 +16,13 @@ const VALIDATE_FORM = {
     type: 'string',
   },
   pin_code: {
+    numericality: true,
     presence: { allowEmpty: false },
-    type: 'string', //TODO: Is if ZIP code? Length or Pattern
+    length: {
+      is: 6,
+      message: 'should be 6 digits'
+    },
+    type: 'string', 
   },
   city: {
     presence: { allowEmpty: false },
