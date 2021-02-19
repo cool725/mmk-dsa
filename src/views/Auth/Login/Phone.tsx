@@ -4,17 +4,10 @@ import { Grid, TextField, Card, CardHeader, CardContent, InputAdornment } from '
 import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppLink, AppIconButton } from '../../../components';
-import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
 
 const VALIDATE_FORM_LOGIN_PHONE = {
-  phone: {
-    presence: true,
-    format: {
-      pattern: '[- .+()0-9]+',
-      // flags: "i",
-      message: 'should contain numbers',
-    },
-  },
+  phone: VALIDATION_PHONE,
   pin: {
     presence: true,
     format: {

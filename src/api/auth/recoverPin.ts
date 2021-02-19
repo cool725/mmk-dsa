@@ -8,7 +8,7 @@ interface IRecoverPin {
 
 export async function recoverPinByDirectus({ phone }: IRecoverPin) {
   try {
-    await api.directus.auth.password.request(phone);
+    await api.directus.auth.password.request(phone?.replace(/\D/g, ''));
     return true;
   } catch (error) {
     console.error(METHOD, error);

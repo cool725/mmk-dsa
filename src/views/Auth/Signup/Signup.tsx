@@ -12,7 +12,7 @@ import {
 import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppIconButton, AppLink } from '../../../components';
-import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
 import { useHistory } from 'react-router-dom';
 
 const VALIDATE_FORM_SIGNUP = {
@@ -26,14 +26,7 @@ const VALIDATE_FORM_SIGNUP = {
     presence: true,
     email: true,
   },
-  phone: {
-    presence: true,
-    format: {
-      pattern: '[- .+()0-9]+',
-      // flags: "i",
-      message: 'should contain numbers',
-    },
-  },
+  phone: VALIDATION_PHONE,
   password: {
     presence: true,
     length: {

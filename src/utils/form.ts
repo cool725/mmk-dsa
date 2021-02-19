@@ -9,6 +9,16 @@ export const SHARED_CONTROL_PROPS = {
   fullWidth: true,
 } as const;
 
+// Shared validation rule for Phone numbers
+export const VALIDATION_PHONE = {
+  type: 'string',
+  presence: { allowEmpty: false },
+  format: {
+    pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
+    message: 'should contain numbers',
+  },
+};
+
 // "Schema" for formState
 interface FormState {
   isValid: boolean;

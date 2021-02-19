@@ -7,6 +7,9 @@ const METHOD = 'dsaCreate()';
 export async function dsaCreateByAxios(payload: any | any[], query?: any) {
   const data = {
     ...payload,
+    mobile_number: payload?.mobile_number?.replace(/\D/g, ''),
+    mobile_number_secondary: payload?.mobile_number_secondary?.replace(/\D/g, ''),
+    referrer_mobile_number: payload?.referrer_mobile_number?.replace(/\D/g, ''),
   };
   const config = {
     headers: {

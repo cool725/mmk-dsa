@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Grid, TextField, Card, CardHeader, CardContent, Divider, FormControlLabel, Checkbox } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert, AppLink } from '../../components';
 import { useFormStyles } from './styles';
 
@@ -12,14 +12,7 @@ const VALIDATE_REFERRALS = {
     type: 'string',
     presence: { allowEmpty: false },
   },
-  referrer_mobile_number: {
-    type: 'string',
-    presence: { allowEmpty: false },
-    format: {
-      pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
-      message: 'should contain numbers',
-    },
-  },
+  referrer_mobile_number: VALIDATION_PHONE,
 };
 
 const VALIDATE_FORM = {
@@ -191,8 +184,7 @@ const DsaStep6View = () => {
                     <AppLink to="/legal/terms" openInNewTab>
                       terms and conditions
                     </AppLink>{' '}
-                    and code of conduct and will abide by them.
-                    All information provided is true &amp; correct. *
+                    and code of conduct and will abide by them. All information provided is true &amp; correct. *
                   </>
                 }
               />

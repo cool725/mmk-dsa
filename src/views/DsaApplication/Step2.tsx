@@ -20,9 +20,9 @@ const VALIDATE_FORM = {
     presence: { allowEmpty: false },
     length: {
       is: 6,
-      message: 'should be 6 digits'
+      message: 'should be 6 digits',
     },
-    type: 'string', 
+    type: 'string',
   },
   city: {
     presence: { allowEmpty: false },

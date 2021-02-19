@@ -87,7 +87,7 @@ const DsaStep1View = () => {
             (apiData?.entity_type === 'individual'
               ? apiData?.individual_last_name
               : apiData?.entity_primary_contact_last_name) || '',
-          designation: apiData.designation,    
+          designation: apiData.designation,
         },
       }));
     }

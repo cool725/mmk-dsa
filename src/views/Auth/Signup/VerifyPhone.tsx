@@ -3,21 +3,14 @@ import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/cor
 import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppAlert, AppButton } from '../../../components';
-import { useAppForm, SHARED_CONTROL_PROPS } from '../../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../../utils/form';
 import { useTimeout } from '../../../utils/hooks';
 import { useHistory } from 'react-router-dom';
 
 const WAITING_TIMEOUT = 10 * 1000; // 10 seconds
 
 const VALIDATE_FORM_PHONE_WITH_OTP = {
-  phone: {
-    presence: true,
-    format: {
-      pattern: '[- .+()0-9]+',
-      // flags: "i",
-      message: 'should contain numbers',
-    },
-  },
+  phone: VALIDATION_PHONE,
   otp: {
     presence: true,
     format: {
@@ -72,7 +65,7 @@ const VerifyPhoneView = () => {
 
   const handleRequestOptClick = useCallback(async () => {
     setError(undefined);
-    setWaiting(true); // Set the .waiting flag, it starts useTimeout() 
+    setWaiting(true); // Set the .waiting flag, it starts useTimeout()
     resetOtp(); // Clean up "OTP Code" field from previously entered code
 
     const phone = (formState.values as FormStateValues).phone;
