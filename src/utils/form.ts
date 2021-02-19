@@ -12,12 +12,16 @@ export const SHARED_CONTROL_PROPS = {
 // Shared validation rule for Phone numbers
 export const VALIDATION_PHONE = {
   type: 'string',
-  presence: { allowEmpty: false },
   format: {
     pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
     message: 'should contain numbers',
   },
+  length: {
+    maximum: 10,
+    message: 'must be up to 10 digits',
+  },
 };
+
 
 // "Schema" for formState
 interface FormState {

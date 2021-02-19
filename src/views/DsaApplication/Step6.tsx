@@ -12,7 +12,10 @@ const VALIDATE_REFERRALS = {
     type: 'string',
     presence: { allowEmpty: false },
   },
-  referrer_mobile_number: VALIDATION_PHONE,
+  referrer_mobile_number: {
+    ...VALIDATION_PHONE,
+    presence: { allowEmpty: false },
+  }
 };
 
 const VALIDATE_FORM = {

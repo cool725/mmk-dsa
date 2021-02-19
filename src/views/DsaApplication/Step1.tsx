@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider, Typography } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from './styles';
 
@@ -26,6 +26,7 @@ const VALIDATE_FORM = {
     type: 'string',
     presence: { allowEmpty: false },
   },
+  secondary_phone: VALIDATION_PHONE,
 };
 
 interface FormStateValues {
@@ -34,6 +35,7 @@ interface FormStateValues {
   first_name: string;
   last_name: string;
   designation: string;
+  secondary_phone: string;
 }
 
 /**
@@ -51,6 +53,7 @@ const DsaStep1View = () => {
       first_name: '',
       last_name: '',
       designation: '',
+      secondary_phone: '',
     } as FormStateValues,
   });
   const [loading, setLoading] = useState(true);
@@ -87,7 +90,8 @@ const DsaStep1View = () => {
             (apiData?.entity_type === 'individual'
               ? apiData?.individual_last_name
               : apiData?.entity_primary_contact_last_name) || '',
-          designation: apiData.designation,
+          designation: apiData?.designation || '',
+          secondary_phone: apiData?.mobile_number_secondary || '',
         },
       }));
     }
@@ -113,8 +117,9 @@ const DsaStep1View = () => {
         entity_primary_contact_first_name: values.first_name,
         entity_primary_contact_last_name: values.last_name,
         designation: values.designation,
-        mobile_number: phone,
         email: email,
+        mobile_number: phone,
+        mobile_number_secondary: values.secondary_phone,
       };
 
       let apiResult;
@@ -230,14 +235,6 @@ const DsaStep1View = () => {
 
               <TextField
                 disabled
-                label={state.verifiedPhone ? 'Verified Phone' : 'Phone'}
-                name="phone"
-                value={phone}
-                helperText=" "
-                {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                disabled
                 label={state.verifiedPhone ? 'Verified Email' : 'Email'}
                 name="email"
                 value={email}
@@ -245,6 +242,25 @@ const DsaStep1View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
 
+              <TextField
+                disabled
+                label={state.verifiedPhone ? 'Verified Phone' : 'Phone'}
+                name="phone"
+                value={phone}
+                helperText=" "
+                {...SHARED_CONTROL_PROPS}
+              />
+
+              <TextField
+                disabled={inputDisabled}
+                label="Secondary Phone"
+                name="secondary_phone"
+                value={(formState.values as FormStateValues).secondary_phone}
+                error={fieldHasError('secondary_phone')}
+                helperText={fieldGetError('secondary_phone') || ' '}
+                onChange={onFieldChange}
+                {...SHARED_CONTROL_PROPS}
+              />
               <br />
               <br />
               <Divider />

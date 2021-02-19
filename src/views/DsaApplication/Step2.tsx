@@ -1,9 +1,10 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, Divider, MenuItem } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { STATES } from '../../utils/address';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from './styles';
 
@@ -194,6 +195,25 @@ const DsaStep2View = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
+
+              <TextField
+                required
+                disabled={inputDisabled}
+                select
+                label="State"
+                name="state"
+                value={(formState.values as FormStateValues).state}
+                error={fieldHasError('state')}
+                helperText={fieldGetError('state') || ' '}
+                onChange={onFieldChange}
+                {...SHARED_CONTROL_PROPS}
+              >
+                {STATES.map((state) => (
+                  <MenuItem key={state.code} value={state.code}>
+                    {state.code} - {state.name}
+                  </MenuItem>
+                ))}
+              </TextField>
 
               <br />
               <br />
