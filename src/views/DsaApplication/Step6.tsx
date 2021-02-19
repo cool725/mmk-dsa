@@ -7,15 +7,14 @@ import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert, AppLink } from '../../components';
 import { useFormStyles } from './styles';
 
-const VALIDATE_FORM = {
-  was_referred: {
-    type: 'boolean',
-  },
+const VALIDATE_REFERRALS = {
   referrer_name: {
     type: 'string',
+    presence: { allowEmpty: false },
   },
   referrer_mobile_number: {
     type: 'string',
+    presence: { allowEmpty: false },
     format: {
       pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
       message: 'should contain numbers',
@@ -23,10 +22,17 @@ const VALIDATE_FORM = {
   },
 };
 
+const VALIDATE_FORM = {
+  was_referred: {
+    type: 'boolean',
+  },
+  ...VALIDATE_REFERRALS,
+};
+
 interface FormStateValues {
   was_referred: boolean;
-  referrer_name: string;
-  referrer_mobile_number: string;
+  referrer_name?: string;
+  referrer_mobile_number?: string;
 }
 
 /**
@@ -88,10 +94,16 @@ const DsaStep6View = () => {
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
-      const payload = {
+      const payload: Record<string, any> = {
         ...formState.values,
         email,
       };
+
+      // Remove all referral data if was_referred is not set
+      if (!(formState.values as FormStateValues).was_referred) {
+        delete payload.referrer_name;
+        delete payload.referrer_mobile_number;
+      }
 
       let apiResult;
       if (!dsaId) {
@@ -141,26 +153,32 @@ const DsaStep6View = () => {
                   />
                 }
               />
-              <TextField
-                disabled={referrerDisabled}
-                label="Name of referrer"
-                name="referrer_name"
-                value={(formState.values as FormStateValues).referrer_name}
-                error={fieldHasError('referrer_name')}
-                helperText={fieldGetError('referrer_name') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                disabled={referrerDisabled}
-                label="Referrers mobile number"
-                name="referrer_mobile_number"
-                value={(formState.values as FormStateValues).referrer_mobile_number}
-                error={fieldHasError('referrer_mobile_number')}
-                helperText={fieldGetError('referrer_mobile_number') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
+              {(formState.values as FormStateValues).was_referred && (
+                <>
+                  <TextField
+                    required
+                    disabled={referrerDisabled}
+                    label="Name of referrer"
+                    name="referrer_name"
+                    value={(formState.values as FormStateValues).referrer_name}
+                    error={fieldHasError('referrer_name')}
+                    helperText={fieldGetError('referrer_name') || ' '}
+                    onChange={onFieldChange}
+                    {...SHARED_CONTROL_PROPS}
+                  />
+                  <TextField
+                    required
+                    disabled={referrerDisabled}
+                    label="Referrers mobile number"
+                    name="referrer_mobile_number"
+                    value={(formState.values as FormStateValues).referrer_mobile_number}
+                    error={fieldHasError('referrer_mobile_number')}
+                    helperText={fieldGetError('referrer_mobile_number') || ' '}
+                    onChange={onFieldChange}
+                    {...SHARED_CONTROL_PROPS}
+                  />
+                </>
+              )}
               <br />
               <br />
               <Divider />
@@ -173,11 +191,12 @@ const DsaStep6View = () => {
                     <AppLink to="/legal/terms" openInNewTab>
                       terms and conditions
                     </AppLink>{' '}
-                    and code of conduct and will abide by them *
+                    and code of conduct and will abide by them.
+                    All information provided is true &amp; correct. *
                   </>
                 }
               />
-              All information provided is true &amp; correct.
+
               <br />
               <br />
               <Divider />
@@ -188,7 +207,14 @@ const DsaStep6View = () => {
                 </AppAlert>
               ) : null}
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={!agree || inputDisabled || !formState.isValid}>
+                <AppButton
+                  type="submit"
+                  disabled={
+                    !agree ||
+                    inputDisabled ||
+                    ((formState.values as FormStateValues).was_referred && !formState.isValid)
+                  }
+                >
                   Confirm and Finish
                 </AppButton>
               </Grid>
