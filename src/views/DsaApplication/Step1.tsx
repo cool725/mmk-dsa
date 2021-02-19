@@ -22,6 +22,10 @@ const VALIDATE_FORM = {
     type: 'string',
     presence: { allowEmpty: false },
   },
+  designation: {
+    type: 'string',
+    presence: { allowEmpty: false },
+  },
 };
 
 interface FormStateValues {
@@ -29,6 +33,7 @@ interface FormStateValues {
   entity_name: string;
   first_name: string;
   last_name: string;
+  designation: string;
 }
 
 /**
@@ -45,6 +50,7 @@ const DsaStep1View = () => {
       entity_name: '',
       first_name: '',
       last_name: '',
+      designation: '',
     } as FormStateValues,
   });
   const [loading, setLoading] = useState(true);
@@ -81,6 +87,7 @@ const DsaStep1View = () => {
             (apiData?.entity_type === 'individual'
               ? apiData?.individual_last_name
               : apiData?.entity_primary_contact_last_name) || '',
+          designation: apiData.designation,    
         },
       }));
     }
@@ -105,6 +112,7 @@ const DsaStep1View = () => {
         individual_last_name: values.last_name,
         entity_primary_contact_first_name: values.first_name,
         entity_primary_contact_last_name: values.last_name,
+        designation: values.designation,
         mobile_number: phone,
         email: email,
       };
@@ -204,6 +212,18 @@ const DsaStep1View = () => {
                 value={(formState.values as FormStateValues).last_name}
                 error={fieldHasError('last_name')}
                 helperText={fieldGetError('last_name') || ' '}
+                onChange={onFieldChange}
+                {...SHARED_CONTROL_PROPS}
+              />
+
+              <TextField
+                required
+                disabled={inputDisabled}
+                label="Designation"
+                name="designation"
+                value={(formState.values as FormStateValues).designation}
+                error={fieldHasError('designation')}
+                helperText={fieldGetError('designation') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
