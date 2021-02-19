@@ -3,6 +3,7 @@ import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/cor
 import api from '../../../api';
 import { AppButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../../utils/form';
+import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_RECOVERY_PASSWORD = {
   email: {
@@ -25,6 +26,7 @@ interface Props {
  * @param {string} [props.email] - pre-populated email in case the user already enters it
  */
 const LoginEmailView = ({ email = '' }: Props) => {
+  const classes = useFormStyles();
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM_RECOVERY_PASSWORD,
     initialValues: { email } as FormStateValues,
@@ -39,9 +41,9 @@ const LoginEmailView = ({ email = '' }: Props) => {
   };
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="Recover Password" />
             <CardContent>
@@ -62,9 +64,9 @@ const LoginEmailView = ({ email = '' }: Props) => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

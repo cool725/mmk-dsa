@@ -6,7 +6,7 @@ import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { STATES } from '../../utils/address';
 import { AppButton, AppAlert } from '../../components';
-import { useFormStyles } from './styles';
+import { useFormStyles } from '../styles';
 
 const VALIDATE_FORM = {
   address_line_1: {

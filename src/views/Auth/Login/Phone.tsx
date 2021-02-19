@@ -5,6 +5,7 @@ import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppLink, AppIconButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
+import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_LOGIN_PHONE = {
   phone: VALIDATION_PHONE,
@@ -31,6 +32,7 @@ interface FormStateValues {
  * url: /auth/login/phone/*
  */
 const LoginPhoneView = () => {
+  const classes = useFormStyles();
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM_LOGIN_PHONE,
     initialValues: { phone: '', pin: '' } as FormStateValues,
@@ -59,9 +61,9 @@ const LoginPhoneView = () => {
   );
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="Login with Phone" />
             <CardContent>
@@ -109,9 +111,9 @@ const LoginPhoneView = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

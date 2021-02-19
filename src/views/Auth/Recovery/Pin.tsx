@@ -3,6 +3,7 @@ import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/cor
 import { api } from '../../../api';
 import { AppButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../../utils/form';
+import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_RECOVERY_PIN = {
   phone: {
@@ -29,6 +30,7 @@ interface Props {
  * @param {string} [props.phone] - pre-populated phone in case the user already enters it
  */
 const LoginPhoneView = ({ phone = '' }: Props) => {
+  const classes = useFormStyles();
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM_RECOVERY_PIN,
     initialValues: { phone } as FormStateValues,
@@ -43,9 +45,9 @@ const LoginPhoneView = ({ phone = '' }: Props) => {
   };
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="Reset PIN" />
             <CardContent>
@@ -66,9 +68,9 @@ const LoginPhoneView = ({ phone = '' }: Props) => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

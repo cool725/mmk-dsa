@@ -1,4 +1,4 @@
-import { Theme } from '@material-ui/core/styles';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 
 export type ColorName =
   | 'default'
@@ -14,24 +14,22 @@ export type ColorName =
 /**
  * Makes style to use for Material UI Paper components across the App
  */
-export const paperStyles = (theme: Theme) => ({
-  paper: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-  },
+export const paperStyle = (theme: Theme) => ({
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
+  paddingRight: theme.spacing(2),
 });
 
 /**
- * Makes style for Title + Values blocks across the App
+ * Makes style for Forms across the App
  */
-export const valuesStyles = (theme: Theme) => ({
-  values: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
+export const formStyle = (theme: Theme) => ({
+  width: '100%',
+  maxWidth: '40rem', // 640px
+  // maxWidth: '32rem', // 512px
 });
+
 
 /**
  * Makes style to use with Material UI dialogs across the App

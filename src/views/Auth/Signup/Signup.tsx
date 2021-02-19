@@ -14,6 +14,7 @@ import { useAppStore } from '../../../store';
 import { AppButton, AppIconButton, AppLink } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
 import { useHistory } from 'react-router-dom';
+import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_SIGNUP = {
   nameFirst: {
@@ -58,6 +59,7 @@ interface FormStateValues {
  * url: /auth/signup/*
  */
 const SignupView = () => {
+  const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [validationSchema, setValidationSchema] = useState<any>({
     ...VALIDATE_FORM_SIGNUP,
@@ -116,9 +118,9 @@ const SignupView = () => {
   );
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="Sign Up - Personal data" />
             <CardContent>
@@ -235,9 +237,9 @@ const SignupView = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

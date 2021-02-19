@@ -135,9 +135,9 @@ const Layout: React.FC = ({ children }) => {
         <ErrorBoundary name="Content">{children}</ErrorBoundary>
       </Grid>
 
-      <Grid className={classes.footer} component="footer">
+      {/* <Grid className={classes.footer} component="footer">
         <Footer isAuthenticated={state.isAuthenticated} />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

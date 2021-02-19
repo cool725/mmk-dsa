@@ -5,6 +5,7 @@ import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppLink, AppIconButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../utils/form';
+import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_LOGIN_EMAIL = {
   email: {
@@ -31,6 +32,7 @@ interface FormStateValues {
  * url: /auth/login/email/*
  */
 const LoginEmailView = () => {
+  const classes = useFormStyles();
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM_LOGIN_EMAIL,
     initialValues: { email: '', password: '' } as FormStateValues,
@@ -57,9 +59,9 @@ const LoginEmailView = () => {
   );
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="Login with Email" />
             <CardContent>
@@ -129,9 +131,9 @@ const LoginEmailView = () => {
               </Grid> */}
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

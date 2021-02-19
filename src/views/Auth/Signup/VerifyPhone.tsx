@@ -1,11 +1,12 @@
 import { SyntheticEvent, useCallback, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppAlert, AppButton } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../../utils/form';
 import { useTimeout } from '../../../utils/hooks';
-import { useHistory } from 'react-router-dom';
+import { useFormStyles } from '../../styles';
 
 const WAITING_TIMEOUT = 10 * 1000; // 10 seconds
 
@@ -34,6 +35,7 @@ interface FormStateValues {
  * url: /auth/signup/verify-phone
  */
 const VerifyPhoneView = () => {
+  const classes = useFormStyles();
   const [, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM_PHONE_WITH_OTP,
@@ -112,9 +114,9 @@ const VerifyPhoneView = () => {
   const fieldCodeDisabled = !otpRequested; // || fieldPhoneInvalid;
 
   return (
-    <Grid container direction="column">
-      <Grid item>
-        <form onSubmit={handleFormSubmit}>
+    <form onSubmit={handleFormSubmit}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item className={classes.formBody}>
           <Card>
             <CardHeader title="Sign Up - Verify Phone" />
             <CardContent>
@@ -158,9 +160,9 @@ const VerifyPhoneView = () => {
               </Grid>
             </CardContent>
           </Card>
-        </form>
+        </Grid>
       </Grid>
-    </Grid>
+    </form>
   );
 };
 

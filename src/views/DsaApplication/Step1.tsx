@@ -5,7 +5,7 @@ import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
-import { useFormStyles } from './styles';
+import { useFormStyles } from '../styles';
 
 const VALIDATE_FORM = {
   entity_type: {
