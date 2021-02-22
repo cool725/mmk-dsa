@@ -184,7 +184,8 @@ const DsaStep2View = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
-              <TextField
+
+              {/* <TextField
                 required
                 disabled={inputDisabled}
                 label="State"
@@ -194,7 +195,7 @@ const DsaStep2View = () => {
                 helperText={fieldGetError('state') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
-              />
+              /> */}
 
               <TextField
                 required

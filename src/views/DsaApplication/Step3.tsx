@@ -20,8 +20,8 @@ const VALIDATE_FORM = {
     presence: { allowEmpty: false },
     type: 'string',
     length: {
-      maximum: 10,
-      // message: 'must be exactly 10 characters',
+      is: 10,
+      message: 'must be exactly 10 characters',
     },
   },
   pan_card_image: {
