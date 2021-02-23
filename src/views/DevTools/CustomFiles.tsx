@@ -31,21 +31,26 @@ const CustomFiles = () => {
 
   const handleFileChange = useCallback(({ target }: any) => {
     console.log('target.files:', target?.files);
-    setFileName(target?.files?.[0]?.name);
+    setFileName(target?.files?.[0]?.name?.trim());
 
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(target?.files?.[0]);
+    if (!target?.files?.[0]) return; // Thats all for now, no file was selected.
 
-    fileReader.onload = (event: any) => {
-      setFileData(event?.target?.result);
-      resetMessages();
-    };
+    setFileData(target.files[0]);
+
+    // const fileReader = new FileReader();
+    // fileReader.readAsDataURL(target?.files?.[0]);
+
+    // fileReader.onload = (event: any) => {
+    //   setFileData(event?.target?.result);
+    //   resetMessages();
+    // };
   }, []);
 
   const handleCreate = useCallback(async () => {
     const payload = {
-      fileData,
-      fileName,
+      info: 'Created by DevTools',
+      name: fileName,
+      file: fileData,
     };
     const data = await api.customFile.create(payload);
     if (data) {
@@ -54,7 +59,7 @@ const CustomFiles = () => {
       setId(String(data?.id));
     } else {
       setResult(null);
-      delete payload.fileData;
+      delete payload.file;
       setError('Can not create: ' + JSON.stringify(payload));
     }
   }, [fileData, fileName]);
@@ -73,8 +78,9 @@ const CustomFiles = () => {
 
   const handleUpdate = useCallback(async () => {
     const payload = {
-      data: fileData,
-      filename_download: fileName,
+      info: 'Updated by DevTools',
+      name: fileName,
+      file: fileData,
     };
     const data = await api.customFile.update(id, payload);
     if (data) {
@@ -83,7 +89,7 @@ const CustomFiles = () => {
       data?.id && setId(String(data?.id));
     } else {
       setResult(null);
-      delete payload.data;
+      delete payload.file;
       setError('Can not update record id: "' + id + '" with payload: ' + JSON.stringify(payload));
     }
   }, [id, fileData, fileName]);
@@ -102,7 +108,7 @@ const CustomFiles = () => {
 
   return (
     <Card>
-      <CardHeader title="Files" subheader={'CRUD for "custom_file" collection'} />
+      <CardHeader title="Custom Files" subheader={'CRUD for "custom_file" collection'} />
       <CardContent>
         <input id="fileSample" type="file" onChange={handleFileChange} />
         <br /> <br />

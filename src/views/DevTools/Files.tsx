@@ -3,6 +3,7 @@ import { Card, CardActions, CardContent, CardHeader, TextField } from '@material
 import { AppAlert, AppButton } from '../../components';
 import { api } from '../../api';
 import { SHARED_CONTROL_PROPS } from '../../utils/form';
+import { fileCreateByAxiosAsFormData, fileCreateByDirectus } from '../../api/file/create';
 
 /**
  * Dev tool for "Files" API
@@ -31,21 +32,24 @@ const Files = () => {
 
   const handleFileChange = useCallback(({ target }: any) => {
     console.log('target.files:', target?.files);
-    setFileName(target?.files?.[0]?.name);
+    setFileName(target?.files?.[0]?.name?.trim());
 
     if (!target?.files?.[0]) return; // Thats all for now, no file was selected.
 
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(target?.files?.[0]);
+    setFileData(target.files[0]);
 
-    fileReader.onload = (event: any) => {
-      setFileData(event?.target?.result);
-      resetMessages();
-    };
+    // const fileReader = new FileReader();
+    // fileReader.readAsDataURL(target?.files?.[0]);
+
+    // fileReader.onload = (event: any) => {
+    //   setFileData(event?.target?.result);
+    //   resetMessages();
+    // };
   }, []);
 
   const handleCreate = useCallback(async () => {
     const payload = {
+      title: 'Created by DevTools',
       filename_download: fileName,
       data: fileData,
     };
@@ -75,8 +79,9 @@ const Files = () => {
 
   const handleUpdate = useCallback(async () => {
     const payload = {
-      data: fileData,
+      title: 'Updated by DevTools',
       filename_download: fileName,
+      data: fileData,
     };
     const data = await api.file.update(id, payload);
     if (data) {
