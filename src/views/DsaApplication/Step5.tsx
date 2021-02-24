@@ -4,8 +4,10 @@ import { Grid, TextField, Card, CardHeader, CardContent, Divider, FormControlLab
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { getAssetUrl } from '../../utils/url';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+import { UploadInput } from '../../components/Upload';
 
 const VALIDATE_FORM = {
   bank_name: {
@@ -43,10 +45,11 @@ interface FormStateValues {
   bank_account: string;
   ifsc_code: string;
 
-  cancelled_cheque_image: string;
-  cancelled_cheque_has_applicant_name: boolean;
+  image_with_name: string;
+}
 
-  account_passbook_page_image: string;
+interface FormFiles {
+  image_with_name?: File;
 }
 
 /**
@@ -64,17 +67,23 @@ const DsaStep5View = () => {
       bank_account: '',
       ifsc_code: '',
 
-      cancelled_cheque_image: '',
-      cancelled_cheque_has_applicant_name: false,
-
-      account_passbook_page_image: '',
+      image_with_name: '',
     } as FormStateValues,
   });
+  const [files, setFiles] = useState<FormFiles>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const history = useHistory();
   const email = state.verifiedEmail || state.currentUser?.email || '';
+
+  function validFiles(): Boolean {
+    const required1 = true;
+    const file1 = Boolean(
+      !required1 || files?.image_with_name || (formState.values as FormStateValues).image_with_name
+    );
+    return file1;
+  }
 
   useEffect(() => {
     // Load previous data form API
@@ -99,10 +108,7 @@ const DsaStep5View = () => {
           bank_account: apiData?.bank_account || '',
           ifsc_code: apiData?.ifsc_code || '',
 
-          cancelled_cheque_image: apiData?.cancelled_cheque_image || '',
-          cancelled_cheque_has_applicant_name: apiData?.cancelled_cheque_has_applicant_name || false,
-
-          account_passbook_page_image: apiData?.account_passbook_page_image || '',
+          image_with_name: apiData?.image_with_name || '',
         },
       }));
     }
@@ -113,18 +119,52 @@ const DsaStep5View = () => {
     };
   }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  const handleFileChange = useCallback(
+    (event, name, file) => {
+      const newFiles = {
+        ...files,
+        [name]: file,
+      };
+      setFiles(newFiles);
+    },
+    [files]
+  );
+
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
+      // Upload new files
+      let image_with_name = (formState.values as FormStateValues).image_with_name;
+      if (files?.image_with_name) {
+        let apiRes;
+        const payload = {
+          data: files?.image_with_name,
+        };
+        try {
+          if (image_with_name) {
+            // Update existing file
+            apiRes = await api.file.update(image_with_name, payload);
+          } else {
+            // Create new file
+            apiRes = await api.file.create(payload);
+          }
+        } catch (error) {
+          // TODO: Halt form submission if needed
+          console.error(error);
+        }
+        image_with_name = apiRes?.id;
+      }
+
+      // Create/Update DSA Application record
+      let apiResult;
       const payload = {
         ...formState.values,
+        image_with_name,
         email,
       };
-
-      let apiResult;
       if (!dsaId) {
         // Create new record
         apiResult = await api.dsa.create(payload);
@@ -142,7 +182,7 @@ const DsaStep5View = () => {
       dispatch({ type: 'SET_DSA_STEP', payload: 6 });
       history.push('/dsa/6'); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email]
+    [dispatch, formState.values, history, dsaId, email, files]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -207,14 +247,11 @@ const DsaStep5View = () => {
               <Divider />
               <br />
 
-              <AppButton>Upload Cheque or Passbook image with your name on it</AppButton>
-              <input
-                disabled // Note: Temporary
-                hidden
-                id="account_passbook_page_image"
-                name="account_passbook_page_image"
-                type="file"
-                // onChange={handleFileUploadChange}
+              <UploadInput
+                name="image_with_name"
+                url={getAssetUrl((formState.values as FormStateValues).image_with_name)}
+                buttonTitle="Upload Cheque or Passbook image with your name on it"
+                onFileChange={handleFileChange}
               />
 
               <br />
@@ -229,7 +266,7 @@ const DsaStep5View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={inputDisabled || !formState.isValid}>
+                <AppButton type="submit" disabled={inputDisabled || !formState.isValid || !validFiles()}>
                   Confirm and Continue
                 </AppButton>
               </Grid>

@@ -7,6 +7,7 @@ import AppLink from '../AppLink';
 import { IUserInfo } from '../../api/types';
 import api from '../../api';
 import { useAppStore } from '../../store';
+import { getAssetUrl } from '../../utils/url';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -63,7 +64,7 @@ const UserInfo = ({ className, showAvatar = false, user: propsUser, ...restOfPro
 
   const fullName = [user?.first_name || '', user?.last_name || ''].join(' ').trim();
   const srcAvatar = user?.avatar
-    ? `${process.env.REACT_APP_API}/assets/${user?.avatar}?key=system-small-cover&access_token=${api.token}`
+    ? getAssetUrl(user?.avatar)
     : undefined;
   const userPhoneOrEmail = user?.phone || (user?.email as string);
 

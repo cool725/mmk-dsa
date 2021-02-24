@@ -4,8 +4,10 @@ import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider } fro
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { getAssetUrl } from '../../utils/url';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+import { UploadInput } from '../../components/Upload';
 
 const VALIDATE_FORM = {
   individual_id_proof_type: {
@@ -37,6 +39,11 @@ interface FormStateValues {
   individual_id_proof_image: string;
 }
 
+interface FormFiles {
+  pan_card_image?: File;
+  individual_id_proof_image?: File;
+}
+
 /**
  * Renders "Step 3" view for "DSA Application" flow
  * url: /dsa/3
@@ -54,11 +61,22 @@ const DsaStep3View = () => {
       individual_id_proof_image: '',
     } as FormStateValues,
   });
+  const [files, setFiles] = useState<FormFiles>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const history = useHistory();
   const email = state.verifiedEmail || state.currentUser?.email || '';
+
+  function validFiles(): Boolean {
+    const required1 = true;
+    const required2 = true;
+    const file1 = Boolean(!required1 || files?.pan_card_image || (formState.values as FormStateValues).pan_card_image);
+    const file2 = Boolean(
+      !required2 || files?.individual_id_proof_image || (formState.values as FormStateValues).individual_id_proof_image
+    );
+    return file1 && file2;
+  }
 
   useEffect(() => {
     // Load previous data form API
@@ -90,18 +108,57 @@ const DsaStep3View = () => {
     };
   }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  const handleFileChange = useCallback(
+    (event, name, file) => {
+      const newFiles = {
+        ...files,
+        [name]: file,
+      };
+      setFiles(newFiles);
+    },
+    [files]
+  );
+
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
+      // Submit user entered data to API
+
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
+      // Upload new files
+      let pan_card_image = (formState.values as FormStateValues).pan_card_image;
+      if (files?.pan_card_image) {
+        console.log('Uploading pan_card_image file');
+        let apiRes;
+        const payload = {
+          data: files?.pan_card_image,
+        };
+        try {
+          if (pan_card_image) {
+            // Update existing file
+            apiRes = await api.file.update(pan_card_image, payload);
+          } else {
+            // Create new file
+            apiRes = await api.file.create(payload);
+          }
+        } catch (error) {
+          // TODO: Halt form submission if needed
+          console.log(error);
+        }
+        pan_card_image = apiRes?.id;
+        console.log('pan_card_image:', pan_card_image);
+      }
+
+      // Create/Update DSA Application record
+      let apiResult;
       const payload = {
         ...formState.values,
+        pan_card_image,
         email,
       };
-
-      let apiResult;
+      console.log('dsa payload:', payload);
       if (!dsaId) {
         // Create new record
         apiResult = await api.dsa.create(payload);
@@ -119,7 +176,7 @@ const DsaStep3View = () => {
       dispatch({ type: 'SET_DSA_STEP', payload: 4 });
       history.push('/dsa/4'); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email]
+    [dispatch, formState.values, history, dsaId, email, files]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -144,14 +201,12 @@ const DsaStep3View = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
-              <AppButton>Upload PAN Card Image</AppButton>
-              <input
-                disabled // Note: Temporary
-                hidden
-                id="pan_card_image"
+
+              <UploadInput
                 name="pan_card_image"
-                type="file"
-                // onChange={handleFileUploadChange}
+                url={getAssetUrl((formState.values as FormStateValues).pan_card_image)}
+                buttonTitle="Upload PAN Card Image"
+                onFileChange={handleFileChange}
               />
 
               <br />
@@ -175,14 +230,12 @@ const DsaStep3View = () => {
                 <MenuItem value="voter_id">Voter ID</MenuItem>
                 <MenuItem value="passport">Passport</MenuItem>
               </TextField>
-              <AppButton>Upload ID Document Image</AppButton>
-              <input
-                disabled // Note: Temporary
-                hidden
-                id="individual_id_proof_image"
+
+              <UploadInput
                 name="individual_id_proof_image"
-                type="file"
-                // onChange={handleFileUploadChange}
+                url={getAssetUrl((formState.values as FormStateValues).individual_id_proof_image)}
+                buttonTitle="Upload ID Document Image"
+                onFileChange={handleFileChange}
               />
 
               <br />
@@ -197,7 +250,7 @@ const DsaStep3View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={inputDisabled || !formState.isValid}>
+                <AppButton type="submit" disabled={inputDisabled || !formState.isValid || !validFiles()}>
                   Confirm and Continue
                 </AppButton>
               </Grid>

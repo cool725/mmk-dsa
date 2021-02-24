@@ -4,8 +4,10 @@ import { Grid, TextField, Card, CardHeader, CardContent, Divider } from '@materi
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { getAssetUrl } from '../../utils/url';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+import { UploadInput } from '../../components/Upload';
 
 const VALIDATE_FORM = {
   gst_number: {
@@ -20,6 +22,9 @@ const VALIDATE_FORM = {
 interface FormStateValues {
   gst_number: string;
   gst_registration_image: string;
+}
+interface FormFiles {
+  gst_registration_image?: File;
 }
 
 /**
@@ -36,11 +41,20 @@ const DsaStep4View = () => {
       gst_registration_image: '',
     } as FormStateValues,
   });
+  const [files, setFiles] = useState<FormFiles>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const history = useHistory();
   const email = state.verifiedEmail || state.currentUser?.email || '';
+
+  function validFiles(): Boolean {
+    const required1 = false;
+    const file1 = Boolean(
+      !required1 || files?.gst_registration_image || (formState.values as FormStateValues).gst_registration_image
+    );
+    return file1;
+  }
 
   useEffect(() => {
     // Load previous data form API
@@ -71,6 +85,17 @@ const DsaStep4View = () => {
     };
   }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  const handleFileChange = useCallback(
+    (event, name, file) => {
+      const newFiles = {
+        ...files,
+        [name]: file,
+      };
+      setFiles(newFiles);
+    },
+    [files]
+  );
+
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
@@ -100,7 +125,7 @@ const DsaStep4View = () => {
       dispatch({ type: 'SET_DSA_STEP', payload: 5 });
       history.push('/dsa/5'); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email]
+    [dispatch, formState.values, history, dsaId, email, files]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -124,14 +149,12 @@ const DsaStep4View = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
-              <AppButton>Upload GST Registration Proof</AppButton>
-              <input
-                hidden
-                disabled // Note: Temporary
-                id="gst_registration_image"
+
+              <UploadInput
                 name="gst_registration_image"
-                type="file"
-                // onChange={handleFileUploadChange}
+                url={getAssetUrl((formState.values as FormStateValues).gst_registration_image)}
+                buttonTitle="Upload GST Registration Proof"
+                onFileChange={handleFileChange}
               />
 
               <br />
@@ -146,7 +169,7 @@ const DsaStep4View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={inputDisabled || !formState.isValid}>
+                <AppButton type="submit" disabled={inputDisabled || !formState.isValid || !validFiles()}>
                   Confirm and Continue
                 </AppButton>
               </Grid>

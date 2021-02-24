@@ -21,6 +21,8 @@ export function clearAuthData() {
  * @param {string|null|undefined} newToken - new token value
  */
 export function saveToken(newToken: string | null | undefined = api.directus.auth.token) {
+  if (process.env.REACT_APP_MULTIPASS) return // Don't save 'fake token'
+
   if (api.directus.auth.token !== newToken) {
     api.directus.auth.token = newToken;
   }
@@ -31,7 +33,7 @@ export function saveToken(newToken: string | null | undefined = api.directus.aut
  * Loads "access token" from the local storage and sets it into "directus api"
  */
 export function loadToken() {
-  api.directus.auth.token = localStorageGet(ACCESS_TOKEN_KEY);
+  api.directus.auth.token =  process.env.REACT_APP_MULTIPASS ? 'fake token' : localStorageGet(ACCESS_TOKEN_KEY);
   return api.directus.auth.token;
 }
 
@@ -88,6 +90,8 @@ export function setRefreshTimeout(interval = 15 * 60 * 1000) {
  * Verifies is the current user still logged in, updates the "token refresh timer" if needed
  */
 export function isUserStillLoggedIn() {
+  if (process.env.REACT_APP_MULTIPASS) return true;
+
   if (_timeout_refresh_token) return true; // Timeout already exists, we are logged in
 
   const dateExpireAt = tokenExpireAt();

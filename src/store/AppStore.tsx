@@ -19,6 +19,8 @@ export interface IAppState {
 const initialAppState: IAppState = {
   darkMode: false, // Overridden by useMediaQuery('(prefers-color-scheme: dark)') in AppStore
   isAuthenticated: false, // Overridden in AppStore by checking auth token
+  verifiedPhone: process.env.REACT_APP_MULTIPASS ? '1234567890' : undefined,
+  verifiedEmail: process.env.REACT_APP_MULTIPASS ? 'fake@domain.com' : undefined,
   dsaStep: -1,
 };
 

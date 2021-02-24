@@ -25,6 +25,8 @@ import InfoIcon from '@material-ui/icons/Info';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import PersonIcon from '@material-ui/icons/Person';
 import HomeIcon from '@material-ui/icons/Home';
+import CameraIcon from '@material-ui/icons/Camera';
+import ImageIcon from '@material-ui/icons/Image';
 
 /**
  * How to use:
@@ -62,6 +64,8 @@ const ICONS: Record<string, React.ComponentType> = {
   signup: PersonAddIcon,
   login: PersonIcon,
   home: HomeIcon,
+  camera: CameraIcon,
+  image: ImageIcon,
 };
 
 /**
