@@ -5,6 +5,39 @@ import { COLLECTION, ENDPOINT } from './utils';
 const METHOD = 'customFileCreate()';
 
 /**
+ * Creates record using 2 sequential API calls
+ */
+export async function customFileCreateByTwoCalls(payload: Payload, query?: Query) {
+  // Create record in 'files' collection
+  let fileObject;
+  if (payload.data) {
+    const filePayload = {
+      title: payload.name,
+      file: payload.data,
+    };
+    fileObject = await api.file.create(filePayload); // First API call
+  }
+
+  // Create record in 'custom_files' collection
+  const data = {
+    name: payload.name || payload.fileName,
+    info: payload.info || payload.text,
+    file: fileObject?.id ?? payload.file, // Id of newly created or previous file
+  };
+  const config = {
+    params: query,
+  };
+  try {
+    const res = await api.axios.post(ENDPOINT, data, config); // Second API call
+    console.warn(METHOD, '- res:', res);
+    return res?.data?.data;
+  } catch (error) {
+    console.error(METHOD, error);
+  }
+  return undefined;
+}
+
+/**
  * Creates record using Form-Data format, supports binary data
  */
 export async function customFileCreateByAxiosAsFormData(payload: Payload, query?: Query) {
@@ -17,14 +50,14 @@ export async function customFileCreateByAxiosAsFormData(payload: Payload, query?
   try {
     const formData = new FormData();
     Object.entries(payload).forEach(([key, value]) => {
-      if (key === 'data' || key === 'file') return; // Skip .data, we will add it at the end as .file
+      if (key === 'data') return; // Skip .data, we will add it at the end as .file
       formData.append(key, value);
     });
-    formData.append('file', payload.data || payload.file); // Must be last in FormData!!!
+    formData.append('file', payload.data); // Must be last in FormData!!!
 
     const res = await api.axios.post(ENDPOINT, formData, config);
     console.warn(METHOD, '- res:', res);
-    return res?.data;
+    return res?.data?.data;
   } catch (error) {
     console.error(METHOD, error);
   }
@@ -36,7 +69,8 @@ export async function customFileCreateByAxiosAsFormData(payload: Payload, query?
  */
 export async function customFileCreateByAxiosAsJson(payload: Payload, query?: Query) {
   const data = {
-    // storage: 'amazon',
+    storage: 'amazon',
+    filename_download: payload.name || payload.fileName,
     name: payload.name || payload.fileName,
     info: payload.info || payload.text,
     file: payload.data || payload.file, // Actually will not work :(
@@ -47,7 +81,7 @@ export async function customFileCreateByAxiosAsJson(payload: Payload, query?: Qu
   try {
     const res = await api.axios.post(ENDPOINT, data, config);
     console.warn(METHOD, '- res:', res);
-    return res?.data;
+    return res?.data?.data;
   } catch (error) {
     console.error(METHOD, error);
   }
@@ -69,6 +103,7 @@ export async function customFileCreateByDirectus(payload: Payload | Payload[], q
   return undefined;
 }
 
-export default customFileCreateByAxiosAsFormData;
+export default customFileCreateByTwoCalls;
+// export default customFileCreateByAxiosAsFormData;
 // export default customFileCreateByAxiosAsJson;
 // export default customFileCreateByDirectus;

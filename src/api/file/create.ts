@@ -20,7 +20,7 @@ export async function fileCreateByAxiosAsFormData(payload: Payload, query?: Quer
       if (key === 'data' || key === 'file') return; // Skip .data, we will add it at the end as .file
       formData.append(key, value);
     });
-    formData.append('file', payload.data || payload.data); // Must be last in FormData!!!
+    formData.append('file', payload.data || payload.file); // Must be last in FormData!!!
 
     const res = await api.axios.post(ENDPOINT, formData, config);
     console.warn(METHOD, '- res:', res);

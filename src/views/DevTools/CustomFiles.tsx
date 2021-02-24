@@ -50,7 +50,7 @@ const CustomFiles = () => {
     const payload = {
       info: 'Created by DevTools',
       name: fileName,
-      file: fileData,
+      data: fileData,
     };
     const data = await api.customFile.create(payload);
     if (data) {
@@ -59,7 +59,7 @@ const CustomFiles = () => {
       setId(String(data?.id));
     } else {
       setResult(null);
-      delete payload.file;
+      delete payload.data;
       setError('Can not create: ' + JSON.stringify(payload));
     }
   }, [fileData, fileName]);
@@ -80,7 +80,7 @@ const CustomFiles = () => {
     const payload = {
       info: 'Updated by DevTools',
       name: fileName,
-      file: fileData,
+      data: fileData,
     };
     const data = await api.customFile.update(id, payload);
     if (data) {
@@ -89,7 +89,7 @@ const CustomFiles = () => {
       data?.id && setId(String(data?.id));
     } else {
       setResult(null);
-      delete payload.file;
+      delete payload.data;
       setError('Can not update record id: "' + id + '" with payload: ' + JSON.stringify(payload));
     }
   }, [id, fileData, fileName]);
