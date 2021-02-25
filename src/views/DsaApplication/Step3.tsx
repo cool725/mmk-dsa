@@ -1,6 +1,6 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider, LinearProgress } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
@@ -9,12 +9,11 @@ import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 import { UploadInput } from '../../components/Upload';
 
+const DSA_PROGRESS = 3;
+
 const VALIDATE_FORM = {
   individual_id_proof_type: {
     presence: { allowEmpty: false },
-    type: 'string',
-  },
-  individual_id_proof_image: {
     type: 'string',
   },
 
@@ -25,9 +24,6 @@ const VALIDATE_FORM = {
       is: 10,
       message: 'must be exactly 10 characters',
     },
-  },
-  pan_card_image: {
-    type: 'string',
   },
 };
 
@@ -49,8 +45,9 @@ interface FormFiles {
  * url: /dsa/3
  */
 const DsaStep3View = () => {
+  const history = useHistory();
   const classes = useFormStyles();
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
@@ -65,21 +62,10 @@ const DsaStep3View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const history = useHistory();
+
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
-  function validFiles(): Boolean {
-    const required1 = true;
-    const required2 = true;
-    const file1 = Boolean(!required1 || files?.pan_card_image || (formState.values as FormStateValues).pan_card_image);
-    const file2 = Boolean(
-      !required2 || files?.individual_id_proof_image || (formState.values as FormStateValues).individual_id_proof_image
-    );
-    return file1 && file2;
-  }
-
   useEffect(() => {
-    // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
       const email = state.verifiedEmail || state.currentUser?.email || '';
@@ -87,6 +73,12 @@ const DsaStep3View = () => {
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      if (Number(apiData?.progress) < DSA_PROGRESS) {
+        // Force jumping to latest incomplete step
+        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        return;
+      }
 
       setLoading(false);
       if (!apiData) return; // No data from API, do nothing
@@ -97,7 +89,10 @@ const DsaStep3View = () => {
         values: {
           ...oldFormState.values,
           pan_number: apiData?.pan_number || '',
+          pan_card_image: apiData?.pan_card_image || '',
+
           individual_id_proof_type: apiData?.individual_id_proof_type || '',
+          individual_id_proof_image: apiData?.individual_id_proof_image || '',
         },
       }));
     }
@@ -106,7 +101,17 @@ const DsaStep3View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+
+  function validFiles(): Boolean {
+    const required1 = true;
+    const required2 = true;
+    const file1 = Boolean(!required1 || files?.pan_card_image || (formState.values as FormStateValues).pan_card_image);
+    const file2 = Boolean(
+      !required2 || files?.individual_id_proof_image || (formState.values as FormStateValues).individual_id_proof_image
+    );
+    return file1 && file2;
+  }
 
   const handleFileChange = useCallback(
     (event, name, file) => {
@@ -130,7 +135,6 @@ const DsaStep3View = () => {
       // Upload new files
       let pan_card_image = (formState.values as FormStateValues).pan_card_image;
       if (files?.pan_card_image) {
-        console.log('Uploading pan_card_image file');
         let apiRes;
         const payload = {
           data: files?.pan_card_image,
@@ -148,7 +152,6 @@ const DsaStep3View = () => {
           console.log(error);
         }
         pan_card_image = apiRes?.id;
-        console.log('pan_card_image:', pan_card_image);
       }
 
       // Create/Update DSA Application record
@@ -156,9 +159,10 @@ const DsaStep3View = () => {
       const payload = {
         ...formState.values,
         pan_card_image,
+        // Required values
         email,
+        progress: DSA_PROGRESS + 1,
       };
-      console.log('dsa payload:', payload);
       if (!dsaId) {
         // Create new record
         apiResult = await api.dsa.create(payload);
@@ -173,13 +177,14 @@ const DsaStep3View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 4 });
-      history.push('/dsa/4'); // Navigate to next Step
+      history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email, files]
+    [formState.values, files, history, dsaId, email, files]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+
+  if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);
 

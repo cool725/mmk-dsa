@@ -1,11 +1,23 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider, FormControlLabel, Checkbox } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  Card,
+  CardHeader,
+  CardContent,
+  Divider,
+  FormControlLabel,
+  Checkbox,
+  LinearProgress,
+} from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert, AppLink } from '../../components';
 import { useFormStyles } from '../styles';
+
+const DSA_PROGRESS = 6;
 
 const VALIDATE_REFERRALS = {
   referrer_name: {
@@ -15,7 +27,7 @@ const VALIDATE_REFERRALS = {
   referrer_mobile_number: {
     ...VALIDATION_PHONE,
     presence: { allowEmpty: false },
-  }
+  },
 };
 
 const VALIDATE_FORM = {
@@ -36,8 +48,9 @@ interface FormStateValues {
  * url: /dsa/6
  */
 const DsaStep6View = () => {
+  const history = useHistory();
   const classes = useFormStyles();
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
@@ -49,19 +62,23 @@ const DsaStep6View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const history = useHistory();
-  const email = state.verifiedEmail || state.currentUser?.email || '';
   const [agree, setAgree] = useState(false);
+  
+  const email = state.verifiedEmail || state.currentUser?.email || '';
 
   useEffect(() => {
-    // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
-      const email = state.verifiedEmail || state.currentUser?.email || '';
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      if (Number(apiData?.progress) < DSA_PROGRESS) {
+        // Force jumping to latest incomplete step
+        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        return;
+      }
 
       setLoading(false);
       if (!apiData) return; // No data from API, do nothing
@@ -82,7 +99,7 @@ const DsaStep6View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -92,7 +109,9 @@ const DsaStep6View = () => {
 
       const payload: Record<string, any> = {
         ...formState.values,
+        // Required values
         email,
+        progress: 'complete',
       };
 
       // Remove all referral data if was_referred is not set
@@ -116,10 +135,9 @@ const DsaStep6View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 7 });
       history.push('/dsa/complete'); // Navigate to "Thank You" page
     },
-    [dispatch, formState.values, history, dsaId, email]
+    [formState.values, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -128,6 +146,8 @@ const DsaStep6View = () => {
     setAgree((oldValue) => !oldValue);
   }, []);
 
+  if (loading) return <LinearProgress />;
+ 
   const inputDisabled = loading || Boolean(error);
   const referrerDisabled = inputDisabled || !(formState.values as FormStateValues).was_referred;
 

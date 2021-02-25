@@ -1,11 +1,23 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, MenuItem, Divider, Typography } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  Card,
+  CardHeader,
+  CardContent,
+  MenuItem,
+  Divider,
+  Typography,
+  LinearProgress,
+} from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+
+const DSA_PROGRESS = 1;
 
 const VALIDATE_FORM = {
   entity_type: {
@@ -43,6 +55,7 @@ interface FormStateValues {
  * url: /dsa/1
  */
 const DsaStep1View = () => {
+  const history = useHistory();
   const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
@@ -59,12 +72,11 @@ const DsaStep1View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const history = useHistory();
+
   const phone = state.verifiedPhone || state.currentUser?.phone || '';
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
   useEffect(() => {
-    // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
@@ -100,7 +112,7 @@ const DsaStep1View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState, email]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -117,9 +129,11 @@ const DsaStep1View = () => {
         entity_primary_contact_first_name: values.first_name,
         entity_primary_contact_last_name: values.last_name,
         designation: values.designation,
-        email: email,
         mobile_number: phone,
         mobile_number_secondary: values.secondary_phone,
+        // Required values
+        email: email,
+        progress: DSA_PROGRESS + 1,
       };
 
       let apiResult;
@@ -137,13 +151,14 @@ const DsaStep1View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 2 });
-      history.push('/dsa/2'); // Navigate to next Step
+      history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
     [dispatch, formState.values, history, dsaId, phone, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+
+  if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);
 

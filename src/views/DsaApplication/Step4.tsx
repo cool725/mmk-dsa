@@ -1,6 +1,6 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, Divider, LinearProgress } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
@@ -9,13 +9,12 @@ import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 import { UploadInput } from '../../components/Upload';
 
+const DSA_PROGRESS = 4;
+
 const VALIDATE_FORM = {
   gst_number: {
     // presence: { allowEmpty: false },
     type: 'string', // TODO: Length or Pattern?
-  },
-  gst_registration_image: {
-    type: 'string',
   },
 };
 
@@ -32,8 +31,9 @@ interface FormFiles {
  * url: /dsa/4
  */
 const DsaStep4View = () => {
+  const history = useHistory();
   const classes = useFormStyles();
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
@@ -45,26 +45,22 @@ const DsaStep4View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const history = useHistory();
+
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
-  function validFiles(): Boolean {
-    const required1 = false;
-    const file1 = Boolean(
-      !required1 || files?.gst_registration_image || (formState.values as FormStateValues).gst_registration_image
-    );
-    return file1;
-  }
-
   useEffect(() => {
-    // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
-      const email = state.verifiedEmail || state.currentUser?.email || '';
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      if (Number(apiData?.progress) < DSA_PROGRESS) {
+        // Force jumping to latest incomplete step
+        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        return;
+      }
 
       setLoading(false);
       if (!apiData) return; // No data from API, do nothing
@@ -75,6 +71,7 @@ const DsaStep4View = () => {
         values: {
           ...oldFormState.values,
           gst_number: apiData?.gst_number || '',
+          gst_registration_image: apiData?.gst_registration_image || '',
         },
       }));
     }
@@ -83,7 +80,15 @@ const DsaStep4View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+
+  function validFiles(): Boolean {
+    const required1 = false;
+    const file1 = Boolean(
+      !required1 || files?.gst_registration_image || (formState.values as FormStateValues).gst_registration_image
+    );
+    return file1;
+  }
 
   const handleFileChange = useCallback(
     (event, name, file) => {
@@ -104,7 +109,9 @@ const DsaStep4View = () => {
 
       const payload = {
         ...formState.values,
+        // Required values
         email,
+        progress: DSA_PROGRESS + 1,
       };
 
       let apiResult;
@@ -122,15 +129,16 @@ const DsaStep4View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 5 });
-      history.push('/dsa/5'); // Navigate to next Step
+      history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email, files]
+    [formState.values, files, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
 
   const inputDisabled = loading || Boolean(error);
+
+  if (loading) return <LinearProgress />;
 
   return (
     <form onSubmit={handleFormSubmit}>

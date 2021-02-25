@@ -1,6 +1,6 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, Divider, LinearProgress } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
@@ -8,6 +8,8 @@ import { getAssetUrl } from '../../utils/url';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 import { UploadInput } from '../../components/Upload';
+
+const DSA_PROGRESS = 5;
 
 const VALIDATE_FORM = {
   bank_name: {
@@ -27,16 +29,6 @@ const VALIDATE_FORM = {
     type: 'string',
   },
 
-  cancelled_cheque_image: {
-    type: 'string',
-  },
-  cancelled_cheque_has_applicant_name: {
-    type: 'boolean',
-  },
-
-  account_passbook_page_image: {
-    type: 'string',
-  },
 };
 
 interface FormStateValues {
@@ -57,8 +49,9 @@ interface FormFiles {
  * url: /dsa/5
  */
 const DsaStep5View = () => {
+  const history = useHistory();
   const classes = useFormStyles();
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
@@ -74,26 +67,22 @@ const DsaStep5View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const history = useHistory();
+
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
-  function validFiles(): Boolean {
-    const required1 = true;
-    const file1 = Boolean(
-      !required1 || files?.image_with_name || (formState.values as FormStateValues).image_with_name
-    );
-    return file1;
-  }
-
   useEffect(() => {
-    // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
-      const email = state.verifiedEmail || state.currentUser?.email || '';
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      if (Number(apiData?.progress) < DSA_PROGRESS) {
+        // Force jumping to latest incomplete step
+        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        return;
+      }
 
       setLoading(false);
       if (!apiData) return; // No data from API, do nothing
@@ -117,7 +106,15 @@ const DsaStep5View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+
+  function validFiles(): Boolean {
+    const required1 = true;
+    const file1 = Boolean(
+      !required1 || files?.image_with_name || (formState.values as FormStateValues).image_with_name
+    );
+    return file1;
+  }
 
   const handleFileChange = useCallback(
     (event, name, file) => {
@@ -163,7 +160,9 @@ const DsaStep5View = () => {
       const payload = {
         ...formState.values,
         image_with_name,
+        // Required values
         email,
+        progress: DSA_PROGRESS + 1,
       };
       if (!dsaId) {
         // Create new record
@@ -179,13 +178,14 @@ const DsaStep5View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 6 });
-      history.push('/dsa/6'); // Navigate to next Step
+      history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email, files]
+    [formState.values, files, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+
+  if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);
 

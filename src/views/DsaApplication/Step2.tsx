@@ -1,12 +1,14 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider, MenuItem } from '@material-ui/core';
+import { Grid, TextField, Card, CardHeader, CardContent, Divider, MenuItem, LinearProgress } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { STATES } from '../../utils/address';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+
+const DSA_PROGRESS = 2;
 
 const VALIDATE_FORM = {
   address_line_1: {
@@ -48,8 +50,9 @@ interface FormStateValues {
  * url: /dsa/2
  */
 const DsaStep2View = () => {
+  const history = useHistory();
   const classes = useFormStyles();
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
@@ -63,17 +66,22 @@ const DsaStep2View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const history = useHistory();
+
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
   useEffect(() => {
-    // Load previous data form API
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      if (Number(apiData?.progress) < DSA_PROGRESS) {
+        // Force jumping to latest incomplete step
+        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        return;
+      }
 
       setLoading(false);
       if (!apiData) return; // No data from API, do nothing
@@ -96,7 +104,7 @@ const DsaStep2View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [state, setFormState, email]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -107,6 +115,7 @@ const DsaStep2View = () => {
       const payload = {
         ...formState.values,
         email,
+        progress: DSA_PROGRESS + 1,
       };
 
       let apiResult;
@@ -124,13 +133,14 @@ const DsaStep2View = () => {
         return;
       }
 
-      dispatch({ type: 'SET_DSA_STEP', payload: 3 });
-      history.push('/dsa/3'); // Navigate to next Step
+      history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, email]
+    [formState.values, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+ 
+  if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);
 
