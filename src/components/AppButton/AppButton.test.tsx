@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import AppButton from './AppButton';
+import { ColorName } from '../../utils/styles';
 
 /**
  * Test specific color for AppButton
@@ -11,7 +12,7 @@ import AppButton from './AppButton';
 function testButtonColor(colorName: string, expectedClassName = colorName, ignoreClassName = false) {
   it(`supports "${colorName}" color`, async () => {
     let text = `${colorName} button`;
-    await render(<AppButton color={colorName}>{text}</AppButton>);
+    await render(<AppButton color={colorName as ColorName}>{text}</AppButton>);
 
     let span = await screen.getByText(text); // <span> with specific text
     expect(span).toBeDefined();
@@ -49,18 +50,6 @@ describe('AppButton component', () => {
 
   testButtonColor('default');
   testButtonColor('inherit', 'default', true);
-
-  it('supports color property', async () => {
-    async function testButtonColor(colorName: string, expectedClassName = colorName) {
-      let text = `${colorName} button`;
-      await render(<AppButton color={colorName}>{text}</AppButton>);
-      let span = await screen.getByText(text); // <span> with specific text
-      expect(span).toBeDefined();
-      let button = await span.closest('button'); // parent <button> element
-      expect(button).toBeDefined();
-      expect(button?.className?.includes(`makeStyles-${expectedClassName}`)).toBeTruthy(); // There is "makeStyles-[colorName]-xxx" class
-    }
-  });
 
   it('supports className property', async () => {
     let text = 'button with specific class';

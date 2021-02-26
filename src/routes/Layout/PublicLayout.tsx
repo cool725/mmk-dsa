@@ -3,9 +3,9 @@ import { useHistory } from 'react-router-dom';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Typography, BottomNavigation, BottomNavigationAction, Grid } from '@material-ui/core/';
 import { useAppStore } from '../../store/AppStore';
-import { ErrorBoundary, AppIconButton, AppIcon } from '..';
-import SideBar from '../SideBar/SideBar';
-import { LinkToPage } from '../SideBar/types';
+import { ErrorBoundary, AppIconButton, AppIcon } from '../../components';
+import SideBar from '../../components/SideBar/SideBar';
+import { LinkToPage } from '../../components/SideBar/types';
 
 const TITLE_PUBLIC = 'Hidden Private App';
 

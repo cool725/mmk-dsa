@@ -63,9 +63,7 @@ const UserInfo = ({ className, showAvatar = false, user: propsUser, ...restOfPro
   }, [state, dispatch]);
 
   const fullName = [user?.first_name || '', user?.last_name || ''].join(' ').trim();
-  const srcAvatar = user?.avatar
-    ? getAssetUrl(user?.avatar)
-    : undefined;
+  const srcAvatar = user?.avatar ? getAssetUrl(user?.avatar) : undefined;
   const userPhoneOrEmail = user?.phone || (user?.email as string);
 
   return (

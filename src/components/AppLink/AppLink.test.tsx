@@ -34,7 +34,7 @@ describe('AppLink component', () => {
     expect(link).toHaveTextContent(text);
     expect(link).toHaveAttribute('target', '_blank'); // Open external links in new Tab by default
     expect(link).toHaveAttribute('rel'); // For links opened in new Tab rel="noreferrer noopener" is required
-    const rel = link?.rel;
+    const rel = (link as any)?.rel;
     expect(rel.includes('noreferrer')).toBeTruthy(); // ref="noreferrer" check
     expect(rel.includes('noopener')).toBeTruthy(); // rel="noreferrer check
   });
@@ -89,7 +89,7 @@ describe('AppLink component', () => {
     expect(link).toHaveTextContent(text);
     expect(link).toHaveAttribute('target', '_blank'); // Open links in new Tab
     expect(link).toHaveAttribute('rel'); // For links opened in new Tab rel="noreferrer noopener" is required
-    const rel = link?.rel;
+    const rel = (link as any)?.rel;
     expect(rel.includes('noreferrer')).toBeTruthy(); // ref="noreferrer" check
     expect(rel.includes('noopener')).toBeTruthy(); // rel="noreferrer check
   });
@@ -110,21 +110,4 @@ describe('AppLink component', () => {
     expect(link).toHaveClass(className);
   });
 
-  it('supports wrapperClassName property', async () => {
-    let text = 'internal link wrapped into span with specific class';
-    let url = '/internal-link-in-wrapper';
-    let wrapperClassName = 'someClassNameForWrappingSpan';
-    await render(
-      <AppRouter>
-        <AppLink to={url} wrapperClassName={wrapperClassName}>
-          {text}
-        </AppLink>
-      </AppRouter>
-    );
-    let link = await screen.getByText(text);
-    expect(link).toBeDefined();
-    let span = await link.closest('span');
-    expect(span).toBeDefined();
-    expect(span).toHaveClass(wrapperClassName);
-  });
 });

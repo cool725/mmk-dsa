@@ -22,7 +22,6 @@ export const VALIDATION_PHONE = {
   },
 };
 
-
 // "Schema" for formState
 interface FormState {
   isValid: boolean;

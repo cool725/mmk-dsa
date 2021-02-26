@@ -34,21 +34,24 @@ const UploadInput: React.FC<any> = ({
   const [url, setUrl] = useState(propUrl);
   const inputFileRef = useRef<HTMLInputElement>();
 
-  const handleChange = useCallback((event: FormEvent<HTMLInputElement>) => {
-    // const newFile = event.target.files[0];
-    const newFile = event?.currentTarget?.files?.[0];
-    if (newFile) {
-      const newUrl = URL.createObjectURL(newFile);
-      setUrl(newUrl);
-    } else {
-      setUrl(propUrl || '');
-    }
+  const handleChange = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      // const newFile = event.target.files[0];
+      const newFile = event?.currentTarget?.files?.[0];
+      if (newFile) {
+        const newUrl = URL.createObjectURL(newFile);
+        setUrl(newUrl);
+      } else {
+        setUrl(propUrl || '');
+      }
 
-    // Notify parent component about file changes
-    if (typeof onFileChange === 'function') {
-      onFileChange(event, name, newFile);
-    }
-  }, [onFileChange]);
+      // Notify parent component about file changes
+      if (typeof onFileChange === 'function') {
+        onFileChange(event, name, newFile);
+      }
+    },
+    [propUrl, onFileChange]
+  );
 
   const handleButtonClick = useCallback(() => {
     inputFileRef?.current?.click();

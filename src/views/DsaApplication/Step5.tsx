@@ -28,7 +28,6 @@ const VALIDATE_FORM = {
     presence: { allowEmpty: false },
     type: 'string',
   },
-
 };
 
 interface FormStateValues {

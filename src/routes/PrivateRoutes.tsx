@@ -1,7 +1,7 @@
 import { Route, Switch } from 'react-router-dom';
 import { DsaApplication, User, Welcome } from '../views';
 import SharedRoutes from './SharedRoutes';
-import { PrivateLayout } from '../components/Layout';
+import { PrivateLayout } from './Layout';
 
 /**
  * List of routes available only for authenticated users

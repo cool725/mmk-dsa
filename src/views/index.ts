@@ -5,6 +5,6 @@ import Legal from './Legal/Legal';
 import Auth from './Auth/Auth';
 import DsaApplication from './DsaApplication';
 import User from './User';
-import Welcome from './Welcome'
+import Welcome from './Welcome';
 
 export { NotFound, About, Legal, Auth, NotImplemented as Loan, DsaApplication, User, Welcome };

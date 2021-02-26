@@ -30,7 +30,6 @@ export const formStyle = (theme: Theme) => ({
   // maxWidth: '32rem', // 512px
 });
 
-
 /**
  * Makes style to use with Material UI dialogs across the App
  */

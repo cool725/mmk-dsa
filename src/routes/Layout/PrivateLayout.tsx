@@ -4,11 +4,10 @@ import clsx from 'clsx';
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles';
 import { Grid, useMediaQuery } from '@material-ui/core';
 import { useAppStore } from '../../store';
-import TopBar from '../TopBar';
-import Footer from './Footer';
-import { ErrorBoundary } from '..';
-import SideBar from '../SideBar/SideBar';
-import { LinkToPage } from '../SideBar/types';
+import TopBar from '../../components/TopBar';
+import { ErrorBoundary } from '../../components';
+import SideBar from '../../components/SideBar/SideBar';
+import { LinkToPage } from '../../components/SideBar/types';
 
 const TITLE_PRIVATE = 'DSA Web App';
 
@@ -62,7 +61,7 @@ const SIDE_BAR_PRIVATE_ITEMS: Array<LinkToPage> = [
   },
   {
     title: 'DSA Application',
-    href: '/dsa',
+    href: '/dsa', // It may redirect to latest unfinished step
     icon: 'edit',
   },
   {
@@ -134,10 +133,6 @@ const Layout: React.FC = ({ children }) => {
       <Grid className={classes.content} component="main">
         <ErrorBoundary name="Content">{children}</ErrorBoundary>
       </Grid>
-
-      {/* <Grid className={classes.footer} component="footer">
-        <Footer isAuthenticated={state.isAuthenticated} />
-      </Grid> */}
     </Grid>
   );
 };

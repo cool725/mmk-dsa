@@ -29,15 +29,15 @@ const VALIDATE_FORM = {
 
 interface FormStateValues {
   pan_number: string;
-  pan_card_image: string;
+  image_pan_card: string;
 
   individual_id_proof_type: string;
-  individual_id_proof_image: string;
+  image_id_document: string;
 }
 
 interface FormFiles {
-  pan_card_image?: File;
-  individual_id_proof_image?: File;
+  image_pan_card?: File;
+  image_id_document?: File;
 }
 
 /**
@@ -52,10 +52,10 @@ const DsaStep3View = () => {
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
       pan_number: '',
-      pan_card_image: '',
+      image_pan_card: '',
 
       individual_id_proof_type: '',
-      individual_id_proof_image: '',
+      image_id_document: '',
     } as FormStateValues,
   });
   const [files, setFiles] = useState<FormFiles>({});
@@ -89,10 +89,10 @@ const DsaStep3View = () => {
         values: {
           ...oldFormState.values,
           pan_number: apiData?.pan_number || '',
-          pan_card_image: apiData?.pan_card_image || '',
+          image_pan_card: apiData?.image_pan_card || '',
 
           individual_id_proof_type: apiData?.individual_id_proof_type || '',
-          individual_id_proof_image: apiData?.individual_id_proof_image || '',
+          image_id_document: apiData?.image_id_document || '',
         },
       }));
     }
@@ -106,9 +106,9 @@ const DsaStep3View = () => {
   function validFiles(): Boolean {
     const required1 = true;
     const required2 = true;
-    const file1 = Boolean(!required1 || files?.pan_card_image || (formState.values as FormStateValues).pan_card_image);
+    const file1 = Boolean(!required1 || files?.image_pan_card || (formState.values as FormStateValues).image_pan_card);
     const file2 = Boolean(
-      !required2 || files?.individual_id_proof_image || (formState.values as FormStateValues).individual_id_proof_image
+      !required2 || files?.image_id_document || (formState.values as FormStateValues).image_id_document
     );
     return file1 && file2;
   }
@@ -133,16 +133,16 @@ const DsaStep3View = () => {
       setLoading(true); // Don't allow to change data anymore
 
       // Upload new files
-      let pan_card_image = (formState.values as FormStateValues).pan_card_image;
-      if (files?.pan_card_image) {
+      let image_pan_card = (formState.values as FormStateValues).image_pan_card;
+      if (files?.image_pan_card) {
         let apiRes;
         const payload = {
-          data: files?.pan_card_image,
+          data: files?.image_pan_card,
         };
         try {
-          if (pan_card_image) {
+          if (image_pan_card) {
             // Update existing file
-            apiRes = await api.file.update(pan_card_image, payload);
+            apiRes = await api.file.update(image_pan_card, payload);
           } else {
             // Create new file
             apiRes = await api.file.create(payload);
@@ -151,14 +151,36 @@ const DsaStep3View = () => {
           // TODO: Halt form submission if needed
           console.log(error);
         }
-        pan_card_image = apiRes?.id;
+        image_pan_card = apiRes?.id;
       }
 
+      // Upload new files
+      let image_id_document = (formState.values as FormStateValues).image_id_document;
+      if (files?.image_id_document) {
+        let apiRes;
+        const payload = {
+          data: files?.image_id_document,
+        };
+        try {
+          if (image_id_document) {
+            // Update existing file
+            apiRes = await api.file.update(image_id_document, payload);
+          } else {
+            // Create new file
+            apiRes = await api.file.create(payload);
+          }
+        } catch (error) {
+          // TODO: Halt form submission if needed
+          console.error(error);
+        }
+        image_id_document = apiRes?.id;
+      }
       // Create/Update DSA Application record
       let apiResult;
       const payload = {
         ...formState.values,
-        pan_card_image,
+        image_pan_card,
+        image_id_document,
         // Required values
         email,
         progress: DSA_PROGRESS + 1,
@@ -208,8 +230,8 @@ const DsaStep3View = () => {
               />
 
               <UploadInput
-                name="pan_card_image"
-                url={getAssetUrl((formState.values as FormStateValues).pan_card_image)}
+                name="image_pan_card"
+                url={getAssetUrl((formState.values as FormStateValues).image_pan_card)}
                 buttonTitle="Upload PAN Card Image"
                 onFileChange={handleFileChange}
               />
@@ -237,8 +259,8 @@ const DsaStep3View = () => {
               </TextField>
 
               <UploadInput
-                name="individual_id_proof_image"
-                url={getAssetUrl((formState.values as FormStateValues).individual_id_proof_image)}
+                name="image_id_document"
+                url={getAssetUrl((formState.values as FormStateValues).image_id_document)}
                 buttonTitle="Upload ID Document Image"
                 onFileChange={handleFileChange}
               />

@@ -63,7 +63,7 @@ const DsaStep6View = () => {
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const [agree, setAgree] = useState(false);
-  
+
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
   useEffect(() => {
@@ -147,7 +147,7 @@ const DsaStep6View = () => {
   }, []);
 
   if (loading) return <LinearProgress />;
- 
+
   const inputDisabled = loading || Boolean(error);
   const referrerDisabled = inputDisabled || !(formState.values as FormStateValues).was_referred;
 

@@ -139,7 +139,7 @@ const DsaStep2View = () => {
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
- 
+
   if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);

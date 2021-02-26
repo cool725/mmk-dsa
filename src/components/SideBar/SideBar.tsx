@@ -11,7 +11,7 @@ import { useAppStore } from '../../store/AppStore';
 import { AppIconButton } from '../../components';
 import UserInfo from '../UserInfo/UserInfo';
 import SideBarNavigation from './SideBarNavigation';
-import { SIDEBAR_WIDTH } from '../Layout/PrivateLayout';
+import { SIDEBAR_WIDTH } from '../../routes/Layout/PrivateLayout';
 import { LinkToPage } from './types';
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -20,10 +20,10 @@ const VALIDATE_FORM = {
 
 interface FormStateValues {
   gst_number: string;
-  gst_registration_image: string;
+  image_gst_proof: string;
 }
 interface FormFiles {
-  gst_registration_image?: File;
+  image_gst_proof?: File;
 }
 
 /**
@@ -38,7 +38,7 @@ const DsaStep4View = () => {
     validationSchema: VALIDATE_FORM, // must be const outside the component
     initialValues: {
       gst_number: '',
-      gst_registration_image: '',
+      image_gst_proof: '',
     } as FormStateValues,
   });
   const [files, setFiles] = useState<FormFiles>({});
@@ -71,7 +71,7 @@ const DsaStep4View = () => {
         values: {
           ...oldFormState.values,
           gst_number: apiData?.gst_number || '',
-          gst_registration_image: apiData?.gst_registration_image || '',
+          image_gst_proof: apiData?.image_gst_proof || '',
         },
       }));
     }
@@ -85,7 +85,7 @@ const DsaStep4View = () => {
   function validFiles(): Boolean {
     const required1 = false;
     const file1 = Boolean(
-      !required1 || files?.gst_registration_image || (formState.values as FormStateValues).gst_registration_image
+      !required1 || files?.image_gst_proof || (formState.values as FormStateValues).image_gst_proof
     );
     return file1;
   }
@@ -107,14 +107,37 @@ const DsaStep4View = () => {
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
+      // Upload new files
+      let image_gst_proof = (formState.values as FormStateValues).image_gst_proof;
+      if (files?.image_gst_proof) {
+        let apiRes;
+        const payload = {
+          data: files?.image_gst_proof,
+        };
+        try {
+          if (image_gst_proof) {
+            // Update existing file
+            apiRes = await api.file.update(image_gst_proof, payload);
+          } else {
+            // Create new file
+            apiRes = await api.file.create(payload);
+          }
+        } catch (error) {
+          // TODO: Halt form submission if needed
+          console.error(error);
+        }
+        image_gst_proof = apiRes?.id;
+      }
+
+      // Create/Update DSA Application record
+      let apiResult;
       const payload = {
         ...formState.values,
+        image_gst_proof,
         // Required values
         email,
         progress: DSA_PROGRESS + 1,
       };
-
-      let apiResult;
       if (!dsaId) {
         // Create new record
         apiResult = await api.dsa.create(payload);
@@ -159,8 +182,8 @@ const DsaStep4View = () => {
               />
 
               <UploadInput
-                name="gst_registration_image"
-                url={getAssetUrl((formState.values as FormStateValues).gst_registration_image)}
+                name="image_gst_proof"
+                url={getAssetUrl((formState.values as FormStateValues).image_gst_proof)}
                 buttonTitle="Upload GST Registration Proof"
                 onFileChange={handleFileChange}
               />

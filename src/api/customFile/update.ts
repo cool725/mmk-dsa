@@ -9,7 +9,7 @@ const METHOD = 'customFileUpdate()';
  */
 export async function customFileUpdateByThreeCalls(key: PrimaryKey, payload: Payload, query?: Query) {
   // Get previous data to know the .file property
-  const prevRecord: any = await api.customFile.get(key, query)
+  const prevRecord: any = await api.customFile.get(key, query);
 
   // Create or update the record in 'files' collection if there "file data"
   let fileObject;

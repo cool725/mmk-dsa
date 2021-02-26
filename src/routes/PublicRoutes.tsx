@@ -2,7 +2,7 @@ import { Route, Switch } from 'react-router-dom';
 import { NotFound } from '../views';
 import AuthRoutes from '../views/Auth';
 import SharedRoutes from './SharedRoutes';
-import { PublicLayout } from '../components/Layout';
+import { PublicLayout } from './Layout';
 // import SignupRoutes from '../views/Auth/Signup';
 import LoginRoutes from '../views/Auth/Login';
 

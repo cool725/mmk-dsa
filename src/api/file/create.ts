@@ -1,6 +1,6 @@
 import { api } from '..';
 import { Payload, Query } from '@directus/sdk-js/dist/types/types';
-import { ENDPOINT } from './utils'
+import { ENDPOINT } from './utils';
 
 const METHOD = 'fileCreate()';
 
@@ -32,7 +32,7 @@ export async function fileCreateByAxiosAsFormData(payload: Payload, query?: Quer
 }
 
 /**
- * Creates File record using JSON format 
+ * Creates File record using JSON format
  * NOTE: Doesn't work correctly. Returns file data, but the file is not accessible by id
  */
 export async function fileCreateByAxiosAsJson(payload: Payload | Payload[], query?: Query) {

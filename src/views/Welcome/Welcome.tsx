@@ -28,15 +28,15 @@ const WelcomeView = () => {
 
       if (!apiData || !apiData?.id) {
         // There is no DSA application for current user, go to Step1
-        console.log('Going to DSA Step 1')
-        // history.push('/dsa/1');
+        // console.log('Going to DSA Step 1')
+        history.push('/dsa/1');
         return;
       }
 
       if (!apiData?.progress || apiData?.progress !== 'complete') {
         // DSA application in progress, go to last incomplete step
-        console.log('Going to DSA Step', apiData?.progress)
-        // history.push(`/dsa/${apiData?.progress || 1}`);
+        // console.log('Going to DSA Step', apiData?.progress)
+        history.push(`/dsa/${apiData?.progress || 1}`);
         return;
       }
 
@@ -53,7 +53,7 @@ const WelcomeView = () => {
     };
   }, [email]);
 
-  if (loading) return  <LinearProgress />;
+  if (loading) return <LinearProgress />;
 
   const { currentUser: user } = state;
   const fullName = [user?.first_name || '', user?.last_name || ''].join(' ').trim();
@@ -63,8 +63,9 @@ const WelcomeView = () => {
       <Grid item xs={12}>
         <Typography variant="h6">Welcome {fullName}</Typography>
 
-        <Typography variant="body1">Your application (id: <b>{dsaId}</b>) has status: <b>{dsaStatus}</b></Typography>
-
+        <Typography variant="body1">
+          Your application (id: <b>{dsaId}</b>) has status: <b>{dsaStatus}</b>
+        </Typography>
       </Grid>
     </Grid>
   );
