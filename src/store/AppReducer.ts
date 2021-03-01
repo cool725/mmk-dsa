@@ -25,6 +25,7 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
         ...state,
         currentUser: action?.currentUser || action?.payload,
       };
+    case 'SIGN_UP':
     case 'LOG_IN':
       return {
         ...state,

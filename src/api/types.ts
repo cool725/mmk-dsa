@@ -24,12 +24,11 @@ export interface IUserInfo {
   managed_by: string | null;
 }
 export interface ISignupCredentials {
-  nameFirst?: string;
-  nameLast?: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   password: string;
-  otp?: string;
 }
 
 // from '@directus/sdk-js/dist/types/handlers/auth';

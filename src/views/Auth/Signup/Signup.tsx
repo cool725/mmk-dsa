@@ -11,17 +11,19 @@ import {
 } from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
-import { AppButton, AppIconButton, AppLink } from '../../../components';
+import { AppButton, AppIconButton, AppLink, AppAlert } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
 import { useHistory } from 'react-router-dom';
 import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_SIGNUP = {
-  nameFirst: {
+  firstName: {
     type: 'string',
+    presence: { allowEmpty: false },
   },
-  nameLast: {
+  lastName: {
     type: 'string',
+    presence: { allowEmpty: false },
   },
   email: {
     presence: true,
@@ -45,8 +47,8 @@ const VALIDATE_EXTENSION = {
 };
 
 interface FormStateValues {
-  nameFirst?: string;
-  nameLast?: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
   password: string;
@@ -59,6 +61,7 @@ interface FormStateValues {
  * url: /auth/signup/*
  */
 const SignupView = () => {
+  const history = useHistory();
   const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
   const [validationSchema, setValidationSchema] = useState<any>({
@@ -68,8 +71,8 @@ const SignupView = () => {
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: validationSchema, // the state value, so could be changed in time
     initialValues: {
-      nameFirst: '',
-      nameLast: '',
+      firstName: '',
+      lastName: '',
       email: '',
       phone: state.verifiedPhone,
       password: '',
@@ -78,7 +81,7 @@ const SignupView = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [agree, setAgree] = useState(false);
-  const history = useHistory();
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     // If the Phone was not verified, redirect to "Phone Verification" view
@@ -106,16 +109,23 @@ const SignupView = () => {
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
-      console.log('onSubmit() - formState.values:', formState.values);
+      // console.log('onSubmit() - formState.values:', formState.values);
 
-      const result = await api.auth.signup(formState.values as FormStateValues);
+      const apiResult = await api.auth.signup(formState.values as FormStateValues);
       // console.warn('api.auth.signup() - result:', result);
-      if (!result) return; // Unsuccessful signup
+
+      if (!apiResult) {
+        setError('Can not create user for given email, if you already have account please sign in');
+        return; // Unsuccessful signup
+      }
 
       dispatch({ type: 'SIGN_UP' });
+      return history.push('/');
     },
-    [dispatch, formState.values]
+    [dispatch, formState.values, history]
   );
+
+  const handleCloseError = useCallback(() => setError(undefined), []);
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -150,20 +160,22 @@ const SignupView = () => {
               )}
               <TextField
                 autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
+                required
                 label="First Name"
-                name="nameFirst"
-                value={(formState.values as FormStateValues).nameFirst}
-                error={fieldHasError('nameFirst')}
-                helperText={fieldGetError('nameFirst') || ' ' /*|| 'Enter your first name'*/}
+                name="firstName"
+                value={(formState.values as FormStateValues).firstName}
+                error={fieldHasError('firstName')}
+                helperText={fieldGetError('firstName') || ' ' /*|| 'Enter your first name'*/}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
               <TextField
+                required
                 label="Last Name"
-                name="nameLast"
-                value={(formState.values as FormStateValues).nameLast}
-                error={fieldHasError('nameLast')}
-                helperText={fieldGetError('nameLast') || ' ' /*|| 'Enter your last name'*/}
+                name="lastName"
+                value={(formState.values as FormStateValues).lastName}
+                error={fieldHasError('lastName')}
+                helperText={fieldGetError('lastName') || ' ' /*|| 'Enter your last name'*/}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
@@ -230,6 +242,13 @@ const SignupView = () => {
                   </>
                 }
               />
+
+              {error ? (
+                <AppAlert severity="error" onClose={handleCloseError}>
+                  {error}
+                </AppAlert>
+              ) : null}
+
               <Grid container justify="center" alignItems="center">
                 <AppButton type="submit" disabled={!(formState.isValid && agree)}>
                   Confirm and Sign Up

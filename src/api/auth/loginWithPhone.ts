@@ -11,8 +11,9 @@ export async function loginWithPhoneByAxios({ phone, pin, otp }: ILoginByPhoneCr
     const res = await api.axios.post(ENDPOINT, { phone, pin, otp });
     if (res?.status === 200) {
       const { data } = res?.data;
-      saveToken(data?.access_token);
-      saveRefreshToken(data?.refresh_token);
+      console.warn(METHOD, '- token expires in', +data?.expires / 1000 / 60, 'minutes');
+      saveToken(data?.access_token || data?.accessToken);
+      saveRefreshToken(data?.refresh_token || data?.refreshToken);
       setRefreshTimeout(data?.expires);
       return data;
     }

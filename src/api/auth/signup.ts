@@ -2,7 +2,7 @@ import { api } from '..';
 import { ISignupCredentials } from '../types';
 import { clearAuthData, saveRefreshToken, saveToken, setRefreshTimeout } from './utils';
 
-const ENDPOINT = 'auth/signup';
+const ENDPOINT = '/custom/user/signup';
 const METHOD = 'signup()';
 
 export async function signupByAxios(credentials: ISignupCredentials) {
@@ -12,8 +12,8 @@ export async function signupByAxios(credentials: ISignupCredentials) {
     if (res?.status < 400) {
       const { data } = res?.data;
       console.warn(METHOD, '- token expires in', +data?.expires / 1000 / 60, 'minutes');
-      saveToken(data?.access_token);
-      saveRefreshToken(data?.refresh_token);
+      saveToken(data?.access_token || data?.accessToken);
+      saveRefreshToken(data?.refresh_token || data?.refreshToken);
       setRefreshTimeout(data?.expires);
       return data;
     }
