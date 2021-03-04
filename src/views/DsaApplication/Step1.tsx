@@ -23,9 +23,6 @@ const VALIDATE_FORM = {
   entity_type: {
     type: 'string', // TODO: Change to enum
   },
-  entity_name: {
-    type: 'string',
-  },
   first_name: {
     type: 'string',
     presence: { allowEmpty: false },
@@ -34,11 +31,18 @@ const VALIDATE_FORM = {
     type: 'string',
     presence: { allowEmpty: false },
   },
+  secondary_phone: VALIDATION_PHONE,
+};
+
+const VALIDATE_EXTENSION = {
+  entity_name: {
+    type: 'string',
+    presence: { allowEmpty: false },
+  },
   designation: {
     type: 'string',
     presence: { allowEmpty: false },
   },
-  secondary_phone: VALIDATION_PHONE,
 };
 
 interface FormStateValues {
@@ -58,8 +62,12 @@ const DsaStep1View = () => {
   const history = useHistory();
   const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
+  const [validationSchema, setValidationSchema] = useState<any>({
+    ...VALIDATE_FORM,
+    // ...VALIDATE_EXTENSION,
+  });
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
-    validationSchema: VALIDATE_FORM, // must be const outside the component
+    validationSchema: validationSchema, // the state value, so could be changed in time
     initialValues: {
       entity_type: '',
       entity_name: '',
@@ -114,6 +122,16 @@ const DsaStep1View = () => {
     };
   }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  useEffect(() => {
+    let newSchema;
+    if ((formState.values as FormStateValues).entity_type === 'individual') {
+      newSchema = VALIDATE_FORM;
+    } else {
+      newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
+    }
+    setValidationSchema(newSchema);
+  }, [(formState.values as FormStateValues).entity_type]);
+
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
@@ -122,19 +140,27 @@ const DsaStep1View = () => {
 
       const values = formState.values as FormStateValues;
       const payload: Record<string, any> = {
-        entity_type: values.entity_type,
-        entity_name: values.entity_name,
-        individual_first_name: values.first_name,
-        individual_last_name: values.last_name,
-        entity_primary_contact_first_name: values.first_name,
-        entity_primary_contact_last_name: values.last_name,
-        designation: values.designation,
         mobile_number: phone,
-        mobile_number_secondary: values.secondary_phone,
         // Required values
+        entity_type: values.entity_type, // For Step 1 and Step 3
         email: email,
-        progress: DSA_PROGRESS + 1,
+        progress: String(DSA_PROGRESS + 1),
       };
+
+      if (values.entity_type === 'individual') {
+        payload.individual_first_name = values.first_name;
+        payload.individual_last_name = values.last_name;
+      } else {
+        payload.entity_name = values.entity_name;
+        payload.designation = values.designation;
+        payload.entity_primary_contact_first_name = values.first_name;
+        payload.entity_primary_contact_last_name = values.last_name;
+      }
+
+      if (values.secondary_phone) {
+        payload.mobile_number_secondary = values.secondary_phone;
+      }
+      // console.log('payload:', payload)
 
       let apiResult;
       if (!dsaId) {
@@ -236,17 +262,19 @@ const DsaStep1View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
 
-              <TextField
-                required
-                disabled={inputDisabled}
-                label="Designation"
-                name="designation"
-                value={(formState.values as FormStateValues).designation}
-                error={fieldHasError('designation')}
-                helperText={fieldGetError('designation') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
+              {(formState.values as FormStateValues).entity_type !== 'individual' && (
+                <TextField
+                  required
+                  disabled={inputDisabled}
+                  label="Designation"
+                  name="designation"
+                  value={(formState.values as FormStateValues).designation}
+                  error={fieldHasError('designation')}
+                  helperText={fieldGetError('designation') || ' '}
+                  onChange={onFieldChange}
+                  {...SHARED_CONTROL_PROPS}
+                />
+              )}
 
               <TextField
                 disabled

@@ -26,8 +26,8 @@ const VALIDATE_FORM_SIGNUP = {
     presence: { allowEmpty: false },
   },
   email: {
-    presence: true,
     email: true,
+    presence: true,
   },
   phone: VALIDATION_PHONE,
   password: {

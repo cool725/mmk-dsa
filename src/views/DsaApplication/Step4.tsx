@@ -13,8 +13,13 @@ const DSA_PROGRESS = 4;
 
 const VALIDATE_FORM = {
   gst_number: {
-    // presence: { allowEmpty: false },
     type: 'string', // TODO: Length or Pattern?
+    length: {
+      is: 15,
+      allowEmpty: true, // Not supported yet :(
+      message: 'must be exactly 15 characters',
+    },
+    presence: { allowEmpty: true },
   },
 };
 
@@ -107,8 +112,10 @@ const DsaStep4View = () => {
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
-      // Upload new files
-      let image_gst_proof = (formState.values as FormStateValues).image_gst_proof;
+      const values = formState.values as FormStateValues;
+
+      // Upload new file
+      let image_gst_proof = values.image_gst_proof;
       if (files?.image_gst_proof) {
         let apiRes;
         const payload = {
@@ -131,13 +138,20 @@ const DsaStep4View = () => {
 
       // Create/Update DSA Application record
       let apiResult;
-      const payload = {
-        ...formState.values,
-        image_gst_proof,
+      const payload: Record<string, any> = {
+        // gst_number: values.gst_number, // Empty string '' is not allowed by API
         // Required values
         email,
-        progress: DSA_PROGRESS + 1,
+        progress: String(DSA_PROGRESS + 1),
       };
+      if (values.gst_number) {
+        payload.gst_number = values.gst_number;
+      }
+      if (image_gst_proof) {
+        payload.image_gst_proof = image_gst_proof;
+      }
+      console.log('payload:', payload);
+
       if (!dsaId) {
         // Create new record
         apiResult = await api.dsa.create(payload);
@@ -163,6 +177,8 @@ const DsaStep4View = () => {
 
   if (loading) return <LinearProgress />;
 
+  const values = (formState.values as FormStateValues);
+
   return (
     <form onSubmit={handleFormSubmit}>
       <Grid container direction="column" alignItems="center">
@@ -174,7 +190,7 @@ const DsaStep4View = () => {
                 disabled={inputDisabled}
                 label="GST Number"
                 name="gst_number"
-                value={(formState.values as FormStateValues).gst_number}
+                value={values.gst_number}
                 error={fieldHasError('gst_number')}
                 helperText={fieldGetError('gst_number') || ' '}
                 onChange={onFieldChange}
@@ -183,7 +199,7 @@ const DsaStep4View = () => {
 
               <UploadInput
                 name="image_gst_proof"
-                url={getAssetUrl((formState.values as FormStateValues).image_gst_proof)}
+                url={getAssetUrl(values.image_gst_proof)}
                 buttonTitle="Upload GST Registration Proof"
                 onFileChange={handleFileChange}
               />
@@ -200,7 +216,7 @@ const DsaStep4View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={inputDisabled || !formState.isValid || !validFiles()}>
+                <AppButton type="submit" disabled={inputDisabled || (!formState.isValid && values.gst_number !== '') || !validFiles()}>
                   Confirm and Continue
                 </AppButton>
               </Grid>

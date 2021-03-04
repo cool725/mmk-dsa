@@ -19,7 +19,13 @@ import { useFormStyles } from '../styles';
 
 const DSA_PROGRESS = 6;
 
-const VALIDATE_REFERRALS = {
+const VALIDATE_FORM = {
+  was_referred: {
+    type: 'boolean',
+  },
+};
+
+const VALIDATE_EXTENSION = {
   referrer_name: {
     type: 'string',
     presence: { allowEmpty: false },
@@ -29,14 +35,6 @@ const VALIDATE_REFERRALS = {
     presence: { allowEmpty: false },
   },
 };
-
-const VALIDATE_FORM = {
-  was_referred: {
-    type: 'boolean',
-  },
-  ...VALIDATE_REFERRALS,
-};
-
 interface FormStateValues {
   was_referred: boolean;
   referrer_name?: string;
@@ -51,8 +49,12 @@ const DsaStep6View = () => {
   const history = useHistory();
   const classes = useFormStyles();
   const [state] = useAppStore();
+  const [validationSchema, setValidationSchema] = useState<any>({
+    ...VALIDATE_FORM,
+    // ...VALIDATE_EXTENSION,
+  });
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
-    validationSchema: VALIDATE_FORM, // must be const outside the component
+    validationSchema: validationSchema, // the state value, so could be changed in time
     initialValues: {
       was_referred: false,
       referrer_name: '',
@@ -100,6 +102,16 @@ const DsaStep6View = () => {
       componentMounted = false; // Remove "component is live" flag
     };
   }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+
+  useEffect(() => {
+    let newSchema;
+    if ((formState.values as FormStateValues).was_referred) {
+      newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
+    } else {
+      newSchema = VALIDATE_FORM;
+    }
+    setValidationSchema(newSchema);
+  }, [(formState.values as FormStateValues).was_referred]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -222,14 +234,7 @@ const DsaStep6View = () => {
                 </AppAlert>
               ) : null}
               <Grid container justify="center" alignItems="center">
-                <AppButton
-                  type="submit"
-                  disabled={
-                    !agree ||
-                    inputDisabled ||
-                    ((formState.values as FormStateValues).was_referred && !formState.isValid)
-                  }
-                >
+                <AppButton type="submit" disabled={!agree || inputDisabled || !formState.isValid}>
                   Confirm and Finish
                 </AppButton>
               </Grid>

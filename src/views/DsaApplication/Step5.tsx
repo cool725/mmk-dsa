@@ -13,20 +13,20 @@ const DSA_PROGRESS = 5;
 
 const VALIDATE_FORM = {
   bank_name: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
   bank_branch_name: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
   bank_account: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
   ifsc_code: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
 };
 
@@ -132,7 +132,7 @@ const DsaStep5View = () => {
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
-      // Upload new files
+      // Upload new file
       let image_with_name = (formState.values as FormStateValues).image_with_name;
       if (files?.image_with_name) {
         let apiRes;
@@ -161,7 +161,7 @@ const DsaStep5View = () => {
         image_with_name,
         // Required values
         email,
-        progress: DSA_PROGRESS + 1,
+        progress: String(DSA_PROGRESS + 1),
       };
       if (!dsaId) {
         // Create new record

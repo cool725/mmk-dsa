@@ -12,28 +12,28 @@ const DSA_PROGRESS = 2;
 
 const VALIDATE_FORM = {
   address_line_1: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
   address_line_2: {
     type: 'string',
   },
   pin_code: {
+    type: 'string',
     numericality: true,
     presence: { allowEmpty: false },
     length: {
       is: 6,
       message: 'should be 6 digits',
     },
-    type: 'string',
   },
   city: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
   state: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
   },
 };
 
@@ -115,7 +115,7 @@ const DsaStep2View = () => {
       const payload = {
         ...formState.values,
         email,
-        progress: DSA_PROGRESS + 1,
+        progress: String(DSA_PROGRESS + 1),
       };
 
       let apiResult;

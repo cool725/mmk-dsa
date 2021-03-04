@@ -12,14 +12,9 @@ import { UploadInput } from '../../components/Upload';
 const DSA_PROGRESS = 3;
 
 const VALIDATE_FORM = {
-  individual_id_proof_type: {
-    presence: { allowEmpty: false },
-    type: 'string',
-  },
-
   pan_number: {
-    presence: { allowEmpty: false },
     type: 'string',
+    presence: { allowEmpty: false },
     length: {
       is: 10,
       message: 'must be exactly 10 characters',
@@ -27,7 +22,16 @@ const VALIDATE_FORM = {
   },
 };
 
+const VALIDATE_EXTENSION = {
+  individual_id_proof_type: {
+    type: 'string',
+    presence: { allowEmpty: false },
+  },
+};
+
 interface FormStateValues {
+  entity_type: string; // Internal use only, no field for that
+
   pan_number: string;
   image_pan_card: string;
 
@@ -48,12 +52,16 @@ const DsaStep3View = () => {
   const history = useHistory();
   const classes = useFormStyles();
   const [state] = useAppStore();
+  const [validationSchema, setValidationSchema] = useState<any>({
+    ...VALIDATE_FORM,
+    // ...VALIDATE_EXTENSION,
+  });
   const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
-    validationSchema: VALIDATE_FORM, // must be const outside the component
+    validationSchema: validationSchema, // the state value, so could be changed in time
     initialValues: {
+      entity_type: '', // Internal use only, no field for that
       pan_number: '',
       image_pan_card: '',
-
       individual_id_proof_type: '',
       image_id_document: '',
     } as FormStateValues,
@@ -88,6 +96,8 @@ const DsaStep3View = () => {
         ...oldFormState,
         values: {
           ...oldFormState.values,
+          entity_type: apiData?.entity_type || '', // Internal use only, no field for that
+
           pan_number: apiData?.pan_number || '',
           image_pan_card: apiData?.image_pan_card || '',
 
@@ -103,9 +113,19 @@ const DsaStep3View = () => {
     };
   }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  useEffect(() => {
+    let newSchema;
+    if ((formState.values as FormStateValues).entity_type !== 'individual') {
+      newSchema = VALIDATE_FORM;
+    } else {
+      newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
+    }
+    setValidationSchema(newSchema);
+  }, [(formState.values as FormStateValues).entity_type]);
+
   function validFiles(): Boolean {
     const required1 = true;
-    const required2 = true;
+    const required2 = (formState.values as FormStateValues).entity_type === 'individual';
     const file1 = Boolean(!required1 || files?.image_pan_card || (formState.values as FormStateValues).image_pan_card);
     const file2 = Boolean(
       !required2 || files?.image_id_document || (formState.values as FormStateValues).image_id_document
@@ -132,8 +152,10 @@ const DsaStep3View = () => {
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
-      // Upload new files
-      let image_pan_card = (formState.values as FormStateValues).image_pan_card;
+      const values = formState.values as FormStateValues;
+
+      // Upload image_pan_card
+      let image_pan_card = values.image_pan_card;
       if (files?.image_pan_card) {
         let apiRes;
         const payload = {
@@ -154,9 +176,9 @@ const DsaStep3View = () => {
         image_pan_card = apiRes?.id;
       }
 
-      // Upload new files
-      let image_id_document = (formState.values as FormStateValues).image_id_document;
-      if (files?.image_id_document) {
+      // Upload image_id_document if needed
+      let image_id_document = values.image_id_document;
+      if (values.entity_type === 'individual' && files?.image_id_document) {
         let apiRes;
         const payload = {
           data: files?.image_id_document,
@@ -175,16 +197,24 @@ const DsaStep3View = () => {
         }
         image_id_document = apiRes?.id;
       }
+
       // Create/Update DSA Application record
       let apiResult;
-      const payload = {
-        ...formState.values,
+      const payload: Record<string, any> = {
+        pan_number: values.pan_number,
         image_pan_card,
-        image_id_document,
         // Required values
-        email,
-        progress: DSA_PROGRESS + 1,
+        entity_type: values.entity_type, // For Step 1 and Step 3
+        email: email,
+        progress: String(DSA_PROGRESS + 1),
       };
+
+      if (values.entity_type === 'individual') {
+        payload.individual_id_proof_type = values.individual_id_proof_type;
+        payload.image_id_document = image_id_document;
+      }
+      // console.log('payload:', payload);
+
       if (!dsaId) {
         // Create new record
         apiResult = await api.dsa.create(payload);
@@ -236,34 +266,38 @@ const DsaStep3View = () => {
                 onFileChange={handleFileChange}
               />
 
-              <br />
-              <br />
-              <Divider />
-              <br />
+              {(formState.values as FormStateValues).entity_type === 'individual' && (
+                <>
+                  <br />
+                  <br />
+                  <Divider />
+                  <br />
 
-              <TextField
-                required
-                disabled={inputDisabled}
-                select
-                label="ID Proof (please provide any one)"
-                name="individual_id_proof_type"
-                value={(formState.values as FormStateValues).individual_id_proof_type}
-                error={fieldHasError('individual_id_proof_type')}
-                helperText={fieldGetError('individual_id_proof_type') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              >
-                <MenuItem value="aadhaar_card">Aadhaar card</MenuItem>
-                <MenuItem value="voter_id">Voter ID</MenuItem>
-                <MenuItem value="passport">Passport</MenuItem>
-              </TextField>
+                  <TextField
+                    required
+                    disabled={inputDisabled}
+                    select
+                    label="ID Proof (please provide any one)"
+                    name="individual_id_proof_type"
+                    value={(formState.values as FormStateValues).individual_id_proof_type}
+                    error={fieldHasError('individual_id_proof_type')}
+                    helperText={fieldGetError('individual_id_proof_type') || ' '}
+                    onChange={onFieldChange}
+                    {...SHARED_CONTROL_PROPS}
+                  >
+                    <MenuItem value="aadhaar_card">Aadhaar card</MenuItem>
+                    <MenuItem value="voter_id">Voter ID</MenuItem>
+                    <MenuItem value="passport">Passport</MenuItem>
+                  </TextField>
 
-              <UploadInput
-                name="image_id_document"
-                url={getAssetUrl((formState.values as FormStateValues).image_id_document)}
-                buttonTitle="Upload ID Document Image"
-                onFileChange={handleFileChange}
-              />
+                  <UploadInput
+                    name="image_id_document"
+                    url={getAssetUrl((formState.values as FormStateValues).image_id_document)}
+                    buttonTitle="Upload ID Document Image"
+                    onFileChange={handleFileChange}
+                  />
+                </>
+              )}
 
               <br />
               <br />
