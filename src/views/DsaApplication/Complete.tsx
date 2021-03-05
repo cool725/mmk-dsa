@@ -31,7 +31,7 @@ const DsaCompletView = () => {
 
       if (apiData?.progress !== DSA_PROGRESS) {
         // Force jumping to latest incomplete step
-        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        history.push(`/dsa/${Number(apiData?.progress) + 1 || 1}`);
         return;
       }
 

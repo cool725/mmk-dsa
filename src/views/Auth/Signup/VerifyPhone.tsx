@@ -126,7 +126,7 @@ const VerifyPhoneView = () => {
                 </AppAlert>
               ) : null}
               <TextField
-                autoFocus // Select "Phone" input by default
+                // autoFocus // Select "Phone" input by default
                 required
                 label="Mobile Number"
                 name="phone"

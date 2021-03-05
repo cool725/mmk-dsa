@@ -76,9 +76,9 @@ const DsaStep6View = () => {
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
 
-      if (Number(apiData?.progress) < DSA_PROGRESS) {
+      if (Number(apiData?.progress || 0) < DSA_PROGRESS - 1) {
         // Force jumping to latest incomplete step
-        history.push(`/dsa/${Number(apiData?.progress) || 1}`);
+        history.push(`/dsa/${Number(apiData?.progress) + 1 || 1}`);
         return;
       }
 

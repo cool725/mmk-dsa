@@ -147,7 +147,7 @@ const SignupView = () => {
               ) : (
                 // Allow to enter Phone
                 <TextField
-                  autoFocus={Boolean(!state.verifiedPhone)} // Select "Phone" field in case phone was NOT verified
+                  // autoFocus={Boolean(!state.verifiedPhone)} // Select "Phone" field in case phone was NOT verified
                   required
                   label="Phone"
                   name="phone"
@@ -159,7 +159,7 @@ const SignupView = () => {
                 />
               )}
               <TextField
-                autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
+                // autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
                 required
                 label="First Name"
                 name="firstName"

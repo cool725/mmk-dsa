@@ -144,7 +144,7 @@ const DsaStep1View = () => {
         // Required values
         entity_type: values.entity_type, // For Step 1 and Step 3
         email: email,
-        progress: String(DSA_PROGRESS + 1),
+        progress: String(DSA_PROGRESS),
       };
 
       if (values.entity_type === 'individual') {
@@ -196,7 +196,7 @@ const DsaStep1View = () => {
             <CardHeader title="DSA Application - Step 1" subheader="Business details" />
             <CardContent>
               <TextField
-                autoFocus
+                // autoFocus
                 required
                 disabled={inputDisabled}
                 select
