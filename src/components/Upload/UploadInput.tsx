@@ -6,13 +6,14 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   label: {
-    display: 'flex',
+    display: 'inline-flex',
     flexDirection: 'row',
     alignItems: 'center',
     // padding: theme.spacing(2),
   },
   avatar: {
     marginRight: theme.spacing(2),
+    cursor: 'pointer',
   },
 }));
 
