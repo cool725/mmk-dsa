@@ -10,7 +10,7 @@ import { useAppStore } from '../../store';
  */
 const WelcomeView = () => {
   const history = useHistory();
-  const [state, dispatch] = useAppStore();
+  const [state,] = useAppStore();
   const [loading, setLoading] = useState(true);
 
   const [dsaId, setDsaId] = useState<string>();
@@ -51,7 +51,7 @@ const WelcomeView = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [email]);
+  }, [history, email]);
 
   if (loading) return <LinearProgress />;
 

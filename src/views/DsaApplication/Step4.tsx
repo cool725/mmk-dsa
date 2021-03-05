@@ -85,7 +85,7 @@ const DsaStep4View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [history, email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   function validFiles(): Boolean {
     const required1 = false;

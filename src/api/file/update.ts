@@ -1,7 +1,6 @@
 import { api } from '..';
 import { Payload, PrimaryKey, Query } from '@directus/sdk-js/dist/types/types';
 import { ENDPOINT } from './utils';
-import { couldStartTrivia } from 'typescript';
 
 const METHOD = 'fileUpdate()';
 

@@ -20,7 +20,7 @@ const VALIDATE_FORM_PHONE_WITH_OTP = {
     },
     length: {
       is: 6,
-      message: 'must be 6 numbers long',
+      message: 'must be exactly 6 digits',
     },
   },
 };
@@ -55,15 +55,15 @@ const VerifyPhoneView = () => {
     [waiting]
   );
 
-  function resetOtp() {
-    setFormState({
-      ...formState,
+  const resetOtp = useCallback(() => {
+    setFormState((oldFormState) => ({
+      ...oldFormState,
       values: {
-        ...formState.values,
+        ...oldFormState.values,
         otp: '',
       },
-    });
-  }
+    }));
+  }, [setFormState]);
 
   const handleRequestOptClick = useCallback(async () => {
     setError(undefined);
@@ -82,12 +82,12 @@ const VerifyPhoneView = () => {
     setTimeout(() => {
       otpInputRef.current?.focus(); // Set focus to "OTP Code" field
     }, 250);
-  }, [formState, setFormState]);
+  }, [formState, resetOtp]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
-      console.log('onSubmit() - formState.values:', formState.values);
+      // console.log('onSubmit() - formState.values:', formState.values);
 
       const phone = (formState.values as FormStateValues).phone;
       const otp = (formState.values as FormStateValues).otp;
@@ -107,7 +107,7 @@ const VerifyPhoneView = () => {
   const handleCloseError = useCallback(() => {
     setError(undefined);
     resetOtp(); // Clean up "OTP Code" field from previously entered code
-  }, []);
+  }, [resetOtp]);
 
   const fieldPhoneInvalid = (formState.values as FormStateValues).phone === '' || fieldHasError('phone');
   const buttonCodeDisabled = waiting || fieldPhoneInvalid;

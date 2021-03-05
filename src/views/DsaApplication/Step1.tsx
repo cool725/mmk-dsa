@@ -61,7 +61,7 @@ interface FormStateValues {
 const DsaStep1View = () => {
   const history = useHistory();
   const classes = useFormStyles();
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
   const [validationSchema, setValidationSchema] = useState<any>({
     ...VALIDATE_FORM,
     // ...VALIDATE_EXTENSION,
@@ -130,7 +130,7 @@ const DsaStep1View = () => {
       newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
     }
     setValidationSchema(newSchema);
-  }, [(formState.values as FormStateValues).entity_type]);
+  }, [formState.values]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -179,7 +179,7 @@ const DsaStep1View = () => {
 
       history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [dispatch, formState.values, history, dsaId, phone, email]
+    [formState.values, history, dsaId, phone, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);

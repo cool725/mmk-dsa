@@ -3,7 +3,6 @@ import { Card, CardActions, CardContent, CardHeader, TextField } from '@material
 import { AppAlert, AppButton } from '../../components';
 import { api } from '../../api';
 import { SHARED_CONTROL_PROPS } from '../../utils/form';
-import { fileCreateByAxiosAsFormData, fileCreateByDirectus } from '../../api/file/create';
 
 /**
  * Dev tool for "Files" API

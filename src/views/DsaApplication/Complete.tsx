@@ -42,7 +42,7 @@ const DsaCompletView = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [email]);
+  }, [history, email]);
 
   if (loading) return <LinearProgress />;
 

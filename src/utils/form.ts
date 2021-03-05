@@ -17,8 +17,8 @@ export const VALIDATION_PHONE = {
     message: 'should contain numbers',
   },
   length: {
-    maximum: 10,
-    message: 'must be up to 10 digits',
+    is: 10,
+    message: 'must be exactly 10 digits',
   },
 };
 

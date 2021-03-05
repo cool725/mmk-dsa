@@ -50,7 +50,7 @@ const UploadInput: React.FC<any> = ({
         onFileChange(event, name, newFile);
       }
     },
-    [propUrl, onFileChange]
+    [propUrl, name, onFileChange]
   );
 
   const handleButtonClick = useCallback(() => {

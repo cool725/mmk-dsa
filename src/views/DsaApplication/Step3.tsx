@@ -76,7 +76,6 @@ const DsaStep3View = () => {
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
-      const email = state.verifiedEmail || state.currentUser?.email || '';
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
@@ -111,7 +110,7 @@ const DsaStep3View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [history, email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   useEffect(() => {
     let newSchema;
@@ -121,7 +120,7 @@ const DsaStep3View = () => {
       newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
     }
     setValidationSchema(newSchema);
-  }, [(formState.values as FormStateValues).entity_type]);
+  }, [formState.values]);
 
   function validFiles(): Boolean {
     const required1 = true;
@@ -231,7 +230,7 @@ const DsaStep3View = () => {
 
       history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [formState.values, files, history, dsaId, email, files]
+    [formState.values, files, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);

@@ -101,7 +101,7 @@ const DsaStep6View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [history, email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   useEffect(() => {
     let newSchema;
@@ -111,7 +111,7 @@ const DsaStep6View = () => {
       newSchema = VALIDATE_FORM;
     }
     setValidationSchema(newSchema);
-  }, [(formState.values as FormStateValues).was_referred]);
+  }, [formState.values]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
