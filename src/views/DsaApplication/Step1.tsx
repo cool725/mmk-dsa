@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_SECONDARY_PHONE } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 
@@ -31,7 +31,7 @@ const VALIDATE_FORM = {
     type: 'string',
     presence: { allowEmpty: false },
   },
-  secondary_phone: VALIDATION_PHONE,
+  secondary_phone: VALIDATION_SECONDARY_PHONE,
 };
 
 const VALIDATE_EXTENSION = {
@@ -141,6 +141,7 @@ const DsaStep1View = () => {
       const values = formState.values as FormStateValues;
       const payload: Record<string, any> = {
         mobile_number: phone,
+        mobile_number_secondary: values.secondary_phone,
         // Required values
         entity_type: values.entity_type, // For Step 1 and Step 3
         email: email,
@@ -155,10 +156,6 @@ const DsaStep1View = () => {
         payload.designation = values.designation;
         payload.entity_primary_contact_first_name = values.first_name;
         payload.entity_primary_contact_last_name = values.last_name;
-      }
-
-      if (values.secondary_phone) {
-        payload.mobile_number_secondary = values.secondary_phone;
       }
       // console.log('payload:', payload)
 

@@ -22,6 +22,18 @@ export const VALIDATION_PHONE = {
   },
 };
 
+export const VALIDATION_SECONDARY_PHONE = {
+  type: 'string',
+  format: {
+    pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
+    message: 'should contain numbers',
+  },
+  length: {
+    maximum: 10,
+    message: 'must be exactly 10 digits',
+  },
+};
+
 // "Schema" for formState
 interface FormState {
   isValid: boolean;
