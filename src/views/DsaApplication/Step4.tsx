@@ -52,6 +52,7 @@ const DsaStep4View = () => {
   const [dsaId, setDsaId] = useState<string>();
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
+  const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
@@ -89,9 +90,7 @@ const DsaStep4View = () => {
 
   function validFiles(): Boolean {
     const required1 = false;
-    const file1 = Boolean(
-      !required1 || files?.image_gst_proof || (formState.values as FormStateValues).image_gst_proof
-    );
+    const file1 = Boolean(!required1 || files?.image_gst_proof || values.image_gst_proof);
     return file1;
   }
 
@@ -102,17 +101,26 @@ const DsaStep4View = () => {
         [name]: file,
       };
       setFiles(newFiles);
+
+      if (!file) {
+        // File was cleared
+        setFormState((oldFormState) => ({
+          ...oldFormState,
+          values: {
+            ...oldFormState.values,
+            [name]: '', // Empty the form value with same name
+          },
+        }));
+      }
     },
-    [files]
+    [files, setFormState]
   );
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
-      // console.log('onSubmit() - formState.values:', formState.values);
+      // console.log('onSubmit() - formState.values:', values);
       setLoading(true); // Don't allow to change data anymore
-
-      const values = formState.values as FormStateValues;
 
       // Upload new file
       let image_gst_proof = values.image_gst_proof;
@@ -139,18 +147,13 @@ const DsaStep4View = () => {
       // Create/Update DSA Application record
       let apiResult;
       const payload: Record<string, any> = {
-        // gst_number: values.gst_number, // Empty string '' is not allowed by API
+        gst_number: values.gst_number,
+        image_gst_proof,
         // Required values
         email,
         progress: String(DSA_PROGRESS),
       };
-      if (values.gst_number) {
-        payload.gst_number = values.gst_number;
-      }
-      if (image_gst_proof) {
-        payload.image_gst_proof = image_gst_proof;
-      }
-      console.log('payload:', payload);
+      // console.log('payload:', payload);
 
       if (!dsaId) {
         // Create new record
@@ -168,7 +171,7 @@ const DsaStep4View = () => {
 
       history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [formState.values, files, history, dsaId, email]
+    [values, files, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -176,8 +179,6 @@ const DsaStep4View = () => {
   const inputDisabled = loading || Boolean(error);
 
   if (loading) return <LinearProgress />;
-
-  const values = (formState.values as FormStateValues);
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -191,7 +192,7 @@ const DsaStep4View = () => {
                 label="GST Number"
                 name="gst_number"
                 value={values.gst_number}
-                error={fieldHasError('gst_number')}
+                error={fieldHasError('gst_number') && values.gst_number !== ''} // Not-required
                 helperText={fieldGetError('gst_number') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
@@ -216,7 +217,10 @@ const DsaStep4View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={inputDisabled || (!formState.isValid && values.gst_number !== '') || !validFiles()}>
+                <AppButton
+                  type="submit"
+                  disabled={inputDisabled || (!formState.isValid && values.gst_number !== '') || !validFiles()}
+                >
                   Confirm and Continue
                 </AppButton>
               </Grid>
