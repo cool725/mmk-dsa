@@ -18,7 +18,8 @@ export async function userExistByAxios({ email, phone }: EmailOrPhone) {
   }
   try {
     const res = await api.axios.post(ENDPOINT, payload);
-    return Boolean(res?.data?.exist);
+    console.warn(METHOD, ' - res:', res)
+    return Boolean(res?.data?.data?.exist);
   } catch (error) {
     console.error(METHOD, error);
   }

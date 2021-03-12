@@ -87,30 +87,28 @@ const SignupView = () => {
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useEffect(() => {
-    // If the Phone was not verified, redirect to "Phone Verification" view
-    if (!state.verifiedPhone) {
-      history.push('/auth/signup/verify-phone');
-      return;
-    }
-  }, [history, state.verifiedPhone]);
-
-  useEffect(() => {
-    // If the user with Phone/Email already exist, redirect to "Login" view
-    let componentMounted = true; 
+    let componentMounted = true;
     async function fetchData() {
+      // If the Phone was not verified, redirect to "Phone Verification" view
+      if (!state.verifiedPhone) {
+        history.push('/auth/signup/verify-phone');
+        return;
+      }
+
+      // If the user with Phone/Email already exist, redirect to "Login" view
       const apiData = await api.auth.userExist({ phone: state.verifiedPhone });
-      if (!componentMounted) return; 
+      if (!componentMounted) return;
       if (apiData) {
         // The User exist, redirect to "Login" view
         history.push('/auth/login/user-exist');
-        return; 
+        return;
       }
       setLoading(false);
     }
     fetchData(); // Call API asynchronously
 
     return () => {
-      componentMounted = false; 
+      componentMounted = false;
     };
   }, [history, state.verifiedPhone]);
 
