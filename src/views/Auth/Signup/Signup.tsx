@@ -8,6 +8,7 @@ import {
   Checkbox,
   FormControlLabel,
   InputAdornment,
+  LinearProgress,
 } from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
@@ -81,14 +82,40 @@ const SignupView = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [agree, setAgree] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useEffect(() => {
     // If the Phone was not verified, redirect to "Phone Verification" view
     if (!state.verifiedPhone) {
-      return history.push('/auth/signup/verify-phone');
+      history.push('/auth/signup/verify-phone');
+      return;
     }
+  }, [history, state.verifiedPhone]);
 
+  useEffect(() => {
+    // If the user with Phone/Email already exist, redirect to "Login" view
+    let componentMounted = true; 
+    async function fetchData() {
+      const apiData = await api.auth.userExist({ phone: state.verifiedPhone });
+      if (!componentMounted) return; 
+      if (apiData) {
+        // The User exist, redirect to "Login" view
+        history.push('/auth/login/user-exist');
+        return; 
+      }
+      setLoading(false);
+    }
+    fetchData(); // Call API asynchronously
+
+    return () => {
+      componentMounted = false; 
+    };
+  }, [history, state.verifiedPhone]);
+
+  useEffect(() => {
+    // Update Validation Schema when Show/Hide password changed
     let newSchema;
     if (showPassword) {
       newSchema = VALIDATE_FORM_SIGNUP; // Validation without .confirmPassword
@@ -96,7 +123,7 @@ const SignupView = () => {
       newSchema = { ...VALIDATE_FORM_SIGNUP, ...VALIDATE_EXTENSION }; // Full validation
     }
     setValidationSchema(newSchema);
-  }, [showPassword, history, state.verifiedPhone]);
+  }, [showPassword]);
 
   const handleShowPasswordClick = useCallback(() => {
     setShowPassword((oldValue) => !oldValue);
@@ -109,10 +136,9 @@ const SignupView = () => {
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
-      // console.log('onSubmit() - formState.values:', formState.values);
+      // console.log('onSubmit() - formState.values:', values);
 
-      const apiResult = await api.auth.signup(formState.values as FormStateValues);
-      // console.warn('api.auth.signup() - result:', result);
+      const apiResult = await api.auth.signup(values);
 
       if (!apiResult) {
         setError('Can not create user for given email, if you already have account please sign in');
@@ -122,10 +148,12 @@ const SignupView = () => {
       dispatch({ type: 'SIGN_UP' });
       return history.push('/');
     },
-    [dispatch, formState.values, history]
+    [dispatch, values, history]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+
+  if (loading) return <LinearProgress />;
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -151,9 +179,9 @@ const SignupView = () => {
                   required
                   label="Phone"
                   name="phone"
-                  value={(formState.values as FormStateValues).phone}
+                  value={values.phone}
                   error={fieldHasError('phone')}
-                  helperText={fieldGetError('phone') || ' ' /*|| 'Enter mobile phone number'*/}
+                  helperText={fieldGetError('phone') || ' '}
                   onChange={onFieldChange}
                   {...SHARED_CONTROL_PROPS}
                 />
@@ -163,9 +191,9 @@ const SignupView = () => {
                 required
                 label="First Name"
                 name="firstName"
-                value={(formState.values as FormStateValues).firstName}
+                value={values.firstName}
                 error={fieldHasError('firstName')}
-                helperText={fieldGetError('firstName') || ' ' /*|| 'Enter your first name'*/}
+                helperText={fieldGetError('firstName') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
@@ -173,9 +201,9 @@ const SignupView = () => {
                 required
                 label="Last Name"
                 name="lastName"
-                value={(formState.values as FormStateValues).lastName}
+                value={values.lastName}
                 error={fieldHasError('lastName')}
-                helperText={fieldGetError('lastName') || ' ' /*|| 'Enter your last name'*/}
+                helperText={fieldGetError('lastName') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
@@ -183,9 +211,9 @@ const SignupView = () => {
                 required
                 label="Email"
                 name="email"
-                value={(formState.values as FormStateValues).email}
+                value={values.email}
                 error={fieldHasError('email')}
-                helperText={fieldGetError('email') || ' ' /*|| 'Enter email address'*/}
+                helperText={fieldGetError('email') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
@@ -194,9 +222,9 @@ const SignupView = () => {
                 type={showPassword ? 'text' : 'password'}
                 label="Password"
                 name="password"
-                value={(formState.values as FormStateValues).password}
+                value={values.password}
                 error={fieldHasError('password')}
-                helperText={fieldGetError('password') || ' ' /*|| 'Enter password'*/}
+                helperText={fieldGetError('password') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
                 InputProps={{
@@ -219,9 +247,9 @@ const SignupView = () => {
                   type="password"
                   label="Confirm Password"
                   name="confirmPassword"
-                  value={(formState.values as FormStateValues).confirmPassword}
+                  value={values.confirmPassword}
                   error={fieldHasError('confirmPassword')}
-                  helperText={fieldGetError('confirmPassword') || ' ' /*|| 'Re-enter password'*/}
+                  helperText={fieldGetError('confirmPassword') || ' '}
                   onChange={onFieldChange}
                   {...SHARED_CONTROL_PROPS}
                 />

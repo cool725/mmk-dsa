@@ -8,7 +8,7 @@ import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../../uti
 import { useTimeout } from '../../../utils/hooks';
 import { useFormStyles } from '../../styles';
 
-const WAITING_TIMEOUT = 10 * 1000; // 10 seconds
+const WAITING_TIMEOUT = 30 * 1000; // 30 seconds
 
 const VALIDATE_FORM_PHONE_WITH_OTP = {
   phone: VALIDATION_PHONE,
@@ -46,6 +46,7 @@ const VerifyPhoneView = () => {
   const [error, setError] = useState<string>();
   const otpInputRef = useRef<HTMLDivElement>();
   const history = useHistory();
+  const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useTimeout(
     () => {
@@ -70,7 +71,7 @@ const VerifyPhoneView = () => {
     setWaiting(true); // Set the .waiting flag, it starts useTimeout()
     resetOtp(); // Clean up "OTP Code" field from previously entered code
 
-    const phone = (formState.values as FormStateValues).phone;
+    const phone = values.phone;
     const apiResult = await api.otp.request(phone);
     if (!apiResult) {
       setWaiting(false);
@@ -82,15 +83,15 @@ const VerifyPhoneView = () => {
     setTimeout(() => {
       otpInputRef.current?.focus(); // Set focus to "OTP Code" field
     }, 250);
-  }, [formState, resetOtp]);
+  }, [values.phone, resetOtp]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', formState.values);
 
-      const phone = (formState.values as FormStateValues).phone;
-      const otp = (formState.values as FormStateValues).otp;
+      const phone = values.phone;
+      const otp = values.otp;
       const apiResult = await api.otp.verify({ phone, otp });
       if (!apiResult) {
         setWaiting(false);
@@ -101,7 +102,7 @@ const VerifyPhoneView = () => {
       dispatch({ type: 'SET_VERIFIED_PHONE', payload: phone });
       history.push('/auth/signup/data'); // Open next "Signup" view
     },
-    [dispatch, history, formState.values]
+    [dispatch, history, values]
   );
 
   const handleCloseError = useCallback(() => {
@@ -109,9 +110,10 @@ const VerifyPhoneView = () => {
     resetOtp(); // Clean up "OTP Code" field from previously entered code
   }, [resetOtp]);
 
-  const fieldPhoneInvalid = (formState.values as FormStateValues).phone === '' || fieldHasError('phone');
+  const fieldPhoneInvalid = values.phone === '' || fieldHasError('phone');
   const buttonCodeDisabled = waiting || fieldPhoneInvalid;
-  const fieldCodeDisabled = !otpRequested; // || fieldPhoneInvalid;
+  const fieldCodeDisabled = false; // !otpRequested; 
+  const buttonConfirmDisabled = !formState.isValid; // || !otpRequested
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -130,7 +132,7 @@ const VerifyPhoneView = () => {
                 required
                 label="Mobile Number"
                 name="phone"
-                value={(formState.values as FormStateValues).phone}
+                value={values.phone}
                 error={fieldHasError('phone')}
                 helperText={fieldGetError('phone') || ' '}
                 onChange={onFieldChange}
@@ -147,14 +149,14 @@ const VerifyPhoneView = () => {
                 disabled={fieldCodeDisabled}
                 label="Code form SMS"
                 name="otp"
-                value={(formState.values as FormStateValues).otp}
+                value={values.otp}
                 error={fieldHasError('otp')}
                 helperText={fieldGetError('otp') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={!formState.isValid || !otpRequested}>
+                <AppButton type="submit" disabled={buttonConfirmDisabled}>
                   Confirm and Continue
                 </AppButton>
               </Grid>
