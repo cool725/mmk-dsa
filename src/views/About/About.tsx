@@ -32,7 +32,7 @@ url: ${api?.url}
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
         <Card>
-          <CardHeader title="DSA Web App" subheader="Version 0.7" />
+          <CardHeader title="DSA Web App" subheader="Version 0.8" />
           <CardContent>
             Public web application for DSA (Direct Selling Agent). This is part of MMK LAP product (Loan Against
             Property).

@@ -1,7 +1,7 @@
 {
   "name": "dsa-web-app",
   "description": "Web application for DSA (Direct Selling Agent) inside MMK LAP product (Loan Against Property)",
-  "version": "0.7.21",
+  "version": "0.8.25",
   "keywords": [
     "lap",
     "dsa",
