@@ -1,4 +1,6 @@
-FROM node:12.16.2-alpine as runner
+FROM node:14.15.5-alpine as runner
+
+RUN npm install -g npm@7
 
 RUN mkdir -p /home/node/src/mmk-dsa/
 RUN mkdir -p /home/node/src/mmk-dsa/node_modules
