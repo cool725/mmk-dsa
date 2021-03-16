@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * Renders "File Input" control with "Preview Image"
  */
 const UploadInput: React.FC<any> = ({
+  accept = "image/*",
   className,
   alt,
   id,
@@ -62,6 +63,7 @@ const UploadInput: React.FC<any> = ({
       <input
         hidden
         type="file"
+        accept
         ref={inputFileRef}
         id={id || name}
         name={name}
