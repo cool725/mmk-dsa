@@ -109,5 +109,4 @@ describe('AppLink component', () => {
     expect(link).toBeDefined();
     expect(link).toHaveClass(className);
   });
-
 });

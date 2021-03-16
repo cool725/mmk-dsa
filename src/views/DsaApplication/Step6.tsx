@@ -121,7 +121,7 @@ const DsaStep6View = () => {
 
       const payload: Record<string, any> = {
         ...formState.values,
-        is_agree_with_terms: true, // "I agree with the..." checkbox was set 
+        is_agree_with_terms: true, // "I agree with the..." checkbox was set
         // Required values
         email,
         progress: 'complete',

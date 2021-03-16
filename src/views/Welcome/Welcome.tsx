@@ -10,7 +10,7 @@ import { useAppStore } from '../../store';
  */
 const WelcomeView = () => {
   const history = useHistory();
-  const [state,] = useAppStore();
+  const [state] = useAppStore();
   const [loading, setLoading] = useState(true);
 
   const [dsaId, setDsaId] = useState<string>();

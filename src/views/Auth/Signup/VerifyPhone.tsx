@@ -112,7 +112,7 @@ const VerifyPhoneView = () => {
 
   const fieldPhoneInvalid = values.phone === '' || fieldHasError('phone');
   const buttonCodeDisabled = waiting || fieldPhoneInvalid;
-  const fieldCodeDisabled = false; // !otpRequested; 
+  const fieldCodeDisabled = false; // !otpRequested;
   const buttonConfirmDisabled = !formState.isValid; // || !otpRequested
 
   return (

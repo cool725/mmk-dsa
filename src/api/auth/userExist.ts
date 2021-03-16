@@ -4,8 +4,8 @@ const ENDPOINT = '/custom/user/exist';
 const METHOD = 'userExist()';
 
 interface EmailOrPhone {
-  email?: string, 
-  phone?: string
+  email?: string;
+  phone?: string;
 }
 
 /**
@@ -14,11 +14,11 @@ interface EmailOrPhone {
 export async function userExistByAxios({ email, phone }: EmailOrPhone) {
   const payload = {
     email,
-    phone
-  }
+    phone,
+  };
   try {
     const res = await api.axios.post(ENDPOINT, payload);
-    console.warn(METHOD, ' - res:', res)
+    console.warn(METHOD, ' - res:', res);
     return Boolean(res?.data?.data?.exist);
   } catch (error) {
     console.error(METHOD, error);

@@ -13,12 +13,12 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
     case 'SET_VERIFIED_PHONE':
       return {
         ...state,
-        verifiedPhone: action?.phone || action?.payload.phone || action?.payload,
+        verifiedPhone: action?.phone || action?.payload?.phone || action?.payload,
       };
     case 'SET_VERIFIED_EMAIL':
       return {
         ...state,
-        verifiedEmail: action?.email || action?.payload.email || action?.payload,
+        verifiedEmail: action?.email || action?.payload?.email || action?.payload,
       };
     case 'SET_CURRENT_USER':
       return {

@@ -14,7 +14,7 @@ import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { AppButton, AppIconButton, AppLink, AppAlert } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useFormStyles } from '../../styles';
 
 const VALIDATE_FORM_SIGNUP = {
@@ -62,8 +62,9 @@ interface FormStateValues {
  * url: /auth/signup/*
  */
 const SignupView = () => {
-  const history = useHistory();
   const classes = useFormStyles();
+  const history = useHistory();
+  const location = useLocation();
   const [state, dispatch] = useAppStore();
   const [validationSchema, setValidationSchema] = useState<any>({
     ...VALIDATE_FORM_SIGNUP,
@@ -95,14 +96,21 @@ const SignupView = () => {
         return;
       }
 
-      // If the user with Phone/Email already exist, redirect to "Login" view
+      // Check does the User with Phone/Email already exist
       const apiData = await api.auth.userExist({ phone: state.verifiedPhone });
       if (!componentMounted) return;
       if (apiData) {
-        // The User exist, redirect to "Login" view
-        history.push('/auth/login/user-exist');
+        // The User exist
+        if (location.pathname === '/auth/signup/data') {
+          // Redirect to "Login" view from '/auth/signup/data' route
+          history.push('/auth/login/user-exist');
+        } else {
+          // Reset .verifiedPhone and allow to signup again on the next render
+          dispatch({ type: 'SET_VERIFIED_PHONE', payload: undefined });
+        }
         return;
       }
+
       setLoading(false);
     }
     fetchData(); // Call API asynchronously
@@ -110,7 +118,7 @@ const SignupView = () => {
     return () => {
       componentMounted = false;
     };
-  }, [history, state.verifiedPhone]);
+  }, [history, location, dispatch, state.verifiedPhone]);
 
   useEffect(() => {
     // Update Validation Schema when Show/Hide password changed
