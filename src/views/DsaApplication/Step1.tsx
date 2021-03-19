@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_SECONDARY_PHONE } from '../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 
@@ -31,10 +31,20 @@ const VALIDATE_FORM = {
     type: 'string',
     presence: { allowEmpty: false },
   },
-  secondary_phone: VALIDATION_SECONDARY_PHONE,
+  secondary_phone: {
+    type: 'string',
+    format: {
+      pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
+      message: 'should contain numbers',
+    },
+    length: {
+      maximum: 10,
+      message: 'must be exactly 10 digits',
+    },
+  },
 };
 
-const VALIDATE_EXTENSION = {
+const VALIDATE_AS_CORPORATE = {
   entity_name: {
     type: 'string',
     presence: { allowEmpty: false },
@@ -43,6 +53,10 @@ const VALIDATE_EXTENSION = {
     type: 'string',
     presence: { allowEmpty: false },
   },
+};
+
+const VALIDATE_NON_EMPTY_SECONDARY_PHONE = {
+  secondary_phone: VALIDATION_PHONE,
 };
 
 interface FormStateValues {
@@ -83,6 +97,7 @@ const DsaStep1View = () => {
 
   const phone = state.verifiedPhone || state.currentUser?.phone || '';
   const email = state.verifiedEmail || state.currentUser?.email || '';
+  const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
@@ -124,13 +139,19 @@ const DsaStep1View = () => {
 
   useEffect(() => {
     let newSchema;
-    if ((formState.values as FormStateValues).entity_type === 'individual') {
+
+    if (values.entity_type === 'individual') {
       newSchema = VALIDATE_FORM;
     } else {
-      newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
+      newSchema = { ...VALIDATE_FORM, ...VALIDATE_AS_CORPORATE };
     }
+
+    if (values.secondary_phone) {
+      newSchema = { ...newSchema, ...VALIDATE_NON_EMPTY_SECONDARY_PHONE };
+    }
+
     setValidationSchema(newSchema);
-  }, [formState.values]);
+  }, [values]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -138,7 +159,6 @@ const DsaStep1View = () => {
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
 
-      const values = formState.values as FormStateValues;
       const payload: Record<string, any> = {
         mobile_number: phone,
         mobile_number_secondary: values.secondary_phone,
@@ -176,7 +196,7 @@ const DsaStep1View = () => {
 
       history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [formState.values, history, dsaId, phone, email]
+    [values, history, dsaId, phone, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -199,7 +219,7 @@ const DsaStep1View = () => {
                 select
                 label="Type of Entity"
                 name="entity_type"
-                value={(formState.values as FormStateValues).entity_type}
+                value={values.entity_type}
                 error={fieldHasError('entity_type')}
                 helperText={fieldGetError('entity_type') || ' '}
                 onChange={onFieldChange}
@@ -209,18 +229,14 @@ const DsaStep1View = () => {
                 <MenuItem value="company">Company</MenuItem>
                 <MenuItem value="partnership">Partnership</MenuItem>
               </TextField>
-              {(formState.values as FormStateValues).entity_type !== 'individual' && (
+              {values.entity_type !== 'individual' && (
                 <>
                   <TextField
                     required
                     disabled={inputDisabled}
-                    label={
-                      (formState.values as FormStateValues).entity_type === 'partnership'
-                        ? 'Partnership Name'
-                        : 'Company Name'
-                    }
+                    label={values.entity_type === 'partnership' ? 'Partnership Name' : 'Company Name'}
                     name="entity_name"
-                    value={(formState.values as FormStateValues).entity_name}
+                    value={values.entity_name}
                     error={fieldHasError('entity_name')}
                     helperText={fieldGetError('entity_name') || ' '}
                     onChange={onFieldChange}
@@ -241,7 +257,7 @@ const DsaStep1View = () => {
                 disabled={inputDisabled}
                 label="First Name"
                 name="first_name"
-                value={(formState.values as FormStateValues).first_name}
+                value={values.first_name}
                 error={fieldHasError('first_name')}
                 helperText={fieldGetError('first_name') || ' '}
                 onChange={onFieldChange}
@@ -252,20 +268,20 @@ const DsaStep1View = () => {
                 disabled={inputDisabled}
                 label="Last Name"
                 name="last_name"
-                value={(formState.values as FormStateValues).last_name}
+                value={values.last_name}
                 error={fieldHasError('last_name')}
                 helperText={fieldGetError('last_name') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
 
-              {(formState.values as FormStateValues).entity_type !== 'individual' && (
+              {values.entity_type !== 'individual' && (
                 <TextField
                   required
                   disabled={inputDisabled}
                   label="Designation"
                   name="designation"
-                  value={(formState.values as FormStateValues).designation}
+                  value={values.designation}
                   error={fieldHasError('designation')}
                   helperText={fieldGetError('designation') || ' '}
                   onChange={onFieldChange}
@@ -295,7 +311,7 @@ const DsaStep1View = () => {
                 disabled={inputDisabled}
                 label="Secondary Phone"
                 name="secondary_phone"
-                value={(formState.values as FormStateValues).secondary_phone}
+                value={values.secondary_phone}
                 error={fieldHasError('secondary_phone')}
                 helperText={fieldGetError('secondary_phone') || ' '}
                 onChange={onFieldChange}

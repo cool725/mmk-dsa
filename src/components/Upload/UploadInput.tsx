@@ -1,8 +1,9 @@
 import { FormEvent, useCallback, useRef, useState } from 'react';
+import clsx from 'clsx';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
-import { AppIcon, AppButton } from '../';
-import clsx from 'clsx';
+import { api } from '../../api';
+import { AppIcon, AppButton, AppAlert } from '../';
 
 const useStyles = makeStyles((theme: Theme) => ({
   label: {
@@ -35,11 +36,22 @@ const UploadInput: React.FC<any> = ({
   const classes = useStyles();
   const [url, setUrl] = useState(propUrl);
   const inputFileRef = useRef<HTMLInputElement>();
+  const [error, setError] = useState<string>();
 
   const handleChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
+      setError(undefined); // reset any previous error
+
       const newFile = event?.currentTarget?.files?.[0];
       if (newFile) {
+        // Check maximum file size
+        if (Number(newFile?.size) > api.file.FILE_SIZE_MAX) {
+          console.warn('UploadInput() - Selected file is too big! The size is', newFile?.size, 'bytes');
+          setError('Selected file is too big! Please use a smaller copy.');
+          return;
+        }
+
+        // File is OK, create the object for preview
         const newUrl = URL.createObjectURL(newFile);
         setUrl(newUrl);
       } else {
@@ -57,6 +69,8 @@ const UploadInput: React.FC<any> = ({
   const handleButtonClick = useCallback(() => {
     inputFileRef?.current?.click();
   }, [inputFileRef]);
+
+  const handleCloseError = useCallback(() => setError(undefined), []);
 
   return (
     <>
@@ -77,6 +91,11 @@ const UploadInput: React.FC<any> = ({
         {buttonTitle ? <AppButton onClick={handleButtonClick}>{buttonTitle}</AppButton> : null}
         {children}
       </label>
+      {error ? (
+        <AppAlert severity="error" onClose={handleCloseError}>
+          {error}
+        </AppAlert>
+      ) : null}
     </>
   );
 };

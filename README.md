@@ -8,6 +8,7 @@ This is part of **[MMK LAP](https://mymoneykarma.atlassian.net/wiki/spaces/LAP/)
 We use `.env` variables and values in `localStore` to configure the Web App
 
 - `env.REACT_APP_API` - base URL of API/Server  
+- `env.REACT_APP_FILE_SIZE_MAX` - Maximum size in bytes to limit filed for uploading (10485760 means 10MB)
 - `localStore.api` - base URL of API/Server, overrides `env.REACT_APP_API` value
 
 ## Technologies

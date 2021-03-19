@@ -72,6 +72,7 @@ const DsaStep3View = () => {
   const [dsaId, setDsaId] = useState<string>();
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
+  const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
@@ -114,21 +115,19 @@ const DsaStep3View = () => {
 
   useEffect(() => {
     let newSchema;
-    if ((formState.values as FormStateValues).entity_type !== 'individual') {
+    if (values.entity_type !== 'individual') {
       newSchema = VALIDATE_FORM;
     } else {
       newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
     }
     setValidationSchema(newSchema);
-  }, [formState.values]);
+  }, [values]);
 
   function validFiles(): Boolean {
     const required1 = true;
-    const required2 = (formState.values as FormStateValues).entity_type === 'individual';
-    const file1 = Boolean(!required1 || files?.image_pan_card || (formState.values as FormStateValues).image_pan_card);
-    const file2 = Boolean(
-      !required2 || files?.image_id_document || (formState.values as FormStateValues).image_id_document
-    );
+    const required2 = values.entity_type === 'individual';
+    const file1 = Boolean(!required1 || files?.image_pan_card || values.image_pan_card);
+    const file2 = Boolean(!required2 || files?.image_id_document || values.image_id_document);
     return file1 && file2;
   }
 
@@ -150,8 +149,6 @@ const DsaStep3View = () => {
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
-
-      const values = formState.values as FormStateValues;
 
       // Upload image_pan_card
       let image_pan_card = values.image_pan_card;
@@ -230,7 +227,7 @@ const DsaStep3View = () => {
 
       history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [formState.values, files, history, dsaId, email]
+    [values, files, history, dsaId, email]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -251,7 +248,7 @@ const DsaStep3View = () => {
                 disabled={inputDisabled}
                 label="PAN Number"
                 name="pan_number"
-                value={(formState.values as FormStateValues).pan_number}
+                value={values.pan_number}
                 error={fieldHasError('pan_number')}
                 helperText={fieldGetError('pan_number') || ' '}
                 onChange={onFieldChange}
@@ -260,12 +257,12 @@ const DsaStep3View = () => {
 
               <UploadInput
                 name="image_pan_card"
-                url={getAssetUrl((formState.values as FormStateValues).image_pan_card)}
+                url={getAssetUrl(values.image_pan_card)}
                 buttonTitle="Upload PAN Card Image"
                 onFileChange={handleFileChange}
               />
 
-              {(formState.values as FormStateValues).entity_type === 'individual' && (
+              {values.entity_type === 'individual' && (
                 <>
                   <br />
                   <br />
@@ -278,7 +275,7 @@ const DsaStep3View = () => {
                     select
                     label="ID Proof (please provide any one)"
                     name="individual_id_proof_type"
-                    value={(formState.values as FormStateValues).individual_id_proof_type}
+                    value={values.individual_id_proof_type}
                     error={fieldHasError('individual_id_proof_type')}
                     helperText={fieldGetError('individual_id_proof_type') || ' '}
                     onChange={onFieldChange}
@@ -291,7 +288,7 @@ const DsaStep3View = () => {
 
                   <UploadInput
                     name="image_id_document"
-                    url={getAssetUrl((formState.values as FormStateValues).image_id_document)}
+                    url={getAssetUrl(values.image_id_document)}
                     buttonTitle="Upload ID Document Image"
                     onFileChange={handleFileChange}
                   />
