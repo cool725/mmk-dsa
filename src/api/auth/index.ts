@@ -7,5 +7,6 @@ import userExist from './userExist';
 
 import recoverPassword from './recoverPassword';
 import recoverPin from './recoverPin';
+import resetPassword from './resetPassword';
 
-export { signup, loginWithEmail, loginWithPhone, logout, refresh, userExist, recoverPassword, recoverPin };
+export { signup, loginWithEmail, loginWithPhone, logout, refresh, userExist, recoverPassword, recoverPin, resetPassword };

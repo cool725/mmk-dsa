@@ -55,7 +55,7 @@ const UploadInput: React.FC<any> = ({
         const newUrl = URL.createObjectURL(newFile);
         setUrl(newUrl);
       } else {
-        setUrl(/*propUrl ||*/ '');
+        setUrl(url || '');
       }
 
       // Notify parent component about file changes
@@ -63,7 +63,7 @@ const UploadInput: React.FC<any> = ({
         onFileChange(event, name, newFile);
       }
     },
-    [/*propUrl,*/ name, onFileChange]
+    [/*propUrl,*/ url, name, onFileChange]
   );
 
   const handleButtonClick = useCallback(() => {
