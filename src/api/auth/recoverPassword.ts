@@ -8,7 +8,7 @@ interface IRecoverPassword {
 
 export async function recoverPasswordByDirectus({ email }: IRecoverPassword) {
   try {
-    const reset_url = `${window.location.host}/auth/recovery/reset-password`;
+    const reset_url = `${window.location.origin}/auth/recovery/reset-password`;
     await api.axios.post(ENDPOINT, { email, reset_url });
     return true;
   } catch (error) {
