@@ -1,7 +1,7 @@
-import { SyntheticEvent } from 'react';
+import { SyntheticEvent, useCallback, useState } from 'react';
 import { Grid, TextField, Card, CardHeader, CardContent } from '@material-ui/core';
 import api from '../../../api';
-import { AppButton } from '../../../components';
+import { AppButton, AppAlert } from '../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../../utils/form';
 import { useFormStyles } from '../../styles';
 
@@ -31,14 +31,20 @@ const LoginEmailView = ({ email = '' }: Props) => {
     validationSchema: VALIDATE_FORM_RECOVERY_PASSWORD,
     initialValues: { email } as FormStateValues,
   });
+  const [message, setMessage] = useState<string>();
+  const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   const handleFormSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     console.log('onSubmit() - formState.values:', formState.values);
 
-    await api.auth.recoverPassword(formState.values as FormStateValues);
-    //TODO: Show message with instructions for the user
+    await api.auth.recoverPassword(values);
+
+    //Show message with instructions for the user
+    setMessage('Email with instructions has been sent to your address');
   };
+
+  const handleCloseError = useCallback(() => setMessage(undefined), []);
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -51,12 +57,19 @@ const LoginEmailView = ({ email = '' }: Props) => {
                 required
                 label="Email"
                 name="email"
-                value={(formState.values as FormStateValues).email}
+                value={values.email}
                 error={fieldHasError('email')}
                 helperText={fieldGetError('email') || ' ' /*|| 'Enter email address'*/}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
+
+              {message ? (
+                <AppAlert severity="success" onClose={handleCloseError}>
+                  {message}
+                </AppAlert>
+              ) : null}
+
               <Grid container justify="center" alignItems="center">
                 <AppButton type="submit" disabled={!formState.isValid}>
                   Send Password Recovery Email
