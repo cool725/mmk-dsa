@@ -98,9 +98,8 @@ const VerifyPhoneView = () => {
         setError(`Code ${otp} is not valid for ${phone} phone`);
         return;
       }
-
       dispatch({ type: 'SET_VERIFIED_PHONE', payload: phone });
-      history.push('/auth/signup/data'); // Open next "Signup" view
+      history.replace('/auth/signup/verify-email'); // Open next "VerifyEmail" view
     },
     [dispatch, history, values]
   );

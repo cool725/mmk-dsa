@@ -75,7 +75,7 @@ const SignupView = () => {
     initialValues: {
       firstName: '',
       lastName: '',
-      email: '',
+      email: state.verifiedEmail,
       phone: state.verifiedPhone,
       password: '',
       confirmPassword: '',
@@ -96,6 +96,11 @@ const SignupView = () => {
         return;
       }
 
+      if (!state.verifiedEmail) {
+        history.push('/auth/signup/verify-email');
+        return;
+      }
+
       // Check does the User with Phone/Email already exist
       const apiData = await api.auth.userExist({ phone: state.verifiedPhone });
       if (!componentMounted) return;
@@ -107,6 +112,7 @@ const SignupView = () => {
         } else {
           // Reset .verifiedPhone and allow to signup again on the next render
           dispatch({ type: 'SET_VERIFIED_PHONE', payload: undefined });
+          dispatch({ type: 'SET_VERIFIED_EMAIL', payload: undefined });
         }
         return;
       }
@@ -213,16 +219,29 @@ const SignupView = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
-              <TextField
-                required
-                label="Email"
-                name="email"
-                value={values.email}
-                error={fieldHasError('email')}
-                helperText={fieldGetError('email') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
+              {state.verifiedEmail ? (
+                // No editor when Email is already verified
+                <TextField
+                  disabled
+                  label="Email"
+                  name="email"
+                  value={state.verifiedEmail}
+                  helperText = " "
+                  {...SHARED_CONTROL_PROPS}
+                />
+              ) : (
+                // Allow to enter email
+                <TextField
+                  required
+                  label="Email"
+                  name="email"
+                  value={values.email}
+                  error={fieldHasError('email')}
+                  helperText={fieldGetError('email') || ' '}
+                  onChange={onFieldChange}
+                  {...SHARED_CONTROL_PROPS}
+                />
+              )}
               <TextField
                 required
                 type={showPassword ? 'text' : 'password'}

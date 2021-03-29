@@ -11,14 +11,18 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
   console.log('AppReducer() - action:', action);
   switch (action.type || action.action) {
     case 'SET_VERIFIED_PHONE':
+      const verifiedPhone = action?.phone || action?.payload?.phone || action?.payload;
+      localStorageSet('VERIFIED_PHONE', verifiedPhone);
       return {
         ...state,
-        verifiedPhone: action?.phone || action?.payload?.phone || action?.payload,
+        verifiedPhone,
       };
     case 'SET_VERIFIED_EMAIL':
+      const verifiedEmail = action?.email || action?.payload?.email || action?.payload;
+      localStorageSet('VERIFIED_EMAIL', verifiedEmail);
       return {
         ...state,
-        verifiedEmail: action?.email || action?.payload?.email || action?.payload,
+        verifiedEmail,
       };
     case 'SET_CURRENT_USER':
       return {
