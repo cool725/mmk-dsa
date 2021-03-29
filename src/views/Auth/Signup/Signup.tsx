@@ -124,7 +124,7 @@ const SignupView = () => {
     return () => {
       componentMounted = false;
     };
-  }, [history, location, dispatch, state.verifiedPhone]);
+  }, [history, location, dispatch, state]);
 
   useEffect(() => {
     // Update Validation Schema when Show/Hide password changed

@@ -1,4 +1,4 @@
-import { SyntheticEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
@@ -44,7 +44,7 @@ const ConfirmEmailView = () => {
       dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
       history.push('/auth/signup/data'); // Open next "Signup" view
     },
-    [dispatch, history]
+    [dispatch, history, token]
   ))();
 
   const handleCloseError = useCallback(() => setError(undefined), []);

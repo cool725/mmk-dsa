@@ -30,13 +30,13 @@ interface FormStateValues {
 const VerifyEmailView = () => {
   const classes = useFormStyles();
   const [state, dispatch] = useAppStore();
-  const [formState, setFormState, onFieldChange, fieldGetError, fieldHasError] = useAppForm({
+  const [formState, , /*setFormState*/ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: VALIDATE_FORM_EMAIL,
     initialValues: { email: '' } as FormStateValues,
   });
   const [verificationRequested, setverificationRequested] = useState(false);
-  const [error, setError] = useState<string>(undefined);
-  const [success, setSuccess] = useState<string>(undefined);
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const history = useHistory();
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
   const phone = state.verifiedPhone || localStorageGet('VERIFIED_PHONE');
@@ -45,17 +45,7 @@ const VerifyEmailView = () => {
     if (!phone) {
       history.push('auth/signup/verify-phone'); // Open previous "Verify Phone" view
     }
-  }, []);
-
-  const resetEmail = useCallback(() => {
-    setFormState((oldFormState) => ({
-      ...oldFormState,
-      values: {
-        ...oldFormState.values,
-        email: '',
-      },
-    }));
-  }, [setFormState]);
+  }, [phone, history]);
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -63,24 +53,20 @@ const VerifyEmailView = () => {
       const email = values.email;
       const {error, message} = await api.auth.verifyEmail({ email, phone });
       if (error) {
-        setSuccess(undefined);
+        setSuccess("");
         setError(message || `Error ocurred in sending email. Please contact administrator.`);
         return;
       }
-      setError(undefined);
+      setError("");
       setSuccess(message || `Verification email sent. Please check inbox.`);
       setverificationRequested(true);
       dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
     },
-    [dispatch, history, values]
+    [dispatch, values, phone]
   );
 
-  const handleCloseSuccess = useCallback(() => setSuccess(undefined), []);
-
-  const handleCloseError = useCallback(() => {
-    setError(undefined);
-  }, [resetEmail]);
-
+  const handleCloseSuccess = useCallback(() => setSuccess(""), []);
+  const handleCloseError = useCallback(() => setError(""), []);
   const fieldEmailInvalid = values.email === '' || fieldHasError('email');
 
   return (
