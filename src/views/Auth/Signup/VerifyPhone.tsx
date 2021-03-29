@@ -122,11 +122,6 @@ const VerifyPhoneView = () => {
           <Card>
             <CardHeader title="Sign Up - Verify Phone" />
             <CardContent>
-              {error ? (
-                <AppAlert severity="error" onClose={handleCloseError}>
-                  {error}
-                </AppAlert>
-              ) : null}
               <TextField
                 // autoFocus // Select "Phone" input by default
                 required
@@ -155,6 +150,11 @@ const VerifyPhoneView = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
+              {error ? (
+                <AppAlert severity="error" onClose={handleCloseError}>
+                  {error}
+                </AppAlert>
+              ) : null}
               <Grid container justify="center" alignItems="center">
                 <AppButton type="submit" disabled={buttonConfirmDisabled}>
                   Confirm and Continue

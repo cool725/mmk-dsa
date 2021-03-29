@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Grid, TextField, Card, CardHeader, CardContent, InputAdornment } from '@material-ui/core';
 import api from '../../../../api';
 import { useAppStore } from '../../../../store';
-import { AppButton, AppLink, AppIconButton } from '../../../../components';
+import { AppButton, AppLink, AppIconButton, AppAlert } from '../../../../components';
 import { useAppForm, SHARED_CONTROL_PROPS, eventPreventDefault } from '../../../../utils/form';
 
 const VALIDATE_FORM_LOGIN_EMAIL = {
@@ -35,6 +35,7 @@ const FormLoginEmail = () => {
     initialValues: { email: '', password: '' } as FormStateValues,
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string>();
   const [, dispatch] = useAppStore();
   const history = useHistory();
 
@@ -47,13 +48,18 @@ const FormLoginEmail = () => {
       event.preventDefault();
 
       const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
-      if (!result) return; // Unsuccessful login  // TODO: Do we need some error message here?
+      if (!result) {
+        setError('Please check email and password. If error persist contact administrator')
+        return;
+      }
 
       dispatch({ type: 'LOG_IN' });
       history.push('/');
     },
     [dispatch, formState.values, history]
   );
+
+  const handleCloseError = useCallback(() => setError(undefined), []);
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -96,6 +102,11 @@ const FormLoginEmail = () => {
               ),
             }}
           />
+          {error ? (
+            <AppAlert severity="error" onClose={handleCloseError}>
+              {error}
+            </AppAlert>
+          ) : null}
           <Grid container justify="center" alignItems="center">
             <AppButton type="submit" disabled={!formState.isValid}>
               Login with Email
