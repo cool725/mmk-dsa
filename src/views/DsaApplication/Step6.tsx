@@ -29,6 +29,10 @@ const VALIDATE_EXTENSION = {
   referrer_name: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   referrer_mobile_number: {
     ...VALIDATION_PHONE,

@@ -30,6 +30,10 @@ const VALIDATE_FORM = {
   city: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   state: {
     type: 'string',

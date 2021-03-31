@@ -88,10 +88,15 @@ const DsaStep4View = () => {
     };
   }, [history, email, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  // Checks whether supporting document is uploaded for the GST number provided
   function validFiles(): Boolean {
-    const required1 = false;
-    const file1 = Boolean(!required1 || files?.image_gst_proof || values.image_gst_proof);
-    return file1;
+    // Checking condition when file is not uploaded and GST number also not provided
+    if(!(files?.image_gst_proof || values.image_gst_proof) && !values.gst_number) return true;
+
+    // Checking condition when file is not uploaded but GST number is provided
+    if (!(files?.image_gst_proof || values.image_gst_proof) && !!values.gst_number) return false;
+
+    return true;
   }
 
   const handleFileChange = useCallback(
@@ -174,7 +179,7 @@ const DsaStep4View = () => {
     [values, files, history, dsaId, email]
   );
 
-  const handleCloseError = useCallback(() => setError(undefined), []);
+  const handleCloseError = useCallback(() => setError(''), []);
 
   const inputDisabled = loading || Boolean(error);
 
@@ -193,7 +198,7 @@ const DsaStep4View = () => {
                 name="gst_number"
                 value={values.gst_number}
                 error={fieldHasError('gst_number') && values.gst_number !== ''} // Not-required
-                helperText={fieldGetError('gst_number') || ' '}
+                helperText={values.gst_number !== '' ? fieldGetError('gst_number') || ' ' : ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />

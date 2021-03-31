@@ -19,6 +19,10 @@ const VALIDATE_FORM = {
       is: 10,
       message: 'must be exactly 10 characters',
     },
+    format: {
+      pattern: '^[A-Za-z0-9]+$', // Note: Allow only alphanumeric characters
+      message: 'should contain only alphanumerics',
+    }
   },
 };
 
@@ -133,11 +137,13 @@ const DsaStep3View = () => {
 
   const handleFileChange = useCallback(
     (event, name, file) => {
-      const newFiles = {
-        ...files,
-        [name]: file,
-      };
-      setFiles(newFiles);
+      if (file) {
+        const newFiles = {
+          ...files,
+          [name]: file,
+        };
+        setFiles(newFiles);
+      }
     },
     [files]
   );

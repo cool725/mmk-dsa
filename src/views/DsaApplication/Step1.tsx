@@ -26,10 +26,18 @@ const VALIDATE_FORM = {
   first_name: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   last_name: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   secondary_phone: {
     type: 'string',
@@ -48,10 +56,18 @@ const VALIDATE_AS_CORPORATE = {
   entity_name: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z0-9 ]+$', // Note: Allow only alphanumerics and space
+      message: 'should contain only alphanumerics',
+    },
   },
   designation: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z0-9 ]+$', // Note: Allow only alphanumerics and space
+      message: 'should contain only alphanumerics',
+    },
   },
 };
 
@@ -255,7 +271,7 @@ const DsaStep1View = () => {
               <TextField
                 required
                 disabled={inputDisabled}
-                label="First Name"
+                label={values.entity_type === 'individual' ? "First Name" : "Entity Contact First Name"}
                 name="first_name"
                 value={values.first_name}
                 error={fieldHasError('first_name')}
@@ -266,7 +282,7 @@ const DsaStep1View = () => {
               <TextField
                 required
                 disabled={inputDisabled}
-                label="Last Name"
+                label={values.entity_type === 'individual' ? "Last Name" : "Entity Contact Last Name"}
                 name="last_name"
                 value={values.last_name}
                 error={fieldHasError('last_name')}

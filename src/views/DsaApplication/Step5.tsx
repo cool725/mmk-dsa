@@ -15,6 +15,10 @@ const VALIDATE_FORM = {
   bank_name: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   bank_branch_name: {
     type: 'string',
@@ -23,10 +27,15 @@ const VALIDATE_FORM = {
   bank_account: {
     type: 'string',
     presence: { allowEmpty: false },
+    numericality: true,
   },
   ifsc_code: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z0-9]+$', // Note: Allow only alphanumeric characters
+      message: 'should contain only alphanumerics',
+    },
   },
 };
 
@@ -117,11 +126,13 @@ const DsaStep5View = () => {
 
   const handleFileChange = useCallback(
     (event, name, file) => {
-      const newFiles = {
-        ...files,
-        [name]: file,
-      };
-      setFiles(newFiles);
+      if (file) {
+        const newFiles = {
+          ...files,
+          [name]: file,
+        };
+        setFiles(newFiles);
+      }
     },
     [files]
   );
