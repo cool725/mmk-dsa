@@ -21,10 +21,18 @@ const VALIDATE_FORM_SIGNUP = {
   firstName: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   lastName: {
     type: 'string',
     presence: { allowEmpty: false },
+    format: {
+      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
   },
   email: {
     email: true,
