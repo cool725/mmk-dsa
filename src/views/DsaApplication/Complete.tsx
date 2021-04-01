@@ -52,11 +52,7 @@ const DsaCompletView = () => {
         <Card>
           <CardHeader title="Thank you!" subheader="Your application has been completed" />
           <CardContent>
-            <Typography variant="body1">You will receive application status updates via SMS.</Typography>
-            <br />
-            <Divider />
-            <br />
-            <Typography variant="body1">Please verify email to receive updates on email as well.</Typography>
+            <Typography variant="body1">You will receive application status updates via SMS and email.</Typography>
             <br />
             <Divider />
             <br />

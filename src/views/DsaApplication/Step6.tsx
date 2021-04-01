@@ -43,6 +43,7 @@ interface FormStateValues {
   was_referred: boolean;
   referrer_name?: string;
   referrer_mobile_number?: string;
+  application_status: string;
 }
 
 /**
@@ -129,6 +130,7 @@ const DsaStep6View = () => {
         // Required values
         email,
         progress: 'complete',
+        application_status: 'pending_review',
       };
 
       // Remove all referral data if was_referred is not set
