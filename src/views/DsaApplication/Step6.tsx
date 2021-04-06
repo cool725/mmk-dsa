@@ -72,6 +72,7 @@ const DsaStep6View = () => {
   const [agree, setAgree] = useState(false);
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
+  const phone = state.verifiedPhone || state.currentUser?.phone || '';
 
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
@@ -153,10 +154,26 @@ const DsaStep6View = () => {
         setError('Can not update data via API. Verify you connection to the Internet and try agin later.');
         return;
       }
+      const { entity_type,
+              individual_first_name,
+              individual_last_name,
+              entity_primary_contact_first_name,
+              entity_primary_contact_last_name
+            } = apiResult.data;
 
+      let applicantName = '';
+
+      if (entity_type === 'individual') {
+        applicantName = `${individual_first_name} ${individual_last_name}`
+      } else {
+        applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`
+      }
+
+      await api.info.submissionNotificationEmail(email, applicantName);
+      await api.info.submissionNotificationSms(phone, applicantName);
       history.push('/dsa/complete'); // Navigate to "Thank You" page
     },
-    [formState.values, history, dsaId, email]
+    [formState.values, history, dsaId, email, phone]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
