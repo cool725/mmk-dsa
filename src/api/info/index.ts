@@ -1,6 +1,6 @@
 import server from './server';
 import directus from './directus';
 import me from './me';
-import { submissionNotificationSms, submissionNotificationEmail } from './notifications';
+import { submissionNotificationSms, submissionNotificationEmail, submissionNotificationEmailToAnalysts } from './notifications';
 
-export { server, directus, me, submissionNotificationSms, submissionNotificationEmail };
+export { server, directus, me, submissionNotificationSms, submissionNotificationEmail, submissionNotificationEmailToAnalysts };
