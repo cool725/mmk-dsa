@@ -81,8 +81,8 @@ const SignupView = () => {
   const [formState, , /* setFormState */ onFieldChange, fieldGetError, fieldHasError] = useAppForm({
     validationSchema: validationSchema, // the state value, so could be changed in time
     initialValues: {
-      firstName: '',
-      lastName: '',
+      firstName: state.userFirstName,
+      lastName: state.userLastName,
       email: state.verifiedEmail,
       phone: state.verifiedPhone,
       password: '',
@@ -111,8 +111,9 @@ const SignupView = () => {
 
       // Check does the User with Phone/Email already exist
       const apiData = await api.auth.userExist({ phone: state.verifiedPhone });
+      const confirmationType = state.confirmationType;
       if (!componentMounted) return;
-      if (apiData) {
+      if (apiData && confirmationType !== 'invite-dsa') {
         // The User exist
         if (location.pathname === '/auth/signup/data') {
           // Redirect to "Login" view from '/auth/signup/data' route
@@ -121,6 +122,10 @@ const SignupView = () => {
           // Reset .verifiedPhone and allow to signup again on the next render
           dispatch({ type: 'SET_VERIFIED_PHONE', payload: undefined });
           dispatch({ type: 'SET_VERIFIED_EMAIL', payload: undefined });
+          dispatch({ type: 'SET_USER_FIRSTNAME', payload: undefined });
+          dispatch({ type: 'SET_USER_LASTNAME', payload: undefined });
+          dispatch({ type: 'SET_USER_LASTNAME', payload: undefined });
+          dispatch({ type: 'SET_CONFIRMATION_TYPE', payload: undefined });
         }
         return;
       }
@@ -158,7 +163,12 @@ const SignupView = () => {
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', values);
 
-      const apiResult = await api.auth.signup(values);
+      let apiResult;
+      if(state.confirmationType !== 'invite-dsa') {
+        apiResult = await api.auth.signup(values);
+      } else {
+        apiResult = await api.auth.activateAgent(values);
+      }
 
       if (!apiResult) {
         setError('Can not create user for given email, if you already have account please sign in');
@@ -206,27 +216,49 @@ const SignupView = () => {
                   {...SHARED_CONTROL_PROPS}
                 />
               )}
-              <TextField
-                // autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
-                required
-                label="First Name"
-                name="firstName"
-                value={values.firstName}
-                error={fieldHasError('firstName')}
-                helperText={fieldGetError('firstName') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
-              <TextField
-                required
-                label="Last Name"
-                name="lastName"
-                value={values.lastName}
-                error={fieldHasError('lastName')}
-                helperText={fieldGetError('lastName') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              />
+              {state.userFirstName ? (
+                <TextField
+                  disabled
+                  label="First Name"
+                  name="firstName"
+                  value={state.userFirstName}
+                  helperText=" "
+                  {...SHARED_CONTROL_PROPS}
+                />
+                ) : (
+                <TextField
+                  // autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
+                  required
+                  label="First Name"
+                  name="firstName"
+                  value={values.firstName}
+                  error={fieldHasError('firstName')}
+                  helperText={fieldGetError('firstName') || ' '}
+                  onChange={onFieldChange}
+                  {...SHARED_CONTROL_PROPS}
+                />
+              )}
+              {state.userLastName ? (
+                <TextField
+                  disabled
+                  label="Last Name"
+                  name="lastName"
+                  value={state.userLastName}
+                  helperText=" "
+                  {...SHARED_CONTROL_PROPS}
+                />
+                ) : (
+                <TextField
+                  required
+                  label="Last Name"
+                  name="lastName"
+                  value={values.lastName}
+                  error={fieldHasError('lastName')}
+                  helperText={fieldGetError('lastName') || ' '}
+                  onChange={onFieldChange}
+                  {...SHARED_CONTROL_PROPS}
+                />
+              )}
               {state.verifiedEmail ? (
                 // No editor when Email is already verified
                 <TextField

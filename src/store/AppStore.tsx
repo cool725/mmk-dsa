@@ -13,6 +13,9 @@ export interface IAppState {
   isAuthenticated: boolean;
   verifiedPhone?: string;
   verifiedEmail?: string;
+  userFirstName?: string;
+  userLastName?: string;
+  confirmationType?: string;
   currentUser?: Partial<IUserInfo> | undefined | null;
 }
 const initialAppState: IAppState = {
@@ -20,6 +23,9 @@ const initialAppState: IAppState = {
   isAuthenticated: false, // Overridden in AppStore by checking auth token
   verifiedPhone: process.env.REACT_APP_MULTIPASS ? '1234567890' : undefined,
   verifiedEmail: process.env.REACT_APP_MULTIPASS ? 'fake@domain.com' : undefined,
+  userFirstName: process.env.REACT_APP_MULTIPASS ? 'Firstname' : undefined,
+  userLastName: process.env.REACT_APP_MULTIPASS ? 'Lastname' : undefined,
+  confirmationType: process.env.REACT_APP_MULTIPASS ? '' : undefined,
 };
 
 /**

@@ -38,10 +38,13 @@ const ConfirmEmailView = () => {
         return;
       }
 
-      const { phone, email } = apiResult;
+      const { firstName, lastName, phone, email, type } = apiResult;
 
       dispatch({ type: 'SET_VERIFIED_PHONE', payload: phone });
       dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
+      dispatch({ type: 'SET_USER_FIRSTNAME', payload: firstName });
+      dispatch({ type: 'SET_USER_LASTNAME', payload: lastName });
+      dispatch({ type: 'SET_CONFIRMATION_TYPE', payload: type });
       history.push('/auth/signup/data'); // Open next "Signup" view
     },
     [dispatch, history, token]

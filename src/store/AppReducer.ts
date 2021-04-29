@@ -24,6 +24,20 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
         ...state,
         verifiedEmail,
       };
+    case 'SET_USER_FIRSTNAME':
+      const userFirstName = action?.firstName || action?.payload?.firstName || action?.payload;
+      localStorageSet('USER_FIRSTNAME', userFirstName);
+      return {
+        ...state,
+        userFirstName,
+      };
+    case 'SET_USER_LASTNAME':
+      const userLastName = action?.lastName || action?.payload?.lastName || action?.payload;
+      localStorageSet('USER_LASTNAME', userLastName);
+      return {
+        ...state,
+        userLastName,
+      };
     case 'SET_CURRENT_USER':
       return {
         ...state,
@@ -49,6 +63,13 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
         darkMode,
       };
     }
+    case 'SET_CONFIRMATION_TYPE':
+      const confirmationType = action?.scope || action?.payload?.scope || action?.payload;
+      localStorageSet('CONFIRMATION_TYPE', confirmationType);
+      return {
+        ...state,
+        confirmationType,
+      };
     default:
       return state;
   }
