@@ -72,17 +72,22 @@ const VerifyPhoneView = () => {
     resetOtp(); // Clean up "OTP Code" field from previously entered code
 
     const phone = values.phone;
-    const apiResult = await api.otp.request(phone);
-    if (!apiResult) {
+
+    try {
+      await api.otp.request(phone);
+      setOtpRequested(true);
+      setTimeout(() => {
+        otpInputRef.current?.focus(); // Set focus to "OTP Code" field
+      }, 250);
+    } catch (error) {
       setWaiting(false);
-      setError(`Cannot send SMS to ${phone}`);
-      return;
+      if(error?.response?.status === 409) {
+        setError(`User with given mobile already exists. Please login.`);
+      } else {
+        setError(`Cannot send SMS to ${phone}`);
+      }
     }
 
-    setOtpRequested(true);
-    setTimeout(() => {
-      otpInputRef.current?.focus(); // Set focus to "OTP Code" field
-    }, 250);
   }, [values.phone, resetOtp]);
 
   const handleFormSubmit = useCallback(

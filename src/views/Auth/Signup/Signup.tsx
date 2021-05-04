@@ -109,11 +109,17 @@ const SignupView = () => {
         return;
       }
 
-      // Check does the User with Phone/Email already exist
-      const apiData = await api.auth.userExist({ phone: state.verifiedPhone });
-      const confirmationType = state.confirmationType;
       if (!componentMounted) return;
-      if (apiData && confirmationType !== 'invite-dsa') {
+
+      const confirmationType = state.confirmationType;
+      let excludeStatus = undefined;
+
+      if (confirmationType === 'invite-dsa') excludeStatus = 'invited';
+
+      // Check does the User with Phone/Email already exist
+      const apiData = await api.auth.userExist({ phone: state.verifiedPhone, excludeStatus });
+
+      if (apiData) {
         // The User exist
         if (location.pathname === '/auth/signup/data') {
           // Redirect to "Login" view from '/auth/signup/data' route

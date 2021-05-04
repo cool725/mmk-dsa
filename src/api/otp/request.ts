@@ -13,8 +13,8 @@ export async function otpRequest(phone: string) {
     }
   } catch (error) {
     console.error(METHOD, error);
+    throw error;
   }
-  return false;
 }
 
 export default otpRequest;
