@@ -22,7 +22,7 @@ export async function dsaReadByDirectus(key: PrimaryKey, query?: Query) {
   try {
     const { data } = await api.directus.items(COLLECTION).read(key, query);
     console.warn(METHOD, '- data:', data);
-    return data;
+    return data[0];
   } catch (error) {
     console.error(METHOD, error);
   }
