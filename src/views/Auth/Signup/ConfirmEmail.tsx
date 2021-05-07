@@ -34,7 +34,7 @@ const ConfirmEmailView = () => {
       const apiResult = await api.auth.confirmEmail({ token });
 
       if (!apiResult) {
-        setError(`Invalid token provided`);
+        setError(`Invalid or expired confirmation link`);
         return;
       }
 

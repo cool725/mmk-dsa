@@ -172,6 +172,7 @@ const DsaStep6View = () => {
       await api.info.submissionNotificationEmail(email, applicantName);
       await api.info.submissionNotificationSms(phone, applicantName);
       await api.info.submissionNotificationEmailToAnalysts(applicantName);
+      await api.info.submissionNotificationEmailToManagers(applicantName);
       history.push('/dsa/complete'); // Navigate to "Thank You" page
     },
     [formState.values, history, dsaId, email, phone]

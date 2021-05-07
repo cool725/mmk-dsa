@@ -10,4 +10,17 @@ import recoverPin from './recoverPin';
 import resetPassword from './resetPassword';
 import { verifyEmail, confirmEmail } from './emailVerification';
 
-export { signup, loginWithEmail, loginWithPhone, logout, refresh, userExist, recoverPassword, recoverPin, resetPassword, verifyEmail, confirmEmail, activateAgent };
+export {
+    signup,
+    loginWithEmail,
+    loginWithPhone,
+    logout,
+    refresh,
+    userExist,
+    recoverPassword,
+    recoverPin,
+    resetPassword,
+    verifyEmail,
+    confirmEmail,
+    activateAgent
+};
