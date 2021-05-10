@@ -131,7 +131,6 @@ const DsaStep6View = () => {
         // Required values
         email,
         progress: 'complete',
-        application_status: 'pending_review',
       };
 
       // Remove all referral data if was_referred is not set
@@ -154,19 +153,20 @@ const DsaStep6View = () => {
         setError('Can not update data via API. Verify you connection to the Internet and try agin later.');
         return;
       }
-      const { entity_type,
-              individual_first_name,
-              individual_last_name,
-              entity_primary_contact_first_name,
-              entity_primary_contact_last_name
-            } = apiResult.data;
+      const {
+        entity_type,
+        individual_first_name,
+        individual_last_name,
+        entity_primary_contact_first_name,
+        entity_primary_contact_last_name,
+      } = apiResult.data;
 
       let applicantName = '';
 
       if (entity_type === 'individual') {
-        applicantName = `${individual_first_name} ${individual_last_name}`
+        applicantName = `${individual_first_name} ${individual_last_name}`;
       } else {
-        applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`
+        applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`;
       }
 
       await api.info.submissionNotificationEmail(email, applicantName);
