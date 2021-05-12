@@ -7,7 +7,7 @@ import { ErrorBoundary, AppIconButton, AppIcon } from '../../components';
 import SideBar from '../../components/SideBar/SideBar';
 import { LinkToPage } from '../../components/SideBar/types';
 
-const TITLE_PUBLIC = 'Hidden Private App';
+const TITLE_PUBLIC = 'MyMoneyKarma DSA';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
