@@ -8,6 +8,8 @@ import {
     submissionNotificationEmailToManagers
 } from './notifications';
 
+import { getPinCodeDetail, getPinCodeList } from './pincode';
+
 export {
     server,
     directus,
@@ -15,5 +17,7 @@ export {
     submissionNotificationSms,
     submissionNotificationEmail,
     submissionNotificationEmailToAnalysts,
-    submissionNotificationEmailToManagers
+    submissionNotificationEmailToManagers,
+    getPinCodeDetail,
+    getPinCodeList,
 };

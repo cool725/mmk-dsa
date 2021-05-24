@@ -1,4 +1,4 @@
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useState, Fragment } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Grid, TextField, Card, CardHeader, CardContent, Divider, MenuItem, LinearProgress } from '@material-ui/core';
 import api from '../../api';
@@ -7,6 +7,8 @@ import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { STATES } from '../../utils/address';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const DSA_PROGRESS = 2;
 
@@ -70,6 +72,8 @@ const DsaStep2View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
+  const [open, setOpen] = useState(false);
+  const [pincodeList, setPincodeList] = useState<string[]>([]);
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
@@ -110,6 +114,12 @@ const DsaStep2View = () => {
     };
   }, [history, email, setFormState]); // Note: Don't put formState as dependency here !!!
 
+  useEffect(() => {
+    if (!open) {
+      setPincodeList([]);
+    }
+  }, [open]);
+
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
@@ -141,6 +151,44 @@ const DsaStep2View = () => {
     },
     [formState.values, history, dsaId, email]
   );
+
+  const onInputChange = async (event: any, searchPin: any) => {
+    if (!searchPin) {
+      setPincodeList([]);
+      return;
+    }
+
+    const response = await api.info.getPinCodeList(searchPin);
+
+    setPincodeList(
+      response
+        .map((data: any) => {
+          return data.pincode;
+        })
+        .splice(0, 5)
+    );
+  };
+
+  const onSelectTag = async (event: any, pincode: string | null) => {
+    if (!pincode) {
+      formState.values = {
+        ...formState.values,
+        pin_code: '',
+        city: '',
+        state: '',
+      };
+      return;
+    }
+
+    const { city, state } = await api.info.getPinCodeDetail(pincode);
+
+    formState.values = {
+      ...formState.values,
+      pin_code: pincode,
+      city: city,
+      state: state,
+    };
+  };
 
   const handleCloseError = useCallback(() => setError(undefined), []);
 
@@ -176,20 +224,45 @@ const DsaStep2View = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
-              <TextField
-                required
-                disabled={inputDisabled}
-                label="PIN code"
-                name="pin_code"
+
+              <Autocomplete
+                style={{ marginBottom: 16 }}
+                open={open}
+                onOpen={() => {
+                  setOpen(true);
+                }}
+                onClose={() => {
+                  setOpen(false);
+                }}
+                getOptionSelected={(option, value) => option === value}
+                getOptionLabel={(option) => option}
+                options={pincodeList}
+                loading={loading}
+                onInputChange={onInputChange}
+                onChange={onSelectTag}
                 value={(formState.values as FormStateValues).pin_code}
-                error={fieldHasError('pin_code')}
-                helperText={fieldGetError('pin_code') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
+                renderInput={(params) => (
+                  <TextField
+                    required
+                    {...params}
+                    {...SHARED_CONTROL_PROPS}
+                    label="PIN Code"
+                    variant="outlined"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <Fragment>
+                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {params.InputProps.endAdornment}
+                        </Fragment>
+                      ),
+                    }}
+                  />
+                )}
               />
+
               <TextField
-                required
-                disabled={inputDisabled}
+                disabled={true}
                 label="City"
                 name="city"
                 value={(formState.values as FormStateValues).city}
@@ -199,21 +272,8 @@ const DsaStep2View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
 
-              {/* <TextField
-                required
-                disabled={inputDisabled}
-                label="State"
-                name="state"
-                value={(formState.values as FormStateValues).state}
-                error={fieldHasError('state')}
-                helperText={fieldGetError('state') || ' '}
-                onChange={onFieldChange}
-                {...SHARED_CONTROL_PROPS}
-              /> */}
-
               <TextField
-                required
-                disabled={inputDisabled}
+                disabled={true}
                 select
                 label="State"
                 name="state"
