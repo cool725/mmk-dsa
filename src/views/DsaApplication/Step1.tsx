@@ -271,7 +271,7 @@ const DsaStep1View = () => {
               <TextField
                 required
                 disabled={inputDisabled}
-                label={values.entity_type === 'individual' ? "First Name" : "Entity Contact First Name"}
+                label={values.entity_type === 'individual' ? 'First Name' : 'Entity Contact First Name'}
                 name="first_name"
                 value={values.first_name}
                 error={fieldHasError('first_name')}
@@ -282,7 +282,7 @@ const DsaStep1View = () => {
               <TextField
                 required
                 disabled={inputDisabled}
-                label={values.entity_type === 'individual' ? "Last Name" : "Entity Contact Last Name"}
+                label={values.entity_type === 'individual' ? 'Last Name' : 'Entity Contact Last Name'}
                 name="last_name"
                 value={values.last_name}
                 error={fieldHasError('last_name')}
@@ -307,7 +307,7 @@ const DsaStep1View = () => {
 
               <TextField
                 disabled
-                label={state.verifiedPhone ? 'Verified Email' : 'Email'}
+                label={state.verifiedEmail ? 'Verified Email' : 'Email'}
                 name="email"
                 value={email}
                 helperText=" "

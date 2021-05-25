@@ -223,7 +223,7 @@ const DsaStep6View = () => {
                   <TextField
                     required
                     disabled={referrerDisabled}
-                    label="Referrers mobile number"
+                    label="Referrer's mobile number"
                     name="referrer_mobile_number"
                     value={(formState.values as FormStateValues).referrer_mobile_number}
                     error={fieldHasError('referrer_mobile_number')}

@@ -9,6 +9,12 @@ export const SHARED_CONTROL_PROPS = {
   fullWidth: true,
 } as const;
 
+export const SHARED_SUMMARY_PROPS = {
+  variant: 'standard',
+  margin: 'dense', // 'dense', 'none'
+  fullWidth: true,
+} as const;
+
 // Shared validation rule for Phone numbers
 export const VALIDATION_PHONE = {
   type: 'string',

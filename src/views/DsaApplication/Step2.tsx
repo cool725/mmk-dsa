@@ -247,6 +247,7 @@ const DsaStep2View = () => {
                     {...params}
                     {...SHARED_CONTROL_PROPS}
                     label="PIN Code"
+                    name="pincode"
                     variant="outlined"
                     InputProps={{
                       ...params.InputProps,
