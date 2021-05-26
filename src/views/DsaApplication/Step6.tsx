@@ -240,13 +240,7 @@ const DsaStep6View = () => {
               <FormControlLabel
                 control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
                 label={
-                  <>
-                    I agree with the{' '}
-                    <AppLink to="/legal/terms" openInNewTab>
-                      terms and conditions
-                    </AppLink>{' '}
-                    and code of conduct and will abide by them. All information provided is true &amp; correct. *
-                  </>
+                  <>I agree with Mymoneykarma DSA terms and condition.</>
                 }
               />
 
