@@ -1,17 +1,21 @@
-pipelines:
-  branches:
-    develop:
-      - step:
-          script: # Modify the commands below to build your repository.
+definitions:
+  services:
+    docker:
+      memory: 2048
+  steps:
+    - step: &Release-step
+        name: Release step
+        deployment: testing
+        script: # Modify the commands below to build your repository.
             - docker version
-            - docker build -t testing-mmk-dsa --build-arg REACT_APP_API=https://lap-testing.mymoneykarma.com --build-arg BUILD_VERSION=${BITBUCKET_COMMIT} .
+            - docker build -t ${ENV}-mmk-dsa --build-arg REACT_APP_API=${LAP_URL} --build-arg BUILD_VERSION=${BITBUCKET_COMMIT} .
 
             - pipe: atlassian/aws-ecr-push-image:1.2.2
               variables:
-                AWS_ACCESS_KEY_ID: $AWS_ECR_TESTING_KEY_ID
-                AWS_SECRET_ACCESS_KEY: $AWS_ECR_TESTING_SECRET_KEY
+                AWS_ACCESS_KEY_ID: $AWS_ECR_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $AWS_ECR_SECRET_KEY
                 AWS_DEFAULT_REGION: $AWS_ECR_REGION
-                IMAGE_NAME: testing-mmk-dsa
+                IMAGE_NAME: ${ENV}-mmk-dsa
                 TAGS: 'latest'
 
             - pipe: atlassian/trigger-pipeline:4.2.1
@@ -20,13 +24,18 @@ pipelines:
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: 'mmk-platform'
                 BRANCH_NAME: 'develop'
-                CUSTOM_PIPELINE_NAME: 'deploy-mmk-web-testing'
+                CUSTOM_PIPELINE_NAME: 'deploy-mmk-web-${ENV}'
 
-          services:
+        services:
             - docker
-          caches:
+        caches:
             - docker
-definitions:
-  services:
-    docker:
-      memory: 2048
+pipelines:
+  branches:
+    master:
+      - step:
+          <<: *Release-step
+          deployment: production
+    develop:
+      - step:
+          <<: *Release-step
