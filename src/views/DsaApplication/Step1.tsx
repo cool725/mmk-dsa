@@ -244,6 +244,7 @@ const DsaStep1View = () => {
                 <MenuItem value="individual">Individual</MenuItem>
                 <MenuItem value="company">Company</MenuItem>
                 <MenuItem value="partnership">Partnership</MenuItem>
+                <MenuItem value="sole_proprietorship">Sole Proprietorship</MenuItem>
               </TextField>
               {values.entity_type !== 'individual' && (
                 <>
