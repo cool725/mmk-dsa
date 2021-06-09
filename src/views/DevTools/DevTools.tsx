@@ -2,8 +2,6 @@ import React, { useCallback } from 'react';
 import { Grid, Card, CardContent, CardHeader, CardActions } from '@material-ui/core';
 import { api } from '../../api';
 import { AppButton } from '../../components';
-import CustomData from './CustomData';
-import CustomFiles from './CustomFiles';
 import Files from './Files';
 import { useAppStore } from '../../store';
 
@@ -52,14 +50,6 @@ url: ${api?.url}
 
       <Grid item xs={12} md={6}>
         <Files />
-      </Grid>
-
-      <Grid item xs={12} md={6}>
-        <CustomData />
-      </Grid>
-
-      <Grid item xs={12} md={6}>
-        <CustomFiles />
       </Grid>
     </Grid>
   );
