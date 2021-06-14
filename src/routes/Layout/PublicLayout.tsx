@@ -51,11 +51,11 @@ const SIDE_BAR_PUBLIC_ITEMS: Array<LinkToPage> = [
     href: '/auth/signup',
     icon: 'signup',
   },
-  {
-    title: 'About',
-    href: '/about',
-    icon: 'info',
-  },
+  // {
+  //   title: 'About',
+  //   href: '/about',
+  //   icon: 'info',
+  // },
 ];
 
 /**
@@ -70,13 +70,13 @@ const PublicLayout: React.FC = ({ children }) => {
   const title = TITLE_PUBLIC;
   document.title = title; // Also Update Tab Title
 
-  const handleSwitchDarkMode = useCallback(() => {
-    dispatch({
-      type: 'SET_DARK_MODE',
-      darkMode: !state.darkMode,
-      payload: !state.darkMode,
-    });
-  }, [state, dispatch]);
+  // const handleSwitchDarkMode = useCallback(() => {
+  //   dispatch({
+  //     type: 'SET_DARK_MODE',
+  //     darkMode: !state.darkMode,
+  //     payload: !state.darkMode,
+  //   });
+  // }, [state, dispatch]);
 
   const handleSideBarOpen = useCallback(() => {
     if (!openSideBar) setOpenSideBar(true);
@@ -104,13 +104,6 @@ const PublicLayout: React.FC = ({ children }) => {
             <Typography className={classes.title} variant="h6">
               {title}
             </Typography>
-
-            <AppIconButton
-              icon={state.darkMode ? 'day' : 'night'}
-              title={state.darkMode ? 'Switch to Light mode' : 'Switch to Dark mode'}
-              color="primary"
-              onClick={handleSwitchDarkMode}
-            />
           </Toolbar>
         </AppBar>
 
@@ -131,7 +124,6 @@ const PublicLayout: React.FC = ({ children }) => {
         <BottomNavigation onChange={handleBottomNavigationChange} showLabels>
           <BottomNavigationAction label="Login" value="/auth/login" icon={<AppIcon icon="login" />} />
           <BottomNavigationAction label="Signup" value="/auth/signup" icon={<AppIcon icon="signup" />} />
-          <BottomNavigationAction label="About" value="/about" icon={<AppIcon icon="info" />} />
         </BottomNavigation>
       </Grid>
     </Grid>

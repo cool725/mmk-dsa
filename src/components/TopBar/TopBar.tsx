@@ -3,7 +3,7 @@ import { Theme, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import AppIconButton from '../AppIconButton';
+import { AppIconButton } from '../../components';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -46,7 +46,6 @@ const TopBar: React.FC<Props> = ({
   ...restOfProps
 }) => {
   const classes = useStyles();
-  // const iconMenu = isAuthenticated ? 'account' : 'menu';
 
   return (
     <AppBar {...restOfProps} className={clsx(classes.root, className)} component="div">
@@ -60,13 +59,6 @@ const TopBar: React.FC<Props> = ({
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-
-        <div className={classes.buttons}>
-          {isAuthenticated && (
-            <AppIconButton icon="notifications" color="inherit" title="User Notifications" onClick={onNotifications} />
-          )}
-          {/* <AppIconButton icon={iconMenu} color="inherit" title="Open Menu" onClick={onMenu} /> */}
-        </div>
       </Toolbar>
     </AppBar>
   );

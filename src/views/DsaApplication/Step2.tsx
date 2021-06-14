@@ -171,23 +171,29 @@ const DsaStep2View = () => {
 
   const onSelectTag = async (event: any, pincode: string | null) => {
     if (!pincode) {
-      formState.values = {
-        ...formState.values,
-        pin_code: '',
-        city: '',
-        state: '',
-      };
+      setFormState((oldFormState) => ({
+        ...oldFormState,
+        values: {
+          ...oldFormState.values,
+          pin_code: '',
+          city: '',
+          state: '',
+        },
+      }));
       return;
     }
 
     const { city, state } = await api.info.getPinCodeDetail(pincode);
 
-    formState.values = {
-      ...formState.values,
-      pin_code: pincode,
-      city: city,
-      state: state,
-    };
+    setFormState((oldFormState) => ({
+      ...oldFormState,
+      values: {
+        ...oldFormState.values,
+        pin_code: pincode ?? '',
+        city,
+        state,
+      },
+    }));
   };
 
   const handleCloseError = useCallback(() => setError(undefined), []);

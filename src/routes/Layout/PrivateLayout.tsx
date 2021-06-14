@@ -7,9 +7,8 @@ import { useAppStore } from '../../store';
 import TopBar from '../../components/TopBar';
 import { ErrorBoundary } from '../../components';
 import SideBar from '../../components/SideBar/SideBar';
-import { LinkToPage } from '../../components/SideBar/types';
 
-const TITLE_PRIVATE = 'DSA Web App';
+const TITLE_PRIVATE = 'MyMoneyKarma DSA';
 
 const MOBILE_SIDEBAR_ANCHOR = 'left'; // 'right';
 const DESKTOP_SIDEBAR_ANCHOR = 'left'; // 'right';
@@ -53,33 +52,33 @@ function updateDocumentTitle(title = '') {
 /**
  * "Link to Page" items in Sidebar
  */
-const SIDE_BAR_PRIVATE_ITEMS: Array<LinkToPage> = [
-  {
-    title: 'Home',
-    href: '/',
-    icon: 'home',
-  },
-  {
-    title: 'DSA Application',
-    href: '/dsa', // It may redirect to latest unfinished step
-    icon: 'edit',
-  },
-  {
-    title: 'Profile',
-    href: '/user',
-    icon: 'account',
-  },
-  {
-    title: 'About',
-    href: '/about',
-    icon: 'info',
-  },
-  {
-    title: 'Dev Tools',
-    href: '/dev',
-    icon: 'settings',
-  },
-];
+// const SIDE_BAR_PRIVATE_ITEMS: Array<LinkToPage> = [
+// {
+//   title: 'Home',
+//   href: '/',
+//   icon: 'home',
+// },
+// {
+//   title: 'DSA Application',
+//   href: '/dsa', // It may redirect to latest unfinished step
+//   icon: 'edit',
+// },
+// {
+//   title: 'Profile',
+//   href: '/user',
+//   icon: 'account',
+// },
+// {
+//   title: 'About',
+//   href: '/about',
+//   icon: 'info',
+// },
+// {
+//   title: 'Dev Tools',
+//   href: '/dev',
+//   icon: 'settings',
+// },
+// ];
 
 /**
  * Renders "Layout" composition
@@ -125,7 +124,7 @@ const Layout: React.FC = ({ children }) => {
           anchor={isDesktop ? DESKTOP_SIDEBAR_ANCHOR : MOBILE_SIDEBAR_ANCHOR}
           open={shouldOpenSideBar}
           variant={isDesktop ? 'persistent' : 'temporary'}
-          items={SIDE_BAR_PRIVATE_ITEMS}
+          items={[]}
           onClose={handleSideBarClose}
         />
       </Grid>

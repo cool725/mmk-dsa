@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardContent,
   Container,
-  Divider,
   TextField,
   MenuItem,
   Accordion,
@@ -131,6 +130,7 @@ const WelcomeView = () => {
                 <MenuItem value="individual">Individual</MenuItem>
                 <MenuItem value="company">Company</MenuItem>
                 <MenuItem value="partnership">Partnership</MenuItem>
+                <MenuItem value="sole_proprietorship">Sole Proprietorship</MenuItem>
               </TextField>
               {formValues.entity_type !== 'individual' && (
                 <>

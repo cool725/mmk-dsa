@@ -2,17 +2,15 @@ import React, { useCallback } from 'react';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import Drawer, { DrawerProps } from '@material-ui/core/Drawer';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import Tooltip from '@material-ui/core/Tooltip';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import api from '../../api';
 import { useAppStore } from '../../store/AppStore';
 import { AppIconButton } from '../../components';
 import UserInfo from '../UserInfo/UserInfo';
 import SideBarNavigation from './SideBarNavigation';
 import { SIDEBAR_WIDTH } from '../../routes/Layout/PrivateLayout';
 import { LinkToPage } from './types';
+import api from '../../api';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -58,14 +56,6 @@ const SideBar: React.FC<Props> = ({ anchor, className, open, variant, items, onC
   const [state, dispatch] = useAppStore();
   const classes = useStyles();
 
-  const handleSwitchDarkMode = useCallback(() => {
-    dispatch({
-      type: 'SET_DARK_MODE',
-      darkMode: !state.darkMode,
-      payload: !state.darkMode,
-    });
-  }, [state, dispatch]);
-
   const handleOnLogout = useCallback(async () => {
     await api.auth.logout();
     dispatch({ type: 'LOG_OUT' });
@@ -92,7 +82,6 @@ const SideBar: React.FC<Props> = ({ anchor, className, open, variant, items, onC
         {state.isAuthenticated /*&& state?.currentUser*/ && (
           <>
             <UserInfo className={classes.profile} user={state.currentUser} showAvatar />
-            <Divider />
           </>
         )}
 
@@ -100,21 +89,11 @@ const SideBar: React.FC<Props> = ({ anchor, className, open, variant, items, onC
         <Divider />
 
         <div className={classes.buttons}>
-          <Tooltip title={state.darkMode ? 'Switch to Light mode' : 'Switch to Dark mode'}>
-            <FormControlLabel
-              label={!state.darkMode ? 'Light mode' : 'Dark mode'}
-              control={
-                <Switch
-                  // color="primary"
-                  checked={state.darkMode}
-                  onChange={handleSwitchDarkMode}
-                />
-              }
-            />
-          </Tooltip>
-
           {state.isAuthenticated && (
-            <AppIconButton icon="logout" title="Logout Current User" onClick={handleOnLogout} />
+            <>
+              <InputLabel children="Logout User" />
+              <AppIconButton icon="logout" title="Logout Current User" onClick={handleOnLogout} />
+            </>
           )}
         </div>
       </div>

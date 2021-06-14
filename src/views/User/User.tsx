@@ -1,7 +1,5 @@
-import { Card, CardActions, CardContent, CardHeader, Grid } from '@material-ui/core';
-import { AppButton } from '../../components';
+import { Card, CardContent, CardHeader, Grid } from '@material-ui/core';
 import UserInfo from '../../components/UserInfo/UserInfo';
-import api from '../../api';
 import { useAppStore } from '../../store';
 
 /**
@@ -9,27 +7,16 @@ import { useAppStore } from '../../store';
  * url: /user
  */
 const UserView = () => {
-  const [state, dispatch] = useAppStore();
+  const [state] = useAppStore();
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
         <Card>
-          <CardHeader title="Current User" />
+          <CardHeader title="User Details" />
           <CardContent>
             <UserInfo showAvatar user={state.currentUser} />
           </CardContent>
-          <CardActions>
-            <AppButton
-              onClick={async () => {
-                const currentUser = await api.info.me();
-                console.log('currentUser:', currentUser);
-                dispatch({ type: 'SET_CURRENT_USER', currentUser });
-              }}
-            >
-              Load User from API
-            </AppButton>
-          </CardActions>
         </Card>
       </Grid>
     </Grid>

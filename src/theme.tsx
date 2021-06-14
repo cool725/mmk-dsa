@@ -13,11 +13,11 @@ import { useAppStore } from './store/AppStore';
  */
 const FRONT_COLORS = {
   primary: {
-    main: '#4527A0',
+    main: '#1669BA',
     contrastText: '#ffffff',
   },
   secondary: {
-    main: '#ff9800',
+    main: '#337AB7',
     contrastText: '#ffffff',
   },
 };
