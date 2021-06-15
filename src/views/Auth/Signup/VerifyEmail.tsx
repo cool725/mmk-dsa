@@ -90,7 +90,7 @@ const VerifyEmailView = () => {
               />
               <Grid container justify="center">
                 <AppButton disabled={fieldEmailInvalid} mb={4} onClick={handleFormSubmit}>
-                  {verificationRequested ? 'Resend Verify Email' : 'Send Verify Email'}
+                  {verificationRequested ? 'Resend Email' : 'Send Verify Email'}
                 </AppButton>
               </Grid>
               {success ? (
