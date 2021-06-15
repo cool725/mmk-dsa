@@ -50,15 +50,11 @@ const TopBar: React.FC<Props> = ({
   return (
     <AppBar {...restOfProps} className={clsx(classes.root, className)} component="div">
       <Toolbar className={classes.toolbar} disableGutters>
-        <AppIconButton
-          icon="logo"
-          // color="primary"
-          onClick={onMenu}
-        />
-
+        <AppIconButton icon="logo" onClick={onMenu} />
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
+        {/* <AppIconButton icon="mmkLogo" /> */}
       </Toolbar>
     </AppBar>
   );

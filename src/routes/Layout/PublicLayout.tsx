@@ -1,11 +1,7 @@
-import { useCallback, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Typography, BottomNavigation, BottomNavigationAction, Grid } from '@material-ui/core/';
-import { useAppStore } from '../../store/AppStore';
-import { ErrorBoundary, AppIconButton, AppIcon } from '../../components';
-import SideBar from '../../components/SideBar/SideBar';
-import { LinkToPage } from '../../components/SideBar/types';
+import { ErrorBoundary, AppIcon, AppIconButton } from '../../components';
 
 const TITLE_PUBLIC = 'MyMoneyKarma DSA';
 
@@ -38,53 +34,14 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * "Link to Page" items in Sidebar
- */
-const SIDE_BAR_PUBLIC_ITEMS: Array<LinkToPage> = [
-  {
-    title: 'Log In',
-    href: '/auth/login',
-    icon: 'login',
-  },
-  {
-    title: 'Sign Up',
-    href: '/auth/signup',
-    icon: 'signup',
-  },
-  // {
-  //   title: 'About',
-  //   href: '/about',
-  //   icon: 'info',
-  // },
-];
-
-/**
  * Renders "Public Layout" composition
  */
 const PublicLayout: React.FC = ({ children }) => {
   const classes = useStyles();
-  const [openSideBar, setOpenSideBar] = useState(false);
-  const [state, dispatch] = useAppStore();
   const history = useHistory();
 
   const title = TITLE_PUBLIC;
   document.title = title; // Also Update Tab Title
-
-  // const handleSwitchDarkMode = useCallback(() => {
-  //   dispatch({
-  //     type: 'SET_DARK_MODE',
-  //     darkMode: !state.darkMode,
-  //     payload: !state.darkMode,
-  //   });
-  // }, [state, dispatch]);
-
-  const handleSideBarOpen = useCallback(() => {
-    if (!openSideBar) setOpenSideBar(true);
-  }, [openSideBar]);
-
-  const handleSideBarClose = useCallback(() => {
-    if (openSideBar) setOpenSideBar(false);
-  }, [openSideBar]);
 
   const handleBottomNavigationChange = (event: React.ChangeEvent<{}>, value: any) => {
     history.push(value);
@@ -95,25 +52,13 @@ const PublicLayout: React.FC = ({ children }) => {
       <Grid item className={classes.header} component="header">
         <AppBar component="div">
           <Toolbar className={classes.toolbar} disableGutters>
-            <AppIconButton
-              icon="logo"
-              // color="primary"
-              onClick={handleSideBarOpen}
-            />
-
+            {/* <AppIconButton icon="logo" /> */}
             <Typography className={classes.title} variant="h6">
               {title}
             </Typography>
+            {/* <AppIconButton icon="mmkLogo" /> */}
           </Toolbar>
         </AppBar>
-
-        <SideBar
-          anchor="left"
-          open={openSideBar}
-          variant="temporary"
-          items={SIDE_BAR_PUBLIC_ITEMS}
-          onClose={handleSideBarClose}
-        />
       </Grid>
 
       <Grid item className={classes.content} component="main">
@@ -123,7 +68,6 @@ const PublicLayout: React.FC = ({ children }) => {
       <Grid item className={classes.footer} component="footer">
         <BottomNavigation onChange={handleBottomNavigationChange} showLabels>
           <BottomNavigationAction label="Login" value="/auth/login" icon={<AppIcon icon="login" />} />
-          <BottomNavigationAction label="Signup" value="/auth/signup" icon={<AppIcon icon="signup" />} />
         </BottomNavigation>
       </Grid>
     </Grid>

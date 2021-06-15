@@ -1,6 +1,7 @@
 import { SvgIcon } from '@material-ui/core';
 // SVG assets
 import { ReactComponent as LogoIcon } from './logo.svg';
+import { ReactComponent as MmkLogoIcon } from '../../mmk_logo.svg';
 // import { ReactComponent as LogoIcon } from '../../../public/img/logo.svg';
 // Material Icons
 import DefaultIcon from '@material-ui/icons/MoreHoriz';
@@ -38,6 +39,11 @@ import ImageIcon from '@material-ui/icons/Image';
  */
 const ICONS: Record<string, React.ComponentType> = {
   default: DefaultIcon,
+  mmkLogo: () => (
+    <SvgIcon>
+      <MmkLogoIcon />
+    </SvgIcon>
+  ),
   logo: () => (
     <SvgIcon>
       <LogoIcon />

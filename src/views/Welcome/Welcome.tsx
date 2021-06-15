@@ -361,34 +361,36 @@ const WelcomeView = () => {
         </Accordion>
 
         {/* Referrer Details Summary */}
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="referrer-details-content"
-            id="referrer-details-header"
-            style={{ marginTop: 16 }}
-          >
-            <Typography>Referrer Details</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Container>
-              <TextField
-                disabled
-                label="Name of referrer"
-                name="referrer_name"
-                value={!formValues.referrer_name ? 'N.A.' : formValues.referrer_name}
-                {...SHARED_SUMMARY_PROPS}
-              />
-              <TextField
-                disabled
-                label="Referrer's mobile number"
-                name="referrer_mobile_number"
-                value={!formValues.referrer_mobile_number ? 'N.A.' : formValues.referrer_mobile_number}
-                {...SHARED_SUMMARY_PROPS}
-              />
-            </Container>
-          </AccordionDetails>
-        </Accordion>
+        {formValues.was_referred && (
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="referrer-details-content"
+              id="referrer-details-header"
+              style={{ marginTop: 16 }}
+            >
+              <Typography>Referrer Details</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Container>
+                <TextField
+                  disabled
+                  label="Name of referrer"
+                  name="referrer_name"
+                  value={formValues.referrer_name}
+                  {...SHARED_SUMMARY_PROPS}
+                />
+                <TextField
+                  disabled
+                  label="Referrer's mobile number"
+                  name="referrer_mobile_number"
+                  value={formValues.referrer_mobile_number}
+                  {...SHARED_SUMMARY_PROPS}
+                />
+              </Container>
+            </AccordionDetails>
+          </Accordion>
+        )}
       </Grid>
     </Grid>
   );

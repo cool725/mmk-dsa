@@ -3,8 +3,7 @@ import { NotFound } from '../views';
 import AuthRoutes from '../views/Auth';
 import SharedRoutes from './SharedRoutes';
 import { PublicLayout } from './Layout';
-// import SignupRoutes from '../views/Auth/Signup';
-import LoginRoutes from '../views/Auth/Login';
+import SignupRoutes from '../views/Auth/Signup';
 
 /**
  * List of routes available only for anonymous users
@@ -14,7 +13,7 @@ const PublicRoutes = () => {
   return (
     <PublicLayout>
       <Switch>
-        <Route exact path="/" component={LoginRoutes} />
+        <Route exact path="/" component={SignupRoutes} />
         <Route path="/auth" component={AuthRoutes} />
         <SharedRoutes />
         <Route component={NotFound} />
