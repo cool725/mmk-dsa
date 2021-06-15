@@ -193,6 +193,11 @@ const DsaStep5View = () => {
     [formState.values, files, history, dsaId, email]
   );
 
+  const goBack = () => {
+    history.push(`/dsa/${DSA_PROGRESS - 1}`);
+    return;
+  };
+
   const handleCloseError = useCallback(() => setError(undefined), []);
 
   if (loading) return <LinearProgress />;
@@ -276,6 +281,7 @@ const DsaStep5View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
+                <AppButton onClick={goBack}>Back</AppButton>
                 <AppButton type="submit" disabled={inputDisabled || !formState.isValid || !validFiles()}>
                   Confirm and Continue
                 </AppButton>

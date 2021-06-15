@@ -90,7 +90,6 @@ const SignupView = () => {
     } as FormStateValues,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
@@ -160,17 +159,13 @@ const SignupView = () => {
     setShowPassword((oldValue) => !oldValue);
   }, []);
 
-  const handleAgreeClick = useCallback(() => {
-    setAgree((oldValue) => !oldValue);
-  }, []);
-
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', values);
 
       let apiResult;
-      if(state.confirmationType !== 'invite-dsa') {
+      if (state.confirmationType !== 'invite-dsa') {
         apiResult = await api.auth.signup(values);
       } else {
         apiResult = await api.auth.activateAgent(values);
@@ -231,7 +226,7 @@ const SignupView = () => {
                   helperText=" "
                   {...SHARED_CONTROL_PROPS}
                 />
-                ) : (
+              ) : (
                 <TextField
                   // autoFocus={Boolean(state.verifiedPhone)} // Select "First Name" field if phone was SUCCESSFULLY verified
                   required
@@ -253,7 +248,7 @@ const SignupView = () => {
                   helperText=" "
                   {...SHARED_CONTROL_PROPS}
                 />
-                ) : (
+              ) : (
                 <TextField
                   required
                   label="Last Name"
@@ -272,7 +267,7 @@ const SignupView = () => {
                   label="Email"
                   name="email"
                   value={state.verifiedEmail}
-                  helperText = " "
+                  helperText=" "
                   {...SHARED_CONTROL_PROPS}
                 />
               ) : (
@@ -325,22 +320,6 @@ const SignupView = () => {
                   {...SHARED_CONTROL_PROPS}
                 />
               )}
-              <FormControlLabel
-                control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
-                label={
-                  <>
-                    You must agree with{' '}
-                    <AppLink to="/legal/terms" openInNewTab>
-                      Terms of Use
-                    </AppLink>{' '}
-                    and{' '}
-                    <AppLink to="/legal/privacy" openInNewTab>
-                      Privacy Policy
-                    </AppLink>{' '}
-                    to use our service *
-                  </>
-                }
-              />
 
               {error ? (
                 <AppAlert severity="error" onClose={handleCloseError}>
@@ -349,7 +328,7 @@ const SignupView = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={!(formState.isValid && agree)}>
+                <AppButton type="submit" disabled={!formState.isValid}>
                   Confirm and Sign Up
                 </AppButton>
               </Grid>

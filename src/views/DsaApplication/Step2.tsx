@@ -198,6 +198,11 @@ const DsaStep2View = () => {
 
   const handleCloseError = useCallback(() => setError(undefined), []);
 
+  const goBack = () => {
+    history.push(`/dsa/${DSA_PROGRESS - 1}`);
+    return;
+  };
+
   if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);
@@ -309,6 +314,7 @@ const DsaStep2View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
+                <AppButton onClick={goBack}>Back</AppButton>
                 <AppButton type="submit" disabled={inputDisabled || !formState.isValid}>
                   Confirm and Continue
                 </AppButton>

@@ -184,6 +184,11 @@ const DsaStep6View = () => {
     setAgree((oldValue) => !oldValue);
   }, []);
 
+  const goBack = () => {
+    history.push(`/dsa/${DSA_PROGRESS - 1}`);
+    return;
+  };
+
   if (loading) return <LinearProgress />;
 
   const inputDisabled = loading || Boolean(error);
@@ -239,9 +244,7 @@ const DsaStep6View = () => {
               <br />
               <FormControlLabel
                 control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
-                label={
-                  <>I agree with Mymoneykarma DSA terms and condition.</>
-                }
+                label={<>I agree with Mymoneykarma DSA terms and condition.</>}
               />
 
               <br />
@@ -254,6 +257,7 @@ const DsaStep6View = () => {
                 </AppAlert>
               ) : null}
               <Grid container justify="center" alignItems="center">
+                <AppButton onClick={goBack}>Back</AppButton>
                 <AppButton type="submit" disabled={!agree || inputDisabled || !formState.isValid}>
                   Confirm and Finish
                 </AppButton>

@@ -91,7 +91,7 @@ const DsaStep4View = () => {
   // Checks whether supporting document is uploaded for the GST number provided
   function validFiles(): Boolean {
     // Checking condition when file is not uploaded and GST number also not provided
-    if(!(files?.image_gst_proof || values.image_gst_proof) && !values.gst_number) return true;
+    if (!(files?.image_gst_proof || values.image_gst_proof) && !values.gst_number) return true;
 
     // Checking condition when file is not uploaded but GST number is provided
     if (!(files?.image_gst_proof || values.image_gst_proof) && !!values.gst_number) return false;
@@ -179,6 +179,11 @@ const DsaStep4View = () => {
     [values, files, history, dsaId, email]
   );
 
+  const goBack = () => {
+    history.push(`/dsa/${DSA_PROGRESS - 1}`);
+    return;
+  };
+
   const handleCloseError = useCallback(() => setError(''), []);
 
   const inputDisabled = loading || Boolean(error);
@@ -222,6 +227,7 @@ const DsaStep4View = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
+                <AppButton onClick={goBack}>Back</AppButton>
                 <AppButton
                   type="submit"
                   disabled={inputDisabled || (!formState.isValid && values.gst_number !== '') || !validFiles()}
