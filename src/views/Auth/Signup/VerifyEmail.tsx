@@ -14,9 +14,9 @@ const VALIDATE_FORM_EMAIL = {
   email: {
     presence: true,
     email: {
-      message: 'should be a valid email ID'
-    }
-  }
+      message: 'should be a valid email ID',
+    },
+  },
 };
 
 interface FormStateValues {
@@ -35,8 +35,8 @@ const VerifyEmailView = () => {
     initialValues: { email: '' } as FormStateValues,
   });
   const [verificationRequested, setverificationRequested] = useState(false);
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
   const history = useHistory();
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
   const phone = state.verifiedPhone || localStorageGet('VERIFIED_PHONE');
@@ -51,22 +51,24 @@ const VerifyEmailView = () => {
     async (event: SyntheticEvent) => {
       event.preventDefault();
       const email = values.email;
-      const {error, message} = await api.auth.verifyEmail({ email, phone });
+      const { error, message } = await api.auth.verifyEmail({ email, phone });
       if (error) {
-        setSuccess("");
+        setSuccess('');
         setError(message || `Error ocurred in sending email. Please contact administrator.`);
         return;
       }
-      setError("");
-      setSuccess(message || `Verification email sent. Please check inbox.`);
+      setError('');
+      setSuccess(
+        message || `We sent an verification link to your email. Please click on the link to continue your application.`
+      );
       setverificationRequested(true);
       dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
     },
     [dispatch, values, phone]
   );
 
-  const handleCloseSuccess = useCallback(() => setSuccess(""), []);
-  const handleCloseError = useCallback(() => setError(""), []);
+  const handleCloseSuccess = useCallback(() => setSuccess(''), []);
+  const handleCloseError = useCallback(() => setError(''), []);
   const fieldEmailInvalid = values.email === '' || fieldHasError('email');
 
   return (

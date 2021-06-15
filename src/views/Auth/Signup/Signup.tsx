@@ -51,7 +51,10 @@ const VALIDATE_FORM_SIGNUP = {
 
 const VALIDATE_EXTENSION = {
   confirmPassword: {
-    equality: 'password',
+    equality: {
+      attribute: 'password',
+      message: '^Entered passwords do not match',
+    },
   },
 };
 
@@ -179,7 +182,7 @@ const SignupView = () => {
       dispatch({ type: 'SIGN_UP' });
       return history.push('/');
     },
-    [dispatch, values, history]
+    [dispatch, values, history, state]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
