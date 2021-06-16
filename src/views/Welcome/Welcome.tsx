@@ -45,15 +45,6 @@ const WelcomeView = () => {
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
 
-      if (!apiData || !apiData?.id || apiData?.application_status === 'info_required') {
-        // There is no DSA application for current user, go to Step1
-        // or if analyst marks the application as "info_required"
-        // take the user to Step 1 of application
-        // console.log('Going to DSA Step 1')
-        history.push('/dsa/1');
-        return;
-      }
-
       if (!apiData?.progress || apiData?.progress !== 'complete') {
         // DSA application in progress, go to last incomplete step
         // console.log('Going to DSA Step', apiData?.progress)
