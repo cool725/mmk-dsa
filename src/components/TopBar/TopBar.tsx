@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { AppIconButton } from '../../components';
+import { ReactComponent as MmkLogoIcon } from '../../components/AppIcon/mmkLogo.svg';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -18,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: theme.spacing(4),
   },
   title: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(20),
     marginRight: theme.spacing(1),
     flexGrow: 1,
     textAlign: 'center',
@@ -54,7 +55,7 @@ const TopBar: React.FC<Props> = ({
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        {/* <AppIconButton icon="mmkLogo" /> */}
+        <MmkLogoIcon style={{ height: '1rem' }} />
       </Toolbar>
     </AppBar>
   );

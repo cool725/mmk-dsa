@@ -1,7 +1,8 @@
 import { useHistory } from 'react-router-dom';
 import { Theme, makeStyles } from '@material-ui/core/styles';
+import { ReactComponent as MmkLogoIcon } from '../../components/AppIcon/mmkLogo.svg';
 import { AppBar, Toolbar, Typography, BottomNavigation, BottomNavigationAction, Grid } from '@material-ui/core/';
-import { ErrorBoundary, AppIcon, AppIconButton } from '../../components';
+import { ErrorBoundary, AppIcon } from '../../components';
 
 const TITLE_PUBLIC = 'MyMoneyKarma DSA';
 
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingRight: theme.spacing(1),
   },
   title: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(20),
     marginRight: theme.spacing(1),
     flexGrow: 1,
     textAlign: 'center',
@@ -56,7 +57,7 @@ const PublicLayout: React.FC = ({ children }) => {
             <Typography className={classes.title} variant="h6">
               {title}
             </Typography>
-            {/* <AppIconButton icon="mmkLogo" /> */}
+            <MmkLogoIcon style={{ height: '1rem' }} />
           </Toolbar>
         </AppBar>
       </Grid>
