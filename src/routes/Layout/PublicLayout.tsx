@@ -68,7 +68,11 @@ const PublicLayout: React.FC = ({ children }) => {
 
       <Grid item className={classes.footer} component="footer">
         <BottomNavigation onChange={handleBottomNavigationChange} showLabels>
-          <BottomNavigationAction label="Login" value="/auth/login" icon={<AppIcon icon="login" />} />
+          <BottomNavigationAction
+            label="Existing DSAs login here"
+            value="/auth/login"
+            icon={<AppIcon icon="login" />}
+          />
         </BottomNavigation>
       </Grid>
     </Grid>
