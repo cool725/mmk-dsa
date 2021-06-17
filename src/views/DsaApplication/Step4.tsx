@@ -4,10 +4,10 @@ import { Grid, TextField, Card, CardHeader, CardContent, Divider, LinearProgress
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
-import { getAssetUrl } from '../../utils/url';
+// import { getAssetUrl } from '../../utils/url';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
-import { UploadInput } from '../../components/Upload';
+// import { UploadInput } from '../../components/Upload';
 
 const DSA_PROGRESS = 4;
 
@@ -27,9 +27,9 @@ interface FormStateValues {
   gst_number: string;
   image_gst_proof: string;
 }
-interface FormFiles {
-  image_gst_proof?: File;
-}
+// interface FormFiles {
+//   image_gst_proof?: File;
+// }
 
 /**
  * Renders "Step 4" view for "DSA Application" flow
@@ -46,7 +46,7 @@ const DsaStep4View = () => {
       image_gst_proof: '',
     } as FormStateValues,
   });
-  const [files, setFiles] = useState<FormFiles>({});
+  // const [files, setFiles] = useState<FormFiles>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
@@ -89,37 +89,37 @@ const DsaStep4View = () => {
   }, [history, email, setFormState]); // Note: Don't put formState as dependency here !!!
 
   // Checks whether supporting document is uploaded for the GST number provided
-  function validFiles(): Boolean {
-    // Checking condition when file is not uploaded and GST number also not provided
-    if (!(files?.image_gst_proof || values.image_gst_proof) && !values.gst_number) return true;
+  // function validFiles(): Boolean {
+  //   // Checking condition when file is not uploaded and GST number also not provided
+  //   if (!(files?.image_gst_proof || values.image_gst_proof) && !values.gst_number) return true;
 
-    // Checking condition when file is not uploaded but GST number is provided
-    if (!(files?.image_gst_proof || values.image_gst_proof) && !!values.gst_number) return false;
+  //   // Checking condition when file is not uploaded but GST number is provided
+  //   if (!(files?.image_gst_proof || values.image_gst_proof) && !!values.gst_number) return false;
 
-    return true;
-  }
+  //   return true;
+  // }
 
-  const handleFileChange = useCallback(
-    (event, name, file) => {
-      const newFiles = {
-        ...files,
-        [name]: file,
-      };
-      setFiles(newFiles);
+  // const handleFileChange = useCallback(
+  //   (event, name, file) => {
+  //     const newFiles = {
+  //       ...files,
+  //       [name]: file,
+  //     };
+  //     setFiles(newFiles);
 
-      if (!file) {
-        // File was cleared
-        setFormState((oldFormState) => ({
-          ...oldFormState,
-          values: {
-            ...oldFormState.values,
-            [name]: '', // Empty the form value with same name
-          },
-        }));
-      }
-    },
-    [files, setFormState]
-  );
+  //     if (!file) {
+  //       // File was cleared
+  //       setFormState((oldFormState) => ({
+  //         ...oldFormState,
+  //         values: {
+  //           ...oldFormState.values,
+  //           [name]: '', // Empty the form value with same name
+  //         },
+  //       }));
+  //     }
+  //   },
+  //   [files, setFormState]
+  // );
 
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
@@ -128,32 +128,32 @@ const DsaStep4View = () => {
       setLoading(true); // Don't allow to change data anymore
 
       // Upload new file
-      let image_gst_proof = values.image_gst_proof;
-      if (files?.image_gst_proof) {
-        let apiRes;
-        const payload = {
-          data: files?.image_gst_proof,
-        };
-        try {
-          if (image_gst_proof) {
-            // Update existing file
-            apiRes = await api.file.update(image_gst_proof, payload);
-          } else {
-            // Create new file
-            apiRes = await api.file.create(payload);
-          }
-        } catch (error) {
-          // TODO: Halt form submission if needed
-          console.error(error);
-        }
-        image_gst_proof = apiRes?.id;
-      }
+      // let image_gst_proof = values.image_gst_proof;
+      // if (files?.image_gst_proof) {
+      //   let apiRes;
+      //   const payload = {
+      //     data: files?.image_gst_proof,
+      //   };
+      //   try {
+      //     if (image_gst_proof) {
+      //       // Update existing file
+      //       apiRes = await api.file.update(image_gst_proof, payload);
+      //     } else {
+      //       // Create new file
+      //       apiRes = await api.file.create(payload);
+      //     }
+      //   } catch (error) {
+      //     // TODO: Halt form submission if needed
+      //     console.error(error);
+      //   }
+      //   image_gst_proof = apiRes?.id;
+      // }
 
       // Create/Update DSA Application record
       let apiResult;
       const payload: Record<string, any> = {
         gst_number: values.gst_number,
-        image_gst_proof,
+        // image_gst_proof,
         // Required values
         email,
         progress: String(DSA_PROGRESS),
@@ -176,7 +176,7 @@ const DsaStep4View = () => {
 
       history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
     },
-    [values, files, history, dsaId, email]
+    [values, history, dsaId, email]
   );
 
   const goBack = () => {
@@ -208,12 +208,12 @@ const DsaStep4View = () => {
                 {...SHARED_CONTROL_PROPS}
               />
 
-              <UploadInput
+              {/* <UploadInput
                 name="image_gst_proof"
                 url={getAssetUrl(values.image_gst_proof)}
                 buttonTitle="Upload GST Registration Proof"
                 onFileChange={handleFileChange}
-              />
+              /> */}
 
               <br />
               <br />
@@ -228,10 +228,7 @@ const DsaStep4View = () => {
 
               <Grid container justify="center" alignItems="center">
                 <AppButton onClick={goBack}>Back</AppButton>
-                <AppButton
-                  type="submit"
-                  disabled={inputDisabled || (!formState.isValid && values.gst_number !== '') || !validFiles()}
-                >
+                <AppButton type="submit" disabled={inputDisabled || (!formState.isValid && values.gst_number !== '')}>
                   Confirm and Continue
                 </AppButton>
               </Grid>
