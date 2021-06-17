@@ -32,19 +32,25 @@ const LoginEmailView = ({ email = '' }: Props) => {
     initialValues: { email } as FormStateValues,
   });
   const [message, setMessage] = useState<string>();
+  const [error, setError] = useState<string>();
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   const handleFormSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     console.log('onSubmit() - formState.values:', formState.values);
 
-    await api.auth.recoverPassword(values);
+    const response = await api.auth.recoverPassword(values);
 
+    if (!response) {
+      setError('Error in resetting the password. Please contact administrator');
+      return;
+    }
     //Show message with instructions for the user
     setMessage('Email with instructions has been sent to your address');
   };
 
-  const handleCloseError = useCallback(() => setMessage(undefined), []);
+  const handleCloseError = useCallback(() => setError(undefined), []);
+  const handleCloseMessage = useCallback(() => setMessage(undefined), []);
 
   return (
     <form onSubmit={handleFormSubmit}>
@@ -65,8 +71,14 @@ const LoginEmailView = ({ email = '' }: Props) => {
               />
 
               {message ? (
-                <AppAlert severity="success" onClose={handleCloseError}>
+                <AppAlert severity="success" onClose={handleCloseMessage}>
                   {message}
+                </AppAlert>
+              ) : null}
+
+              {error ? (
+                <AppAlert severity="error" onClose={handleCloseError}>
+                  {error}
                 </AppAlert>
               ) : null}
 
