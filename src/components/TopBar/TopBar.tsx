@@ -19,8 +19,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: theme.spacing(4),
   },
   title: {
-    marginLeft: theme.spacing(20),
-    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+    fontSize: '1rem',
+    [theme.breakpoints.up('xs')]: {
+      marginRight: theme.spacing(5), // on Extra small screen
+    },
+    [theme.breakpoints.up('sm')]: {
+      marginRight: theme.spacing(15), // on Small screen
+      fontSize: '1.25rem',
+    },
+    [theme.breakpoints.up('md')]: {
+      marginRight: theme.spacing(25), // on Medium screen
+      fontSize: '1.25rem',
+    },
     flexGrow: 1,
     textAlign: 'center',
     whiteSpace: 'nowrap',
@@ -51,11 +62,11 @@ const TopBar: React.FC<Props> = ({
   return (
     <AppBar {...restOfProps} className={clsx(classes.root, className)} component="div">
       <Toolbar className={classes.toolbar} disableGutters>
-        <AppIconButton icon="logo" onClick={onMenu} />
+        <MmkLogoIcon style={{ height: '1rem' }} />
         <Typography variant="h6" className={classes.title}>
           {title}
         </Typography>
-        <MmkLogoIcon style={{ height: '1rem' }} />
+        <AppIconButton icon="logo" onClick={onMenu} />
       </Toolbar>
     </AppBar>
   );

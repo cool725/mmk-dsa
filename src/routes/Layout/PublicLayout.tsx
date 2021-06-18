@@ -21,8 +21,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingRight: theme.spacing(1),
   },
   title: {
-    marginLeft: theme.spacing(20),
-    marginRight: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+    fontSize: '1rem',
+    [theme.breakpoints.up('xs')]: {
+      marginRight: theme.spacing(8), // on Extra small screen
+    },
+    [theme.breakpoints.up('sm')]: {
+      marginRight: theme.spacing(15), // on Small screen
+      fontSize: '1.25rem',
+    },
+    [theme.breakpoints.up('md')]: {
+      marginRight: theme.spacing(25), // on Medium screen
+      fontSize: '1.25rem',
+    },
     flexGrow: 1,
     textAlign: 'center',
     whiteSpace: 'nowrap',
@@ -53,11 +64,10 @@ const PublicLayout: React.FC = ({ children }) => {
       <Grid item className={classes.header} component="header">
         <AppBar component="div">
           <Toolbar className={classes.toolbar} disableGutters>
-            {/* <AppIconButton icon="logo" /> */}
+            <MmkLogoIcon style={{ height: '1rem' }} />
             <Typography className={classes.title} variant="h6">
               {title}
             </Typography>
-            <MmkLogoIcon style={{ height: '1rem' }} />
           </Toolbar>
         </AppBar>
       </Grid>

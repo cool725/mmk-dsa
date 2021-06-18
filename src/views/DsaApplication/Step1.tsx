@@ -124,8 +124,20 @@ const DsaStep1View = () => {
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
 
       setLoading(false);
-      if (!apiData) return; // No data from API, do nothing
-
+      // No data from API,
+      // Set first_name and last_name
+      // from signup info
+      if (!apiData) {
+        setFormState((oldFormState) => ({
+          ...oldFormState,
+          values: {
+            ...oldFormState.values,
+            first_name: state.currentUser?.first_name || '',
+            last_name: state.currentUser?.last_name || '',
+          },
+        }));
+        return;
+      }
       setDsaId(apiData.id);
       setFormState((oldFormState) => ({
         ...oldFormState,
@@ -151,7 +163,7 @@ const DsaStep1View = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [email, setFormState]); // Note: Don't put formState as dependency here !!!
+  }, [email, setFormState, state]); // Note: Don't put formState as dependency here !!!
 
   useEffect(() => {
     let newSchema;
@@ -271,7 +283,7 @@ const DsaStep1View = () => {
 
               <TextField
                 required
-                disabled={inputDisabled}
+                disabled={!!values.first_name}
                 label={values.entity_type === 'individual' ? 'First Name' : 'Entity Contact First Name'}
                 name="first_name"
                 value={values.first_name}
@@ -282,7 +294,7 @@ const DsaStep1View = () => {
               />
               <TextField
                 required
-                disabled={inputDisabled}
+                disabled={!!values.last_name}
                 label={values.entity_type === 'individual' ? 'Last Name' : 'Entity Contact Last Name'}
                 name="last_name"
                 value={values.last_name}

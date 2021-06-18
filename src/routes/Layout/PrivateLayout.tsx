@@ -10,8 +10,8 @@ import SideBar from '../../components/SideBar/SideBar';
 
 const TITLE_PRIVATE = 'MyMoneyKarma DSA';
 
-const MOBILE_SIDEBAR_ANCHOR = 'left'; // 'right';
-const DESKTOP_SIDEBAR_ANCHOR = 'left'; // 'right';
+const MOBILE_SIDEBAR_ANCHOR = 'right'; // 'right';
+const DESKTOP_SIDEBAR_ANCHOR = 'right'; // 'right';
 export const SIDEBAR_WIDTH = 240; // 240px
 
 const useStyles = makeStyles((theme: Theme) => ({
