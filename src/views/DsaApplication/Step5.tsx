@@ -199,6 +199,13 @@ const DsaStep5View = () => {
   };
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+  const subHeader = (
+    <>
+      <span>Step 5 of 5</span>
+      <br />
+      <span>Commission will be directly credited to this account</span>
+    </>
+  );
 
   if (loading) return <LinearProgress />;
 
@@ -209,7 +216,7 @@ const DsaStep5View = () => {
       <Grid container direction="column" alignItems="center">
         <Grid item className={classes.formBody}>
           <Card>
-            <CardHeader title="DSA Application - Step 5" subheader="Bank details - Your payout will be send there" />
+            <CardHeader title="Bank details" subheader={subHeader} />
             <CardContent>
               <TextField
                 required
@@ -225,7 +232,7 @@ const DsaStep5View = () => {
               <TextField
                 required
                 disabled={inputDisabled}
-                label="Bank Branch Name"
+                label="Bank Branch"
                 name="bank_branch_name"
                 value={(formState.values as FormStateValues).bank_branch_name}
                 error={fieldHasError('bank_branch_name')}
@@ -236,7 +243,7 @@ const DsaStep5View = () => {
               <TextField
                 required
                 disabled={inputDisabled}
-                label="Bank Account"
+                label="Account Number"
                 name="bank_account"
                 value={(formState.values as FormStateValues).bank_account}
                 error={fieldHasError('bank_account')}

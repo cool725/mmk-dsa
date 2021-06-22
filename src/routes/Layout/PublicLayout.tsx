@@ -2,7 +2,7 @@ import { useHistory } from 'react-router-dom';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { ReactComponent as MmkLogoIcon } from '../../components/AppIcon/mmkLogo.svg';
 import { AppBar, Toolbar, Typography, BottomNavigation, BottomNavigationAction, Grid } from '@material-ui/core/';
-import { ErrorBoundary, AppIcon } from '../../components';
+import { ErrorBoundary } from '../../components';
 
 const TITLE_PUBLIC = 'MyMoneyKarma DSA';
 
@@ -43,6 +43,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(1),
   },
   footer: {},
+  login: {
+  },
 }));
 
 /**
@@ -78,11 +80,7 @@ const PublicLayout: React.FC = ({ children }) => {
 
       <Grid item className={classes.footer} component="footer">
         <BottomNavigation onChange={handleBottomNavigationChange} showLabels>
-          <BottomNavigationAction
-            label="Existing DSAs login here"
-            value="/auth/login"
-            icon={<AppIcon icon="login" />}
-          />
+          <BottomNavigationAction label="Already Registered? Log in" value="/auth/login" />
         </BottomNavigation>
       </Grid>
     </Grid>

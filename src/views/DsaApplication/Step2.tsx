@@ -212,7 +212,7 @@ const DsaStep2View = () => {
       <Grid container direction="column" alignItems="center">
         <Grid item className={classes.formBody}>
           <Card>
-            <CardHeader title="DSA Application - Step 2" subheader="Address Info" />
+            <CardHeader title="Address" subheader="Step 2 of 5" />
             <CardContent>
               <TextField
                 required

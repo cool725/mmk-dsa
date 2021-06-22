@@ -199,7 +199,7 @@ const DsaStep6View = () => {
       <Grid container direction="column" alignItems="center">
         <Grid item className={classes.formBody}>
           <Card>
-            <CardHeader title="DSA Application - Step 6" subheader="All Done!" />
+            <CardHeader title="Ready to submit" />
             <CardContent>
               <FormControlLabel
                 label="Did anybody refer you to MMK?"
@@ -259,7 +259,7 @@ const DsaStep6View = () => {
               <Grid container justify="center" alignItems="center">
                 <AppButton onClick={goBack}>Back</AppButton>
                 <AppButton type="submit" disabled={!agree || inputDisabled || !formState.isValid}>
-                  Confirm and Finish
+                  Submit
                 </AppButton>
               </Grid>
             </CardContent>

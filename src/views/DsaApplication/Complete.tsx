@@ -50,7 +50,7 @@ const DsaCompletView = () => {
     <Grid container direction="column" alignItems="center">
       <Grid item className={classes.formBody}>
         <Card>
-          <CardHeader title="Thank you!" subheader="Your application has been completed" />
+          <CardHeader title="Thank you!" subheader="Your application has been submitted" />
           <CardContent>
             <Typography variant="body1">You will receive application status updates via SMS and email.</Typography>
             <br />

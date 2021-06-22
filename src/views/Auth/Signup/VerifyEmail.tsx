@@ -59,7 +59,10 @@ const VerifyEmailView = () => {
       }
       setError('');
       setSuccess(
-        message || `We sent an verification link to your email. Please click on the link to continue your application.`
+        message ||
+          `We have sent a verification link to the email address provided above.
+        Please click on the link in the verification email to continue your application.
+        You may close this window.`
       );
       setverificationRequested(true);
       dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
@@ -90,7 +93,7 @@ const VerifyEmailView = () => {
               />
               <Grid container justify="center">
                 <AppButton disabled={fieldEmailInvalid} mb={4} onClick={handleFormSubmit}>
-                  {verificationRequested ? 'Resend Email' : 'Send Verify Email'}
+                  {verificationRequested ? 'Resend Email' : 'Verify Email'}
                 </AppButton>
               </Grid>
               {success ? (

@@ -238,7 +238,7 @@ const DsaStep1View = () => {
       <Grid container direction="column" alignItems="center">
         <Grid item className={classes.formBody}>
           <Card>
-            <CardHeader title="DSA Application - Step 1" subheader="Business details" />
+            <CardHeader title="Contact details" subheader="Step 1 of 5" />
             <CardContent>
               <TextField
                 // autoFocus

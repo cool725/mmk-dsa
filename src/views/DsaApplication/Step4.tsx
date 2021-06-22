@@ -195,7 +195,7 @@ const DsaStep4View = () => {
       <Grid container direction="column" alignItems="center">
         <Grid item className={classes.formBody}>
           <Card>
-            <CardHeader title="DSA Application - Step 4" subheader="GST details if applicable" />
+            <CardHeader title="GST (if applicable)" subheader="Step 4 of 5" />
             <CardContent>
               <TextField
                 disabled={inputDisabled}

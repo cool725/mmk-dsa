@@ -44,6 +44,7 @@ const VerifyPhoneView = () => {
   const [otpRequested, setOtpRequested] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState<string>();
+  const [success, setSuccess] = useState<string>();
   const otpInputRef = useRef<HTMLDivElement>();
   const history = useHistory();
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
@@ -79,15 +80,15 @@ const VerifyPhoneView = () => {
       setTimeout(() => {
         otpInputRef.current?.focus(); // Set focus to "OTP Code" field
       }, 250);
+      setSuccess(`OTP successfully sent to ${phone}`);
     } catch (error) {
       setWaiting(false);
-      if(error?.response?.status === 409) {
+      if (error?.response?.status === 409) {
         setError(`User with given mobile already exists. Please login.`);
       } else {
         setError(`Cannot send SMS to ${phone}`);
       }
     }
-
   }, [values.phone, resetOtp]);
 
   const handleFormSubmit = useCallback(
@@ -114,6 +115,10 @@ const VerifyPhoneView = () => {
     resetOtp(); // Clean up "OTP Code" field from previously entered code
   }, [resetOtp]);
 
+  const handleCloseSuccess = () => {
+    setSuccess(undefined);
+  };
+
   const fieldPhoneInvalid = values.phone === '' || fieldHasError('phone');
   const buttonCodeDisabled = waiting || fieldPhoneInvalid;
   const fieldCodeDisabled = false; // !otpRequested;
@@ -137,9 +142,14 @@ const VerifyPhoneView = () => {
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
+              {success ? (
+                <AppAlert severity="success" onClose={handleCloseSuccess}>
+                  {success}
+                </AppAlert>
+              ) : null}
               <Grid container justify="center">
                 <AppButton disabled={buttonCodeDisabled} mb={4} onClick={handleRequestOptClick}>
-                  {otpRequested ? 'Resend Code via SMS' : 'Send Code via SMS'}
+                  {otpRequested ? 'Resend Code via SMS' : 'Verify via SMS'}
                 </AppButton>
               </Grid>
               <TextField

@@ -252,7 +252,7 @@ const DsaStep3View = () => {
       <Grid container direction="column" alignItems="center">
         <Grid item className={classes.formBody}>
           <Card>
-            <CardHeader title="DSA Application - Step 3" subheader="KYC details" />
+            <CardHeader title="PAN &amp; KYC" subheader="Step 3 of 5" />
             <CardContent>
               <TextField
                 required
