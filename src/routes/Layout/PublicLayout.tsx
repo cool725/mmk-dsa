@@ -24,10 +24,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginLeft: theme.spacing(1),
     fontSize: '1rem',
     [theme.breakpoints.up('xs')]: {
-      marginRight: theme.spacing(8), // on Extra small screen
+      marginRight: theme.spacing(15), // on Extra small screen
     },
     [theme.breakpoints.up('sm')]: {
-      marginRight: theme.spacing(15), // on Small screen
+      marginRight: theme.spacing(20), // on Small screen
       fontSize: '1.25rem',
     },
     [theme.breakpoints.up('md')]: {
@@ -43,7 +43,15 @@ const useStyles = makeStyles((theme: Theme) => ({
     padding: theme.spacing(1),
   },
   footer: {},
-  login: {
+  loginTextContainer: {
+    maxWidth: '20rem',
+  },
+  loginTextFontMain: {
+    fontWeight: 900,
+    fontSize: '1rem',
+  },
+  loginTextFont: {
+    fontSize: '1rem',
   },
 }));
 
@@ -80,7 +88,16 @@ const PublicLayout: React.FC = ({ children }) => {
 
       <Grid item className={classes.footer} component="footer">
         <BottomNavigation onChange={handleBottomNavigationChange} showLabels>
-          <BottomNavigationAction label="Already Registered? Log in" value="/auth/login" />
+          <BottomNavigationAction
+            className={classes.loginTextContainer}
+            label={
+              <>
+                <span className={classes.loginTextFontMain}>Already Registered? </span>
+                <span className={classes.loginTextFont}>Login</span>
+              </>
+            }
+            value="/auth/login"
+          />
         </BottomNavigation>
       </Grid>
     </Grid>
