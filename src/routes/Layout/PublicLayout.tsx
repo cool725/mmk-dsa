@@ -8,11 +8,12 @@ const TITLE_PUBLIC = 'MyMoneyKarma DSA';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
-    minHeight: '100vh', // Full screen height
+    minHeight: 'calc(100vh - 56px)', // Full screen height
     paddingTop: 56, // on Small screen
     // height: '100%',
     [theme.breakpoints.up('sm')]: {
       paddingTop: 64, // on Large screen
+      minHeight: '100vh', // Full screen height
     },
   },
   header: {},
