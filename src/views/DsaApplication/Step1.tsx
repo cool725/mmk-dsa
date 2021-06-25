@@ -52,13 +52,30 @@ const VALIDATE_FORM = {
   },
 };
 
+const getEntityNameLabel = (entityType: string) => {
+  if (entityType === 'partnership') return 'Partnership Name';
+  if (entityType === 'sole_proprietorship') return 'Business Name';
+  return 'Company Name';
+};
+
 const VALIDATE_AS_CORPORATE = {
   entity_name: {
     type: 'string',
-    presence: { allowEmpty: false },
+    presence: {
+      allowEmpty: false,
+      message: function (value: any, attribute: any, validatorOptions: any, attributes: any, globalOptions: any) {
+        const { entity_type } = attributes;
+        const entityNameLabel = getEntityNameLabel(entity_type);
+        return `^${entityNameLabel} is mandatory`;
+      },
+    },
     format: {
       pattern: '^[A-Za-z0-9 ]+$', // Note: Allow only alphanumerics and space
-      message: 'should contain only alphanumerics',
+      message: function (value: any, attribute: any, validatorOptions: any, attributes: any, globalOptions: any) {
+        const { entity_type } = attributes;
+        const entityNameLabel = getEntityNameLabel(entity_type);
+        return `^${entityNameLabel} should contain only alphanumerics`;
+      },
     },
   },
   designation: {
@@ -263,7 +280,7 @@ const DsaStep1View = () => {
                   <TextField
                     required
                     disabled={inputDisabled}
-                    label={values.entity_type === 'partnership' ? 'Partnership Name' : 'Company Name'}
+                    label={getEntityNameLabel(values.entity_type)}
                     name="entity_name"
                     value={values.entity_name}
                     error={fieldHasError('entity_name')}

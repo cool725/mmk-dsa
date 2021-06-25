@@ -4,7 +4,7 @@ import { ReactComponent as MmkLogoIcon } from '../../components/AppIcon/mmkLogo.
 import { AppBar, Toolbar, Typography, BottomNavigation, BottomNavigationAction, Grid } from '@material-ui/core/';
 import { ErrorBoundary } from '../../components';
 
-const TITLE_PUBLIC = 'MyMoneyKarma DSA';
+const TITLE_PUBLIC = 'DSA';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {

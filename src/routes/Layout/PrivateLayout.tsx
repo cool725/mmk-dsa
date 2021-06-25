@@ -8,7 +8,7 @@ import TopBar from '../../components/TopBar';
 import { ErrorBoundary } from '../../components';
 import SideBar from '../../components/SideBar/SideBar';
 
-const TITLE_PRIVATE = 'MyMoneyKarma DSA';
+const TITLE_PRIVATE = 'DSA';
 
 const MOBILE_SIDEBAR_ANCHOR = 'right'; // 'right';
 const DESKTOP_SIDEBAR_ANCHOR = 'right'; // 'right';

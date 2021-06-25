@@ -70,6 +70,7 @@ const DsaStep2View = () => {
     } as FormStateValues,
   });
   const [loading, setLoading] = useState(true);
+  const [zipLoading, setZipLoading] = useState(false);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const [open, setOpen] = useState(false);
@@ -153,13 +154,15 @@ const DsaStep2View = () => {
   );
 
   const onInputChange = async (event: any, searchPin: any) => {
+    setZipLoading(true);
     if (!searchPin) {
       setPincodeList([]);
+      setZipLoading(false);
       return;
     }
 
     const response = await api.info.getPinCodeList(searchPin);
-
+    setZipLoading(false);
     setPincodeList(
       response
         .map((data: any) => {
@@ -248,7 +251,7 @@ const DsaStep2View = () => {
                 getOptionSelected={(option, value) => option === value}
                 getOptionLabel={(option) => option}
                 options={pincodeList}
-                loading={loading}
+                loading={zipLoading}
                 onInputChange={onInputChange}
                 onChange={onSelectTag}
                 value={(formState.values as FormStateValues).pin_code}
@@ -264,7 +267,7 @@ const DsaStep2View = () => {
                       ...params.InputProps,
                       endAdornment: (
                         <Fragment>
-                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                          {zipLoading ? <CircularProgress color="inherit" size={20} /> : null}
                           {params.InputProps.endAdornment}
                         </Fragment>
                       ),
