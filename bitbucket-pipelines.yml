@@ -10,7 +10,7 @@ definitions:
             - docker version
             - docker build -t ${ENV}-mmk-dsa --build-arg REACT_APP_API=${LAP_URL} --build-arg BUILD_VERSION=${BITBUCKET_COMMIT} .
 
-            - pipe: atlassian/aws-ecr-push-image:1.4.0
+            - pipe: atlassian/aws-ecr-push-image:1.4.1
               variables:
                 AWS_ACCESS_KEY_ID: $AWS_ECR_KEY_ID
                 AWS_SECRET_ACCESS_KEY: $AWS_ECR_SECRET_KEY
