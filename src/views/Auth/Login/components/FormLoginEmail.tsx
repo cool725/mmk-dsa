@@ -48,8 +48,8 @@ const FormLoginEmail = () => {
       event.preventDefault();
 
       const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
-      if (!result) {
-        setError('Please check email and password. If error persist contact administrator')
+      if (result?.error) {
+        setError('Please check email and password. If error persist contact administrator');
         return;
       }
 
