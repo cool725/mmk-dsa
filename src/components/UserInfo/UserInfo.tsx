@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   name: {
     marginTop: theme.spacing(1),
   },
+  email: {
+    wordBreak: 'break-word',
+  },
 }));
 
 type User = Partial<IUserInfo> | undefined | null;
@@ -76,7 +79,9 @@ const UserInfo = ({ className, showAvatar = false, user: propsUser, ...restOfPro
       <Typography className={classes.name} variant="h6">
         {fullName || 'Current User'}
       </Typography>
-      <Typography variant="body2">{userPhoneOrEmail || 'Loading...'}</Typography>
+      <Typography variant="body2" className={classes.email}>
+        {userPhoneOrEmail || 'Loading...'}
+      </Typography>
     </div>
   );
 };
