@@ -33,11 +33,11 @@ export async function submissionNotificationEmailToAnalysts(applicantName: strin
     return null;
 }
 
-export async function submissionNotificationEmailToManagers(applicantName: string) {
-    try {
-        await api.axios.post(SUBMITTED_NOTIF_TO_MANAGER_EMAIL_ENDPOINT, { applicantName });
-    } catch (error) {
-        console.error(`email ${METHOD}`, error);
-    }
-    return null;
-}
+// export async function submissionNotificationEmailToManagers(applicantName: string) {
+//     try {
+//         await api.axios.post(SUBMITTED_NOTIF_TO_MANAGER_EMAIL_ENDPOINT, { applicantName });
+//     } catch (error) {
+//         console.error(`email ${METHOD}`, error);
+//     }
+//     return null;
+// }
