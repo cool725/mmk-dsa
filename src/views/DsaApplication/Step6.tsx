@@ -208,18 +208,6 @@ const DsaStep6View = () => {
   const inputDisabled = loading || Boolean(error);
   const referrerDisabled = inputDisabled || !(formState.values as FormStateValues).was_referred;
 
-  const handleTermsOpen = useCallback(
-    (event: SyntheticEvent) => {
-      event.preventDefault();
-      if (!openTerms) setOpenTerms(true);
-    },
-    [openTerms]
-  );
-
-  const handleTermsClose = useCallback(() => {
-    if (openTerms) setOpenTerms(false);
-  }, [openTerms]);
-
   return (
     <form onSubmit={handleFormSubmit}>
       <Grid container direction="column" alignItems="center">
