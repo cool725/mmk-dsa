@@ -14,8 +14,9 @@ import {
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
-import { AppButton, AppAlert, AppLink } from '../../components';
+import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
+import TermsModal from '../../components/UserInfo/TermsModal';
 
 const DSA_PROGRESS = 6;
 
@@ -70,6 +71,7 @@ const DsaStep6View = () => {
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const [agree, setAgree] = useState(false);
+  const [openTerms, setOpenTerms] = useState(false);
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const phone = state.verifiedPhone || state.currentUser?.phone || '';
@@ -194,6 +196,18 @@ const DsaStep6View = () => {
   const inputDisabled = loading || Boolean(error);
   const referrerDisabled = inputDisabled || !(formState.values as FormStateValues).was_referred;
 
+  const handleTermsOpen = useCallback(
+    (event: SyntheticEvent) => {
+      event.preventDefault();
+      if (!openTerms) setOpenTerms(true);
+    },
+    [openTerms]
+  );
+
+  const handleTermsClose = useCallback(() => {
+    if (openTerms) setOpenTerms(false);
+  }, [openTerms]);
+
   return (
     <form onSubmit={handleFormSubmit}>
       <Grid container direction="column" alignItems="center">
@@ -244,9 +258,16 @@ const DsaStep6View = () => {
               <br />
               <FormControlLabel
                 control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
-                label={<>I agree with Mymoneykarma DSA terms and condition.</>}
+                label={
+                  <>
+                    I agree with{' '}
+                    <a href="/" onClick={handleTermsOpen}>
+                      Mymoneykarma DSA terms and condition.
+                    </a>
+                  </>
+                }
               />
-
+              <TermsModal open={openTerms} onClose={handleTermsClose} />
               <br />
               <br />
               <Divider />

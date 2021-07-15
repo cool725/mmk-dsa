@@ -185,6 +185,8 @@ const DsaStep4View = () => {
   };
 
   const handleCloseError = useCallback(() => setError(''), []);
+  const gsthelperText =
+    'If field is left blank, then it is deemed that the applicant is not required to be GST registered.';
 
   const inputDisabled = loading || Boolean(error);
 
@@ -203,7 +205,7 @@ const DsaStep4View = () => {
                 name="gst_number"
                 value={values.gst_number}
                 error={fieldHasError('gst_number') && values.gst_number !== ''} // Not-required
-                helperText={values.gst_number !== '' ? fieldGetError('gst_number') || ' ' : ' '}
+                helperText={values.gst_number !== '' ? fieldGetError('gst_number') || ' ' : gsthelperText}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
