@@ -50,7 +50,7 @@ const FormLoginEmail = () => {
       const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
       if (result?.error) {
         let message = 'Please check email and password. If error persist contact administrator';
-        if (result.data.code === 'FORBIDDEN') {
+        if (result?.data?.code === 'FORBIDDEN') {
           message = 'Only MyMoneyKarma DSA agents are allowed to access this portal.';
         }
         setError(message);

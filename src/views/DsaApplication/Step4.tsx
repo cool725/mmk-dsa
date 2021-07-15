@@ -205,7 +205,13 @@ const DsaStep4View = () => {
                 name="gst_number"
                 value={values.gst_number}
                 error={fieldHasError('gst_number') && values.gst_number !== ''} // Not-required
-                helperText={values.gst_number !== '' ? fieldGetError('gst_number') || gsthelperText : gsthelperText}
+                helperText={
+                  values.gst_number !== ''
+                    ? !fieldGetError('gst_number')
+                      ? gsthelperText
+                      : fieldGetError('gst_number')
+                    : gsthelperText
+                }
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
               />
