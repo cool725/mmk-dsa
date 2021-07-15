@@ -180,6 +180,18 @@ const DsaStep6View = () => {
     [formState.values, history, dsaId, email, phone]
   );
 
+  const handleTermsOpen = useCallback(
+    (event: SyntheticEvent) => {
+      event.preventDefault();
+      if (!openTerms) setOpenTerms(true);
+    },
+    [openTerms]
+  );
+
+  const handleTermsClose = useCallback(() => {
+    if (openTerms) setOpenTerms(false);
+  }, [openTerms]);
+
   const handleCloseError = useCallback(() => setError(undefined), []);
 
   const handleAgreeClick = useCallback(() => {
