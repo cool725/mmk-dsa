@@ -141,11 +141,11 @@ const DsaStep4View = () => {
       // console.log('onSubmit() - formState.values:', values);
       setLoading(true); // Don't allow to change data anymore
 
-      if (!values.gst_number && !values.gst_agree) {
+      if (!values?.gst_number && !values?.gst_agree) {
         setLoading(false);
         setError('If GST number is not provided, you must agree to GST terms.');
         return;
-      } else if (values.gst_number && values.gst_agree) {
+      } else if (values?.gst_number && values?.gst_agree) {
         setLoading(false);
         setError('GST terms must be agreed only if GST number is not provided.');
         return;
