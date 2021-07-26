@@ -185,8 +185,8 @@ const DsaStep4View = () => {
   };
 
   const handleCloseError = useCallback(() => setError(''), []);
-  const gsthelperText =
-    'If field is left blank, then it is deemed that the applicant is not required to be GST registered.';
+  const gsthelperText = `I confirm that we are not required to be registered under GST. If we become registered under GST,
+    we will intimate Mymoneykarma before the next invoice is generated.`;
 
   const inputDisabled = loading || Boolean(error);
 

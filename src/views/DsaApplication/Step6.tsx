@@ -240,7 +240,6 @@ const DsaStep6View = () => {
                     {...SHARED_CONTROL_PROPS}
                   />
                   <TextField
-                    required
                     disabled={referrerDisabled}
                     label="Referrer's mobile number"
                     name="referrer_mobile_number"

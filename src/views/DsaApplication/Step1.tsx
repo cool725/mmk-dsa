@@ -323,7 +323,6 @@ const DsaStep1View = () => {
 
               {values.entity_type !== 'individual' && (
                 <TextField
-                  required
                   disabled={inputDisabled}
                   label="Designation"
                   name="designation"
