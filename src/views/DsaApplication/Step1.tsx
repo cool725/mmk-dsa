@@ -80,7 +80,7 @@ const VALIDATE_AS_CORPORATE = {
   },
   designation: {
     type: 'string',
-    presence: { allowEmpty: false },
+    presence: { allowEmpty: true },
     format: {
       pattern: '^[A-Za-z0-9 ]+$', // Note: Allow only alphanumerics and space
       message: 'should contain only alphanumerics',

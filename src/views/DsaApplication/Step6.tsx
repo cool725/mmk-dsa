@@ -37,7 +37,7 @@ const VALIDATE_EXTENSION = {
   },
   referrer_mobile_number: {
     ...VALIDATION_PHONE,
-    presence: { allowEmpty: false },
+    presence: { allowEmpty: true },
   },
 };
 interface FormStateValues {
