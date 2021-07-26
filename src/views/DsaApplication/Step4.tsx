@@ -1,6 +1,16 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Grid, TextField, Card, CardHeader, CardContent, Divider, LinearProgress } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  Card,
+  CardHeader,
+  CardContent,
+  Divider,
+  LinearProgress,
+  FormControlLabel,
+  Checkbox,
+} from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
 import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
@@ -26,6 +36,7 @@ const VALIDATE_FORM = {
 interface FormStateValues {
   gst_number: string;
   image_gst_proof: string;
+  gst_agree: boolean;
 }
 // interface FormFiles {
 //   image_gst_proof?: File;
@@ -44,12 +55,14 @@ const DsaStep4View = () => {
     initialValues: {
       gst_number: '',
       image_gst_proof: '',
+      gst_agree: false,
     } as FormStateValues,
   });
   // const [files, setFiles] = useState<FormFiles>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
+  const [gstAgree, setGstAgree] = useState(false);
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
@@ -78,6 +91,7 @@ const DsaStep4View = () => {
           ...oldFormState.values,
           gst_number: apiData?.gst_number || '',
           image_gst_proof: apiData?.image_gst_proof || '',
+          gst_agree: apiData?.gst_agree || false,
         },
       }));
     }
@@ -127,6 +141,16 @@ const DsaStep4View = () => {
       // console.log('onSubmit() - formState.values:', values);
       setLoading(true); // Don't allow to change data anymore
 
+      if (!values.gst_number && !values.gst_agree) {
+        setLoading(false);
+        setError('If GST number is not provided, you must agree to GST terms.');
+        return;
+      } else if (values.gst_number && values.gst_agree) {
+        setLoading(false);
+        setError('GST terms must be agreed only if GST number is not provided.');
+        return;
+      }
+
       // Upload new file
       // let image_gst_proof = values.image_gst_proof;
       // if (files?.image_gst_proof) {
@@ -155,6 +179,7 @@ const DsaStep4View = () => {
         gst_number: values.gst_number,
         // image_gst_proof,
         // Required values
+        gst_agree: values.gst_agree,
         email,
         progress: String(DSA_PROGRESS),
       };
@@ -178,6 +203,10 @@ const DsaStep4View = () => {
     },
     [values, history, dsaId, email]
   );
+
+  const handleGstAgreeClick = useCallback(() => {
+    setGstAgree((oldValue) => !oldValue);
+  }, []);
 
   const goBack = () => {
     history.push(`/dsa/${DSA_PROGRESS - 1}`);
@@ -205,15 +234,16 @@ const DsaStep4View = () => {
                 name="gst_number"
                 value={values.gst_number}
                 error={fieldHasError('gst_number') && values.gst_number !== ''} // Not-required
-                helperText={
-                  values.gst_number !== ''
-                    ? !fieldGetError('gst_number')
-                      ? gsthelperText
-                      : fieldGetError('gst_number')
-                    : gsthelperText
-                }
+                helperText={fieldGetError('gst_number') || ' '}
                 onChange={onFieldChange}
                 {...SHARED_CONTROL_PROPS}
+              />
+
+              <br />
+              <Divider />
+              <FormControlLabel
+                control={<Checkbox required name="gst_agree" checked={gstAgree} onChange={handleGstAgreeClick} />}
+                label={gsthelperText}
               />
 
               {/* <UploadInput

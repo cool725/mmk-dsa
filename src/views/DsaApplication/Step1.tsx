@@ -82,7 +82,7 @@ const VALIDATE_AS_CORPORATE = {
     type: 'string',
     presence: { allowEmpty: true },
     format: {
-      pattern: '^[A-Za-z0-9 ]+$', // Note: Allow only alphanumerics and space
+      pattern: '^$|^[A-Za-z0-9 ]+$', // Note: Allow only alphanumerics and space
       message: 'should contain only alphanumerics',
     },
   },

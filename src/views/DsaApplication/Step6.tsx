@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 import TermsModal from '../../components/UserInfo/TermsModal';
@@ -26,6 +26,18 @@ const VALIDATE_FORM = {
   },
 };
 
+const VALIDATE_REFERRER_MOBILE = {
+  type: 'string',
+  format: {
+    pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
+    message: 'should contain numbers',
+  },
+  length: {
+    maximum: 10,
+    message: 'must be exactly 10 digits',
+  },
+};
+
 const VALIDATE_EXTENSION = {
   referrer_name: {
     type: 'string',
@@ -34,10 +46,6 @@ const VALIDATE_EXTENSION = {
       pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
       message: 'should contain only alphabets',
     },
-  },
-  referrer_mobile_number: {
-    ...VALIDATION_PHONE,
-    presence: { allowEmpty: true },
   },
 };
 interface FormStateValues {
@@ -113,7 +121,12 @@ const DsaStep6View = () => {
 
   useEffect(() => {
     let newSchema;
-    if ((formState.values as FormStateValues).was_referred) {
+    if (
+      (formState.values as FormStateValues).was_referred &&
+      (formState.values as FormStateValues).referrer_mobile_number
+    ) {
+      newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION, ...VALIDATE_REFERRER_MOBILE };
+    } else if ((formState.values as FormStateValues).was_referred) {
       newSchema = { ...VALIDATE_FORM, ...VALIDATE_EXTENSION };
     } else {
       newSchema = VALIDATE_FORM;
