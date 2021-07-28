@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import api from '../../api';
 import { useAppStore } from '../../store';
-import { useAppForm, SHARED_CONTROL_PROPS } from '../../utils/form';
+import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE } from '../../utils/form';
 import { AppButton, AppAlert } from '../../components';
 import { useFormStyles } from '../styles';
 import TermsModal from '../../components/UserInfo/TermsModal';
@@ -26,18 +26,6 @@ const VALIDATE_FORM = {
   },
 };
 
-const VALIDATE_REFERRER_MOBILE = {
-  type: 'string',
-  format: {
-    pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
-    message: 'should contain numbers',
-  },
-  length: {
-    maximum: 10,
-    message: 'must be exactly 10 digits',
-  },
-};
-
 const VALIDATE_EXTENSION = {
   referrer_name: {
     type: 'string',
@@ -47,6 +35,10 @@ const VALIDATE_EXTENSION = {
       message: 'should contain only alphabets',
     },
   },
+};
+
+const VALIDATE_REFERRER_MOBILE = {
+  referrer_mobile_number: VALIDATION_PHONE,
 };
 interface FormStateValues {
   was_referred: boolean;

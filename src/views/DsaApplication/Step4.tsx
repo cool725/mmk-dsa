@@ -26,7 +26,6 @@ const VALIDATE_FORM = {
     type: 'string', // TODO: Length or Pattern?
     length: {
       is: 15,
-      allowEmpty: true, // Not supported yet :(
       message: 'must be exactly 15 characters',
     },
     presence: { allowEmpty: true },
@@ -62,7 +61,6 @@ const DsaStep4View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
-  const [gstAgree, setGstAgree] = useState(false);
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
@@ -204,10 +202,6 @@ const DsaStep4View = () => {
     [values, history, dsaId, email]
   );
 
-  const handleGstAgreeClick = useCallback(() => {
-    setGstAgree((oldValue) => !oldValue);
-  }, []);
-
   const goBack = () => {
     history.push(`/dsa/${DSA_PROGRESS - 1}`);
     return;
@@ -240,9 +234,17 @@ const DsaStep4View = () => {
               />
 
               <br />
+              <br />
               <Divider />
+              <br />
               <FormControlLabel
-                control={<Checkbox name="gst_agree" checked={gstAgree} onChange={handleGstAgreeClick} />}
+                control={
+                  <Checkbox
+                    name="gst_agree"
+                    checked={(formState.values as FormStateValues).gst_agree}
+                    onChange={onFieldChange}
+                  />
+                }
                 label={gsthelperText}
               />
 
