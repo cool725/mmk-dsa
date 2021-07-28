@@ -242,7 +242,7 @@ const DsaStep4View = () => {
               <br />
               <Divider />
               <FormControlLabel
-                control={<Checkbox required name="gst_agree" checked={gstAgree} onChange={handleGstAgreeClick} />}
+                control={<Checkbox name="gst_agree" checked={gstAgree} onChange={handleGstAgreeClick} />}
                 label={gsthelperText}
               />
 
