@@ -309,7 +309,7 @@ const DsaStep6View = () => {
                   {error}
                 </AppAlert>
               ) : null}
-              {successInfo ? (
+              {successInfo && isManagerAccess ? (
                 <AppAlert severity="success" onClose={handleCloseSuccess}>
                   {successInfo}
                 </AppAlert>

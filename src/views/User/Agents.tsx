@@ -32,7 +32,7 @@ const AgentsView = () => {
     return api.dsa.getIncompleteDsaApplications(query, limit);
   };
 
-  const onInputChange = async (event: SyntheticEvent, dsaSearchQuery: string) => {
+  const onInputChange = async (event: any, dsaSearchQuery: string) => {
     setDsaLoading(true);
     if (!dsaSearchQuery || event.type !== 'change') {
       setDsaOptionsList([]);
@@ -44,7 +44,7 @@ const AgentsView = () => {
     setDsaOptionsList(dsaApplications);
   };
 
-  const onChange = async (event: SyntheticEvent, dsa: DsaOption | null) => {
+  const onChange = async (event: any, dsa: DsaOption | null) => {
     if (!dsa || event.type !== 'click') {
       setDsa(null);
       return;
@@ -61,10 +61,10 @@ const AgentsView = () => {
   };
 
   const emulateDsa = () => {
-    dispatch({ type: 'SET_VERIFIED_PHONE', payload: dsa.phone });
-    dispatch({ type: 'SET_VERIFIED_EMAIL', payload: dsa.email });
-    dispatch({ type: 'SET_USER_FIRSTNAME', payload: dsa.first_name });
-    dispatch({ type: 'SET_USER_LASTNAME', payload: dsa.last_name });
+    dispatch({ type: 'SET_VERIFIED_PHONE', payload: dsa?.phone || '' });
+    dispatch({ type: 'SET_VERIFIED_EMAIL', payload: dsa?.email || '' });
+    dispatch({ type: 'SET_USER_FIRSTNAME', payload: dsa?.first_name || '' });
+    dispatch({ type: 'SET_USER_LASTNAME', payload: dsa?.last_name || '' });
     history.push('/');
   };
 
