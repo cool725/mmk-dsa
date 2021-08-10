@@ -1,5 +1,7 @@
 import { FormEvent, useCallback, useRef, useState } from 'react';
 import clsx from 'clsx';
+import { extension } from 'mime-types';
+import { v4 as uuidv4 } from 'uuid';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import { Avatar } from '@material-ui/core';
 import { api } from '../../api';
@@ -72,6 +74,19 @@ const UploadInput: React.FC<any> = ({
 
   const handleCloseError = useCallback(() => setError(undefined), []);
 
+  const downloadFile = useCallback(async () => {
+    const fileUrl = url || propUrl;
+    const response = await fetch(fileUrl);
+    const fileData = await response.blob();
+    const fileExtension = extension(fileData.type);
+    const downoadUrl = window.URL.createObjectURL(fileData);
+    const anchorElement = document.createElement('a');
+    const fileName = `${uuidv4()}.${fileExtension}`;
+    anchorElement.href = downoadUrl;
+    anchorElement.download = fileName;
+    anchorElement.click();
+  }, [url, propUrl]);
+
   return (
     <>
       <input
@@ -89,6 +104,7 @@ const UploadInput: React.FC<any> = ({
           <AppIcon icon="image" />
         </Avatar>
         {buttonTitle ? <AppButton onClick={handleButtonClick}>{buttonTitle}</AppButton> : null}
+        {url || propUrl ? <AppButton onClick={downloadFile}>Download for Preview</AppButton> : null}
         {children}
       </label>
       {error ? (
