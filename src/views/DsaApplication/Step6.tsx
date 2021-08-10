@@ -69,12 +69,21 @@ const DsaStep6View = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [successInfo, setSuccessInfo] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
   const [agree, setAgree] = useState(false);
   const [openTerms, setOpenTerms] = useState(false);
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const phone = state.verifiedPhone || state.currentUser?.phone || '';
+  const isManagerAccess = state.userRole === 'manager' || state.userRole === 'senior_manager';
+  const backButtonText = isManagerAccess ? 'Go To Search DSA' : 'Back';
+
+  const redirectManager = (dsaApplication: any, role?: string) => {
+    if (!dsaApplication && (role === 'manager' || role === 'senior_manager')) {
+      history.push('/user/agents');
+    }
+  };
 
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
@@ -83,6 +92,8 @@ const DsaStep6View = () => {
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      redirectManager(apiData, state.userRole);
 
       if (Number(apiData?.progress || 0) < DSA_PROGRESS - 1) {
         // Force jumping to latest incomplete step
@@ -131,13 +142,14 @@ const DsaStep6View = () => {
       event.preventDefault();
       // console.log('onSubmit() - formState.values:', formState.values);
       setLoading(true); // Don't allow to change data anymore
+      const progress = isManagerAccess ? '6' : 'complete';
 
       const payload: Record<string, any> = {
         ...formState.values,
-        is_agree_with_terms: true, // "I agree with the..." checkbox was set
+        is_agree_with_terms: agree, // "I agree with the..." checkbox was set
         // Required values
         email,
-        progress: 'complete',
+        progress,
       };
 
       // Remove all referral data if was_referred is not set
@@ -176,11 +188,18 @@ const DsaStep6View = () => {
         applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`;
       }
 
-      await api.info.submissionNotificationEmail(email, applicantName);
-      await api.info.submissionNotificationSms(phone, applicantName);
-      await api.info.submissionNotificationEmailToAnalysts(applicantName);
-      // await api.info.submissionNotificationEmailToManagers(applicantName);
-      history.push('/dsa/complete'); // Navigate to "Thank You" page
+      // Navigate to "Thank You" page and sent notifications if user is not manager
+      if (!isManagerAccess) {
+        await api.info.submissionNotificationEmail(email, applicantName);
+        await api.info.submissionNotificationSms(phone, applicantName);
+        await api.info.submissionNotificationEmailToAnalysts(applicantName);
+        history.push('/dsa/complete');
+      } else {
+        setLoading(false);
+        setSuccessInfo(`Application details have been captured successfully. Please request agent to
+          login to application and submit by accepting terms and condutions`);
+        return;
+      }
     },
     [formState.values, history, dsaId, email, phone]
   );
@@ -198,14 +217,19 @@ const DsaStep6View = () => {
   }, [openTerms]);
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+  const handleCloseSuccess = useCallback(() => setSuccessInfo(undefined), []);
 
   const handleAgreeClick = useCallback(() => {
     setAgree((oldValue) => !oldValue);
   }, []);
 
   const goBack = () => {
-    history.push(`/dsa/${DSA_PROGRESS - 1}`);
-    return;
+    if (!isManagerAccess) {
+      history.push(`/dsa/${DSA_PROGRESS - 1}`);
+      return;
+    } else {
+      history.push('/user/agents');
+    }
   };
 
   if (loading) return <LinearProgress />;
@@ -256,21 +280,25 @@ const DsaStep6View = () => {
                   />
                 </>
               )}
-              <br />
-              <br />
-              <Divider />
-              <br />
-              <FormControlLabel
-                control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
-                label={
-                  <>
-                    I agree with{' '}
-                    <a href="/" onClick={handleTermsOpen}>
-                      Mymoneykarma DSA terms and condition.
-                    </a>
-                  </>
-                }
-              />
+              {!isManagerAccess && (
+                <>
+                  <br />
+                  <br />
+                  <Divider />
+                  <br />
+                  <FormControlLabel
+                    control={<Checkbox required name="agree" checked={agree} onChange={handleAgreeClick} />}
+                    label={
+                      <>
+                        I agree with{' '}
+                        <a href="/" onClick={handleTermsOpen}>
+                          Mymoneykarma DSA terms and condition.
+                        </a>
+                      </>
+                    }
+                  />
+                </>
+              )}
               <TermsModal open={openTerms} onClose={handleTermsClose} />
               <br />
               <br />
@@ -281,11 +309,23 @@ const DsaStep6View = () => {
                   {error}
                 </AppAlert>
               ) : null}
+              {successInfo ? (
+                <AppAlert severity="success" onClose={handleCloseSuccess}>
+                  {successInfo}
+                </AppAlert>
+              ) : null}
               <Grid container justify="center" alignItems="center">
-                <AppButton onClick={goBack}>Back</AppButton>
-                <AppButton type="submit" disabled={!agree || inputDisabled || !formState.isValid}>
-                  Submit
-                </AppButton>
+                <AppButton onClick={goBack}>{backButtonText}</AppButton>
+                {!isManagerAccess && (
+                  <AppButton type="submit" disabled={!agree || inputDisabled || !formState.isValid}>
+                    Submit
+                  </AppButton>
+                )}
+                {isManagerAccess && (
+                  <AppButton type="submit" disabled={inputDisabled || !formState.isValid}>
+                    Submit
+                  </AppButton>
+                )}
               </Grid>
             </CardContent>
           </Card>

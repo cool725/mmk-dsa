@@ -9,6 +9,7 @@ import { localStorageGet } from '../utils/localStorage';
  * AppState structure and initial values
  */
 export interface IAppState {
+  userRole?: string;
   darkMode: boolean;
   isAuthenticated: boolean;
   verifiedPhone?: string;
@@ -19,6 +20,7 @@ export interface IAppState {
   currentUser?: Partial<IUserInfo> | undefined | null;
 }
 const initialAppState: IAppState = {
+  userRole: !localStorageGet('USER_ROLE') ? undefined : localStorageGet('USER_ROLE'),
   darkMode: false, // Overridden by useMediaQuery('(prefers-color-scheme: dark)') in AppStore
   isAuthenticated: false, // Overridden in AppStore by checking auth token
   verifiedPhone: process.env.REACT_APP_MULTIPASS ? '1234567890' : undefined,

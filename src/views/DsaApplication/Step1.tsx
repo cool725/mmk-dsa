@@ -132,13 +132,22 @@ const DsaStep1View = () => {
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
+  const redirectManager = (dsaApplication: any, role?: string) => {
+    if (!dsaApplication && (role === 'manager' || role === 'senior_manager')) {
+      history.push('/user/agents');
+    }
+  };
+
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
       if (!email) return; // email is not loaded yet, wait for next call. Don't reset .loading flag!
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
+      // const apiDataTest = await api.dsa.read('');
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+      
+      redirectManager(apiData, state.userRole);
 
       setLoading(false);
       // No data from API,
@@ -155,6 +164,19 @@ const DsaStep1View = () => {
         }));
         return;
       }
+      let firstName = state.currentUser?.first_name || '';
+      let lastName = state.currentUser?.last_name || '';
+
+      if (apiData?.entity_type) {
+        if (apiData?.entity_type === 'individual') {
+          firstName = apiData?.individual_first_name;
+          lastName = apiData?.individual_last_name;
+        } else {
+          firstName = apiData?.entity_primary_contact_first_name;
+          lastName = apiData?.entity_primary_contact_last_name;
+        }
+      }
+
       setDsaId(apiData.id);
       setFormState((oldFormState) => ({
         ...oldFormState,
@@ -162,14 +184,8 @@ const DsaStep1View = () => {
           ...oldFormState.values,
           entity_type: apiData?.entity_type || '',
           entity_name: apiData?.entity_name || '',
-          first_name:
-            (apiData?.entity_type === 'individual'
-              ? apiData?.individual_first_name
-              : apiData?.entity_primary_contact_first_name) || '',
-          last_name:
-            (apiData?.entity_type === 'individual'
-              ? apiData?.individual_last_name
-              : apiData?.entity_primary_contact_last_name) || '',
+          first_name: firstName || '',
+          last_name: lastName || '',
           designation: apiData?.designation || '',
           secondary_phone: apiData?.mobile_number_secondary || '',
         },

@@ -1,5 +1,6 @@
 import { Route, Switch } from 'react-router-dom';
 import UserView from './User';
+import AgentsView from './Agents';
 
 /**
  * Routes for "User" view
@@ -8,7 +9,8 @@ import UserView from './User';
 const UserRoutes = () => {
   return (
     <Switch>
-      <Route component={UserView} />
+      <Route path="/user/agents" component={AgentsView} />
+      <Route path="/user" component={UserView} />
     </Switch>
   );
 };

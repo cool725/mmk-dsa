@@ -50,6 +50,7 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
         isAuthenticated: true,
       };
     case 'LOG_OUT':
+      localStorageSet('USER_ROLE', null);
       return {
         ...state,
         isAuthenticated: false,
@@ -69,6 +70,13 @@ const AppReducer: React.Reducer<IAppState, any> = (state, action) => {
       return {
         ...state,
         confirmationType,
+      };
+    case 'SET_USER_ROLE':
+      const userRole = action?.userRole || action?.payload?.userRole || action?.payload;
+      localStorageSet('USER_ROLE', userRole);
+      return {
+        ...state,
+        userRole,
       };
     default:
       return state;

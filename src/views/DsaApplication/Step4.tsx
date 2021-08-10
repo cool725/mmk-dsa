@@ -65,6 +65,12 @@ const DsaStep4View = () => {
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
+  const redirectManager = (dsaApplication: any, role?: string) => {
+    if (!dsaApplication && (role === 'manager' || role === 'senior_manager')) {
+      history.push('/user/agents');
+    }
+  };
+
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
@@ -72,6 +78,8 @@ const DsaStep4View = () => {
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      redirectManager(apiData, state.userRole);
 
       if (Number(apiData?.progress || 0) < DSA_PROGRESS - 1) {
         // Force jumping to latest incomplete step

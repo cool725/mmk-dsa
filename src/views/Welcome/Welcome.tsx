@@ -20,6 +20,7 @@ import { useAppStore } from '../../store';
 import { useFormStyles } from '../styles';
 import { SHARED_SUMMARY_PROPS } from '../../utils/form';
 import { STATES } from '../../utils/address';
+import { AppButton } from '../../components';
 
 /**
  * Renders "Welcome" view
@@ -36,6 +37,7 @@ const WelcomeView = () => {
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const phone = state.verifiedPhone || state.currentUser?.phone || '';
+  const isManagerAccess = state.userRole === 'manager' || state.userRole === 'senior_manager';
 
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
@@ -64,6 +66,10 @@ const WelcomeView = () => {
       componentMounted = false; // Remove "component is live" flag
     };
   }, [history, email]);
+
+  const goBack = () => {
+    history.push('/user/agents');
+  };
 
   if (loading) return <LinearProgress />;
 
@@ -382,6 +388,13 @@ const WelcomeView = () => {
             </AccordionDetails>
           </Accordion>
         )}
+        <Grid container justify="center" alignItems="center">
+          {isManagerAccess && (
+            <AppButton style={{ marginTop: '25px' }} onClick={goBack}>
+              Go To Search DSA
+            </AppButton>
+          )}
+        </Grid>
       </Grid>
     </Grid>
   );

@@ -48,17 +48,23 @@ const FormLoginEmail = () => {
       event.preventDefault();
 
       const result = await api.auth.loginWithEmail(formState.values as FormStateValues);
+      let roleName = '';
       if (result?.error) {
         let message = 'Please check email and password. If error persist contact administrator';
         if (result?.data?.code === 'FORBIDDEN') {
-          message = 'Only MyMoneyKarma DSA agents are allowed to access this portal.';
+          message = 'Only MyMoneyKarma DSA agents and DSA managers are allowed to access this portal.';
         }
         setError(message);
         return;
       }
 
+      if (result && result.data) roleName = result.data.role_name;
+
       dispatch({ type: 'LOG_IN' });
-      history.push('/');
+      dispatch({ type: 'SET_USER_ROLE', payload: roleName });
+
+      if (roleName === 'agent') history.push('/');
+      if (roleName === 'manager' || roleName === 'senior_manager') history.push('/user/agents');
     },
     [dispatch, formState.values, history]
   );

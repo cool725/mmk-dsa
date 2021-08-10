@@ -132,8 +132,8 @@ const SignupView = () => {
           dispatch({ type: 'SET_VERIFIED_EMAIL', payload: undefined });
           dispatch({ type: 'SET_USER_FIRSTNAME', payload: undefined });
           dispatch({ type: 'SET_USER_LASTNAME', payload: undefined });
-          dispatch({ type: 'SET_USER_LASTNAME', payload: undefined });
           dispatch({ type: 'SET_CONFIRMATION_TYPE', payload: undefined });
+          dispatch({ type: 'SET_USER_ROLE', payload: undefined });
         }
         return;
       }
@@ -162,6 +162,17 @@ const SignupView = () => {
     setShowPassword((oldValue) => !oldValue);
   }, []);
 
+  const createDsaApplication = async (email: string, mobile: string) => {
+    const dsaApplication = await api.dsa.read('', { filter: { email }, single: true });
+    const appId = dsaApplication?.id ?? null;
+
+    if (!appId) {
+      const apiResult = await api.dsa.create({ email, mobile_number: mobile });
+      return apiResult;
+    }
+    return dsaApplication;
+  };
+
   const handleFormSubmit = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
@@ -179,7 +190,14 @@ const SignupView = () => {
         return; // Unsuccessful signup
       }
 
+      if (!state.verifiedEmail || !state.verifiedPhone) {
+        setError('Unable to create user. Invalid email or mobile.');
+        return; // Unsuccessful signup
+      }
+
+      await createDsaApplication(state.verifiedEmail, state.verifiedPhone);
       dispatch({ type: 'SIGN_UP' });
+      dispatch({ type: 'SET_USER_ROLE', payload: 'agent' });
       return history.push('/');
     },
     [dispatch, values, history, state]

@@ -3,12 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
 import { useFormStyles } from '../../styles';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-} from '@material-ui/core';
+import { Grid, Card, CardHeader, CardContent } from '@material-ui/core';
 import { AppAlert } from '../../../components';
 
 const TOKEN_QUERY_PARAM = 'token';
@@ -29,26 +24,23 @@ const ConfirmEmailView = () => {
 
   const token = useQuery().get(TOKEN_QUERY_PARAM) || '';
 
-  (useCallback(
-    async () => {
-      const apiResult = await api.auth.confirmEmail({ token });
+  useCallback(async () => {
+    const apiResult = await api.auth.confirmEmail({ token });
 
-      if (!apiResult) {
-        setError(`Invalid or expired confirmation link`);
-        return;
-      }
+    if (!apiResult) {
+      setError(`Invalid or expired confirmation link`);
+      return;
+    }
 
-      const { firstName, lastName, phone, email, type } = apiResult;
+    const { firstName, lastName, phone, email, type } = apiResult;
 
-      dispatch({ type: 'SET_VERIFIED_PHONE', payload: phone });
-      dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
-      dispatch({ type: 'SET_USER_FIRSTNAME', payload: firstName });
-      dispatch({ type: 'SET_USER_LASTNAME', payload: lastName });
-      dispatch({ type: 'SET_CONFIRMATION_TYPE', payload: type });
-      history.push('/auth/signup/data'); // Open next "Signup" view
-    },
-    [dispatch, history, token]
-  ))();
+    dispatch({ type: 'SET_VERIFIED_PHONE', payload: phone });
+    dispatch({ type: 'SET_VERIFIED_EMAIL', payload: email });
+    dispatch({ type: 'SET_USER_FIRSTNAME', payload: firstName });
+    dispatch({ type: 'SET_USER_LASTNAME', payload: lastName });
+    dispatch({ type: 'SET_CONFIRMATION_TYPE', payload: type });
+    history.push('/auth/signup/data'); // Open next "Signup" view
+  }, [dispatch, history, token])();
 
   const handleCloseError = useCallback(() => setError(undefined), []);
 
@@ -70,7 +62,6 @@ const ConfirmEmailView = () => {
       </Grid>
     </form>
   );
-
 };
 
 export default ConfirmEmailView;

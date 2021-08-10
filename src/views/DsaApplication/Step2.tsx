@@ -33,7 +33,7 @@ const VALIDATE_FORM = {
     type: 'string',
     presence: { allowEmpty: false },
     format: {
-      pattern: '^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      pattern: '^[A-Za-z. ]+$', // Note: Allow only alphabets and space
       message: 'should contain only alphabets',
     },
   },
@@ -78,6 +78,12 @@ const DsaStep2View = () => {
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
 
+  const redirectManager = (dsaApplication: any, role?: string) => {
+    if (!dsaApplication && (role === 'manager' || role === 'senior_manager')) {
+      history.push('/user/agents');
+    }
+  };
+
   useEffect(() => {
     let componentMounted = true; // Set "component is live" flag
     async function fetchData() {
@@ -85,6 +91,8 @@ const DsaStep2View = () => {
 
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
+
+      redirectManager(apiData, state.userRole);
 
       if (Number(apiData?.progress || 0) < DSA_PROGRESS - 1) {
         // Force jumping to latest incomplete step
