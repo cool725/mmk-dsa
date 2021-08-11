@@ -146,10 +146,13 @@ const DsaStep1View = () => {
       const apiData = await api.dsa.read('', { filter: { email: email }, single: true });
       // const apiDataTest = await api.dsa.read('');
       if (!componentMounted) return; // Component was unmounted while we are calling the API, do nothing!
-      
-      redirectManager(apiData, state.userRole);
 
+      redirectManager(apiData, state.userRole);
       setLoading(false);
+
+      let firstName = state?.userFirstName || state.currentUser?.first_name || '';
+      let lastName = state?.userLastName || state.currentUser?.last_name || '';
+
       // No data from API,
       // Set first_name and last_name
       // from signup info
@@ -158,14 +161,12 @@ const DsaStep1View = () => {
           ...oldFormState,
           values: {
             ...oldFormState.values,
-            first_name: state.currentUser?.first_name || '',
-            last_name: state.currentUser?.last_name || '',
+            first_name: firstName,
+            last_name: lastName,
           },
         }));
         return;
       }
-      let firstName = state.currentUser?.first_name || '';
-      let lastName = state.currentUser?.last_name || '';
 
       if (apiData?.entity_type) {
         if (apiData?.entity_type === 'individual') {
@@ -184,8 +185,8 @@ const DsaStep1View = () => {
           ...oldFormState.values,
           entity_type: apiData?.entity_type || '',
           entity_name: apiData?.entity_name || '',
-          first_name: firstName || '',
-          last_name: lastName || '',
+          first_name: firstName,
+          last_name: lastName,
           designation: apiData?.designation || '',
           secondary_phone: apiData?.mobile_number_secondary || '',
         },
