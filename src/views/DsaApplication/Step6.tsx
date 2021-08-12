@@ -195,9 +195,11 @@ const DsaStep6View = () => {
         await api.info.submissionNotificationEmailToAnalysts(applicantName);
         history.push('/dsa/complete');
       } else {
+        await api.info.sendEmailForApplicationSubmissionToAgent(email);
+        await api.info.sendSmsForApplicationSubmissionToAgent(email);
         setLoading(false);
-        setSuccessInfo(`Application details have been captured successfully. Please request agent to
-          login to application and submit by accepting terms and condutions`);
+        setSuccessInfo(`Application details have been captured successfully.
+        Agent will be notified via SMS and E-mail to accept terms and submit application.`);
         return;
       }
     },
