@@ -203,7 +203,7 @@ const DsaStep6View = () => {
         return;
       }
     },
-    [formState.values, history, dsaId, email, phone]
+    [formState.values, history, dsaId, email, phone, agree]
   );
 
   const handleTermsOpen = useCallback(
