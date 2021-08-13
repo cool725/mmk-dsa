@@ -19,12 +19,12 @@ export const SHARED_SUMMARY_PROPS = {
 export const VALIDATION_PHONE = {
   type: 'string',
   format: {
-    pattern: '^$|[- .+()0-9]+', // Note: We have to allow empty in the pattern
-    message: 'should contain numbers',
+    pattern: '^$|[5-9][0-9]{9}', // Note: We have to allow empty in the pattern
+    message: '^Mobile number should be a valid 10 digit number',
   },
   length: {
     is: 10,
-    message: 'must be exactly 10 digits',
+    message: '^Mobile number must be exactly 10 digits',
   },
 };
 
