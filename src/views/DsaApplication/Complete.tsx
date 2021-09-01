@@ -17,8 +17,12 @@ const DsaCompletView = () => {
   const classes = useFormStyles();
   const [state] = useAppStore();
   const [loading, setLoading] = useState(true);
+  const [title, setTitle] = useState<string>('Thank you!');
+  const [subHeader, setSubHeader] = useState<string>('Your application has been submitted');
+  const [agentName, setAgentName] = useState<string>();
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
+  const isManagerAccess = state.userRole === 'manager' || state.userRole === 'senior_manager';
 
   useEffect(() => {
     // Load DSA application data form API
@@ -35,6 +39,24 @@ const DsaCompletView = () => {
         return;
       }
 
+      if (isManagerAccess) {
+        const {
+          entity_type,
+          entity_primary_contact_first_name,
+          entity_primary_contact_last_name,
+          individual_first_name,
+          individual_last_name,
+        } = apiData;
+
+        if (entity_type === 'individual') {
+          setAgentName(`${individual_first_name} ${individual_last_name}`);
+        } else {
+          setAgentName(`${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`);
+        }
+
+        setSubHeader(`Application to onboard ${agentName} has been submitted`);
+      }
+
       setLoading(false);
     }
     fetchData(); // Call API asynchronously
@@ -42,7 +64,7 @@ const DsaCompletView = () => {
     return () => {
       componentMounted = false; // Remove "component is live" flag
     };
-  }, [history, email]);
+  }, [history, email, agentName, isManagerAccess]);
 
   if (loading) return <LinearProgress />;
 
@@ -50,9 +72,16 @@ const DsaCompletView = () => {
     <Grid container direction="column" alignItems="center">
       <Grid item className={classes.formBody}>
         <Card>
-          <CardHeader title="Thank you!" subheader="Your application has been submitted" />
+          <CardHeader title={title} subheader={subHeader} />
           <CardContent>
-            <Typography variant="body1">You will receive application status updates via SMS and email.</Typography>
+            {!isManagerAccess && (
+              <Typography variant="body1">You will receive application status updates via SMS and email.</Typography>
+            )}
+            {isManagerAccess && (
+              <Typography variant="body1">
+                {agentName} will receive application status updates via SMS and email.
+              </Typography>
+            )}
             <br />
             <Divider />
             <br />

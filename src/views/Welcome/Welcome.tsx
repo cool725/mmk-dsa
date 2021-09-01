@@ -34,6 +34,7 @@ const WelcomeView = () => {
   const [dsaId, setDsaId] = useState<string>();
   const [dsaStatus, setStatus] = useState<string>();
   const [formValues, setFormValues] = useState({} as any);
+  const [agentName, setAgentName] = useState<string>();
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
   const phone = state.verifiedPhone || state.currentUser?.phone || '';
@@ -52,6 +53,20 @@ const WelcomeView = () => {
         // console.log('Going to DSA Step', apiData?.progress)
         history.push(`/dsa/${apiData?.progress || 1}`);
         return;
+      }
+
+      const {
+        entity_type,
+        entity_primary_contact_first_name,
+        entity_primary_contact_last_name,
+        individual_first_name,
+        individual_last_name,
+      } = apiData;
+
+      if (entity_type === 'individual') {
+        setAgentName(`${individual_first_name} ${individual_last_name}`);
+      } else {
+        setAgentName(`${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`);
       }
 
       // We will stay on the "Welcome" page
@@ -77,10 +92,14 @@ const WelcomeView = () => {
   const fullName = [user?.first_name || '', user?.last_name || ''].join(' ').trim();
   let cardTitle = '';
 
-  if (dsaStatus === 'approved') {
-    cardTitle = `Congratulations ${fullName}!`;
+  if (!isManagerAccess) {
+    if (dsaStatus === 'approved') {
+      cardTitle = `Congratulations ${fullName}!`;
+    } else {
+      cardTitle = `Welcome ${fullName}!`;
+    }
   } else {
-    cardTitle = `Welcome ${fullName}!`;
+    cardTitle = `Congratulations ${fullName}!`;
   }
 
   return (
@@ -89,16 +108,22 @@ const WelcomeView = () => {
         <Card>
           <CardHeader title={cardTitle} />
           <CardContent>
-            {dsaStatus !== 'approved' && (
+            {!isManagerAccess && dsaStatus !== 'approved' && (
               <Typography variant="body1">
                 Your application is successfully submitted and is under review. Below is the summary of details
                 provided.
               </Typography>
             )}
-            {dsaStatus === 'approved' && (
+            {!isManagerAccess && dsaStatus === 'approved' && (
               <Typography variant="body1">
                 Your application with ID <b>{dsaId}</b> has been <b>Approved</b>.Below is the summary of details
                 provided.
+              </Typography>
+            )}
+            {isManagerAccess && (
+              <Typography variant="body1">
+                You have successfully submitted the application to onboard {agentName} and it is currently under review.
+                Below is the summary of details provided.
               </Typography>
             )}
           </CardContent>

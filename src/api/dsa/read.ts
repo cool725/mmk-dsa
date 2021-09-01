@@ -30,9 +30,9 @@ export async function dsaReadByDirectus(key: PrimaryKey, query?: Query) {
 }
 
 
-export async function getIncompleteDsaApplications(search: string, limit: number) {
+export async function getIncompleteDsaApplications(fetchAll: string, search?: string, limit?: number) {
   try {
-    const params = { search, limit }
+    const params = { search, fetchAll, limit }
     const { data } = await api.axios.get('/custom/manager/dsa_applications_for_edit', { params });
     const apps = data?.data?.result ?? null;
     console.warn(READ_METHOD, '- apps:', apps);

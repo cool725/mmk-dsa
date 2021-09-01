@@ -26,6 +26,8 @@ import PersonIcon from '@material-ui/icons/Person';
 import HomeIcon from '@material-ui/icons/Home';
 import CameraIcon from '@material-ui/icons/Camera';
 import ImageIcon from '@material-ui/icons/Image';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 /**
  * How to use:
@@ -65,6 +67,8 @@ const ICONS: Record<string, React.ComponentType> = {
   home: HomeIcon,
   camera: CameraIcon,
   image: ImageIcon,
+  cloudupload: CloudUploadIcon,
+  clouddownload: CloudDownloadIcon,
 };
 
 /**

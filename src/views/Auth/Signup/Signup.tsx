@@ -12,7 +12,8 @@ import {
 } from '@material-ui/core';
 import api from '../../../api';
 import { useAppStore } from '../../../store';
-import { AppButton, AppIconButton, AppLink, AppAlert } from '../../../components';
+import { AppButton, AppIconButton, AppAlert } from '../../../components';
+import TermsModal from '../../../components/UserInfo/TermsModal';
 import { useAppForm, SHARED_CONTROL_PROPS, VALIDATION_PHONE, eventPreventDefault } from '../../../utils/form';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useFormStyles } from '../../styles';
@@ -47,6 +48,20 @@ const VALIDATE_FORM_SIGNUP = {
       message: 'must be between 8 and 32 characters',
     },
   },
+  referrerName: {
+    type: 'string',
+    format: {
+      pattern: '^$|^[A-Za-z ]+$', // Note: Allow only alphabets and space
+      message: 'should contain only alphabets',
+    },
+  },
+  referrerMobile: {
+    type: 'string',
+    format: {
+      pattern: '^$|[5-9][0-9]{9}', // Note: We have to allow empty in the pattern
+      message: '^Mobile number should be a valid 10 digit number',
+    },
+  },
 };
 
 const VALIDATE_EXTENSION = {
@@ -63,9 +78,12 @@ interface FormStateValues {
   lastName: string;
   email: string;
   phone: string;
+  referrerName?: string;
+  referrerMobile?: string;
   password: string;
   confirmPassword?: string;
   otp?: string;
+  agreeWithTerms: boolean;
 }
 
 /**
@@ -90,11 +108,14 @@ const SignupView = () => {
       phone: state.verifiedPhone,
       password: '',
       confirmPassword: '',
+      agreeWithTerms: false,
     } as FormStateValues,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
+  const [agreeWithTerms, setAgreeWithTerms] = useState(false);
+  const [openTerms, setOpenTerms] = useState(false);
   const values = formState.values as FormStateValues; // Typed alias to formState.values as the Source of Truth
 
   useEffect(() => {
@@ -162,12 +183,37 @@ const SignupView = () => {
     setShowPassword((oldValue) => !oldValue);
   }, []);
 
-  const createDsaApplication = async (email: string, mobile: string) => {
-    const dsaApplication = await api.dsa.read('', { filter: { email }, single: true });
+  const handleAgreeClick = useCallback(() => {
+    setAgreeWithTerms((oldValue) => !oldValue);
+  }, []);
+
+  const handleTermsOpen = useCallback(
+    (event: SyntheticEvent) => {
+      event.preventDefault();
+      if (!openTerms) setOpenTerms(true);
+    },
+    [openTerms]
+  );
+
+  const handleTermsClose = useCallback(() => {
+    if (openTerms) setOpenTerms(false);
+  }, [openTerms]);
+
+  const createDsaApplication = async (currentState: any, formValues: any) => {
+    const { verifiedEmail, verifiedPhone } = currentState;
+    const { referrerName, referrerMobile } = formValues;
+    const dsaApplication = await api.dsa.read('', { filter: { email: verifiedEmail }, single: true });
     const appId = dsaApplication?.id ?? null;
 
     if (!appId) {
-      const apiResult = await api.dsa.create({ email, mobile_number: mobile });
+      const apiResult = await api.dsa.create({
+        email: verifiedEmail,
+        mobile_number: verifiedPhone,
+        referrer_name: referrerName,
+        referrer_mobile_number: referrerMobile,
+        is_agree_with_terms: agreeWithTerms,
+        was_referred: !!(referrerName || referrerMobile),
+      });
       return apiResult;
     }
     return dsaApplication;
@@ -180,9 +226,9 @@ const SignupView = () => {
 
       let apiResult;
       if (state.confirmationType !== 'invite-dsa') {
-        apiResult = await api.auth.signup(values);
+        apiResult = await api.auth.signup({ ...values, agreeWithTerms });
       } else {
-        apiResult = await api.auth.activateAgent(values);
+        apiResult = await api.auth.activateAgent({ ...values, agreeWithTerms });
       }
 
       if (!apiResult) {
@@ -195,12 +241,18 @@ const SignupView = () => {
         return; // Unsuccessful signup
       }
 
-      await createDsaApplication(state.verifiedEmail, state.verifiedPhone);
+      const dsaApplication = await createDsaApplication(state, values);
+
+      if (!dsaApplication) {
+        setError('Unable to create DSA application. Please contact administrator');
+        return; // Unsuccessful application creation
+      }
+
       dispatch({ type: 'SIGN_UP' });
       dispatch({ type: 'SET_USER_ROLE', payload: 'agent' });
       return history.push('/');
     },
-    [dispatch, values, history, state]
+    [dispatch, values, history, state, agreeWithTerms]
   );
 
   const handleCloseError = useCallback(() => setError(undefined), []);
@@ -305,6 +357,24 @@ const SignupView = () => {
                 />
               )}
               <TextField
+                label="Referrer Name"
+                name="referrerName"
+                value={values.referrerName}
+                error={fieldHasError('referrerName')}
+                helperText={fieldGetError('referrerName') || ' '}
+                onChange={onFieldChange}
+                {...SHARED_CONTROL_PROPS}
+              />
+              <TextField
+                label="Referrer Mobile"
+                name="referrerMobile"
+                value={values.referrerMobile}
+                error={fieldHasError('referrerMobile')}
+                helperText={fieldGetError('referrerMobile') || ' '}
+                onChange={onFieldChange}
+                {...SHARED_CONTROL_PROPS}
+              />
+              <TextField
                 required
                 type={showPassword ? 'text' : 'password'}
                 label="Password"
@@ -341,7 +411,18 @@ const SignupView = () => {
                   {...SHARED_CONTROL_PROPS}
                 />
               )}
-
+              <FormControlLabel
+                control={<Checkbox required name="agree" checked={agreeWithTerms} onChange={handleAgreeClick} />}
+                label={
+                  <>
+                    I agree with{' '}
+                    <a href="/" onClick={handleTermsOpen}>
+                      Mymoneykarma DSA terms and condition.
+                    </a>
+                  </>
+                }
+              />
+              <TermsModal open={openTerms} onClose={handleTermsClose} />
               {error ? (
                 <AppAlert severity="error" onClose={handleCloseError}>
                   {error}
@@ -349,7 +430,7 @@ const SignupView = () => {
               ) : null}
 
               <Grid container justify="center" alignItems="center">
-                <AppButton type="submit" disabled={!formState.isValid}>
+                <AppButton type="submit" disabled={!formState.isValid || !agreeWithTerms}>
                   Confirm and Sign Up
                 </AppButton>
               </Grid>

@@ -75,8 +75,12 @@ const DsaStep5View = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>();
   const [dsaId, setDsaId] = useState<string>();
+  const [successInfo, setSuccessInfo] = useState<string>();
 
   const email = state.verifiedEmail || state.currentUser?.email || '';
+  const phone = state.verifiedPhone || state.currentUser?.phone || '';
+  const isManagerAccess = state.userRole === 'manager' || state.userRole === 'senior_manager';
+  const backButtonText = isManagerAccess ? 'Go To Search DSA' : 'Back';
 
   const redirectManager = (dsaApplication: any, role?: string) => {
     if (!dsaApplication && (role === 'manager' || role === 'senior_manager')) {
@@ -180,7 +184,7 @@ const DsaStep5View = () => {
         image_with_name,
         // Required values
         email,
-        progress: String(DSA_PROGRESS),
+        progress: 'complete',
       };
       if (!dsaId) {
         // Create new record
@@ -196,17 +200,50 @@ const DsaStep5View = () => {
         return;
       }
 
-      history.push(`/dsa/${DSA_PROGRESS + 1}`); // Navigate to next Step
+      const {
+        entity_type,
+        individual_first_name,
+        individual_last_name,
+        entity_primary_contact_first_name,
+        entity_primary_contact_last_name,
+      } = apiResult.data;
+
+      let applicantName = '';
+
+      if (entity_type === 'individual') {
+        applicantName = `${individual_first_name} ${individual_last_name}`;
+      } else {
+        applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`;
+      }
+
+      // Navigate to "Thank You" page and sent notifications if user is not manager
+      if (!isManagerAccess) {
+        await api.info.submissionNotificationEmail(email, applicantName);
+        await api.info.submissionNotificationSms(phone, applicantName);
+      } else {
+        await api.info.sendEmailForApplicationSubmissionToAgent(email);
+        await api.info.sendSmsForApplicationSubmissionToAgent(email);
+      }
+
+      await api.info.submissionNotificationEmailToAnalysts(applicantName);
+      setLoading(false);
+      history.push('/dsa/complete');
     },
-    [formState.values, files, history, dsaId, email]
+    [formState.values, files, history, dsaId, email, phone]
   );
 
   const goBack = () => {
-    history.push(`/dsa/${DSA_PROGRESS - 1}`);
-    return;
+    if (!isManagerAccess) {
+      history.push(`/dsa/${DSA_PROGRESS - 1}`);
+      return;
+    } else {
+      history.push('/user/agents');
+    }
   };
 
   const handleCloseError = useCallback(() => setError(undefined), []);
+  const handleCloseSuccess = useCallback(() => setSuccessInfo(undefined), []);
+
   const subHeader = (
     <>
       <span>Step 5 of 5</span>
@@ -289,6 +326,12 @@ const DsaStep5View = () => {
               <Divider />
               <br />
 
+              {successInfo && isManagerAccess ? (
+                <AppAlert severity="success" onClose={handleCloseSuccess}>
+                  {successInfo}
+                </AppAlert>
+              ) : null}
+
               {error ? (
                 <AppAlert severity="error" onClose={handleCloseError}>
                   {error}
@@ -298,7 +341,7 @@ const DsaStep5View = () => {
               <Grid container justify="center" alignItems="center">
                 <AppButton onClick={goBack}>Back</AppButton>
                 <AppButton type="submit" disabled={inputDisabled || !formState.isValid || !validFiles()}>
-                  Confirm and Continue
+                  Submit
                 </AppButton>
               </Grid>
             </CardContent>

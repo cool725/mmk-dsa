@@ -156,7 +156,7 @@ const VerifyPhoneView = () => {
                 required
                 inputRef={otpInputRef} // Used to set focus after Code request
                 disabled={fieldCodeDisabled}
-                label="Code form SMS"
+                label="Code from SMS"
                 name="otp"
                 value={values.otp}
                 error={fieldHasError('otp')}
