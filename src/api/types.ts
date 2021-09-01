@@ -29,6 +29,7 @@ export interface ISignupCredentials {
   email: string;
   phone: string;
   password: string;
+  agreeWithTerms: boolean;
 }
 
 // from '@directus/sdk-js/dist/types/handlers/auth';
