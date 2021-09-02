@@ -34,21 +34,3 @@ export async function submissionNotificationEmailToAnalysts(applicantName: strin
     }
     return null;
 }
-
-export async function sendEmailForApplicationSubmissionToAgent(emailId: string) {
-    try {
-        await api.axios.post(EMAIL_FOR_APPLICATION_SUBMISSION_ENDPOINT, { emailId });
-    } catch (error) {
-        console.error(`email ${METHOD}`, error);
-    }
-    return null;
-}
-
-export async function sendSmsForApplicationSubmissionToAgent(emailId: string) {
-    try {
-        await api.axios.post(SMS_FOR_APPLICATION_SUBMISSION_ENDPOINT, { emailId });
-    } catch (error) {
-        console.error(`sms ${METHOD}`, error);
-    }
-    return null;
-}

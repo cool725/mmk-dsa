@@ -216,15 +216,8 @@ const DsaStep5View = () => {
         applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`;
       }
 
-      // Navigate to "Thank You" page and sent notifications if user is not manager
-      if (!isManagerAccess) {
-        await api.info.submissionNotificationEmail(email, applicantName);
-        await api.info.submissionNotificationSms(phone, applicantName);
-      } else {
-        await api.info.sendEmailForApplicationSubmissionToAgent(email);
-        await api.info.sendSmsForApplicationSubmissionToAgent(email);
-      }
-
+      await api.info.submissionNotificationEmail(email, applicantName);
+      await api.info.submissionNotificationSms(phone, applicantName);
       await api.info.submissionNotificationEmailToAnalysts(applicantName);
       setLoading(false);
       history.push('/dsa/complete');
