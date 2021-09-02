@@ -5,8 +5,6 @@ import {
     submissionNotificationSms,
     submissionNotificationEmail,
     submissionNotificationEmailToAnalysts,
-    sendEmailForApplicationSubmissionToAgent,
-    sendSmsForApplicationSubmissionToAgent,
 } from './notifications';
 
 import { getPinCodeDetail, getPinCodeList } from './pincode';
@@ -18,8 +16,6 @@ export {
     submissionNotificationSms,
     submissionNotificationEmail,
     submissionNotificationEmailToAnalysts,
-    sendEmailForApplicationSubmissionToAgent,
-    sendSmsForApplicationSubmissionToAgent,
     getPinCodeDetail,
     getPinCodeList,
 };
