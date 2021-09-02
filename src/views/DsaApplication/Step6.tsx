@@ -188,20 +188,21 @@ const DsaStep6View = () => {
         applicantName = `${entity_primary_contact_first_name} ${entity_primary_contact_last_name}`;
       }
 
+      return;
       // Navigate to "Thank You" page and sent notifications if user is not manager
-      if (!isManagerAccess) {
-        await api.info.submissionNotificationEmail(email, applicantName);
-        await api.info.submissionNotificationSms(phone, applicantName);
-        await api.info.submissionNotificationEmailToAnalysts(applicantName);
-        history.push('/dsa/complete');
-      } else {
-        await api.info.sendEmailForApplicationSubmissionToAgent(email);
-        await api.info.sendSmsForApplicationSubmissionToAgent(email);
-        setLoading(false);
-        setSuccessInfo(`Application details have been captured successfully.
-        Agent will be notified via SMS and E-mail to accept terms and submit application.`);
-        return;
-      }
+      // if (!isManagerAccess) {
+      //   await api.info.submissionNotificationEmail(email, applicantName);
+      //   await api.info.submissionNotificationSms(phone, applicantName);
+      //   await api.info.submissionNotificationEmailToAnalysts(applicantName);
+      //   history.push('/dsa/complete');
+      // } else {
+      //   await api.info.sendEmailForApplicationSubmissionToAgent(email);
+      //   await api.info.sendSmsForApplicationSubmissionToAgent(email);
+      //   setLoading(false);
+      //   setSuccessInfo(`Application details have been captured successfully.
+      //   Agent will be notified via SMS and E-mail to accept terms and submit application.`);
+      //   return;
+      // }
     },
     [formState.values, history, dsaId, email, phone, agree]
   );
