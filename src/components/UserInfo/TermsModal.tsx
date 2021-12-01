@@ -50,10 +50,9 @@ const TermsModal: React.FC<Props> = ({ open, onClose }) => {
                 property leads can be generated.
               </li>
               <li>
-                It is the DSA’s sole responsibility to scout for loan application proposals and pass on the same along
-                with complete documents as required for the requisite loan type and lender. Such proposals will have to
-                be within the operational area of the DSA so that the DSA can provide necessary assistance to the
-                borrower to complete an error free application.
+                The DSA’s sole responsibility is to scout for loan application proposals and share those prospects with
+                mymoneykarma. Mymoneykarma will complete and log those prospects under its code with the respective
+                lenders.
               </li>
               <li>
                 The DSA shall not represent himself/herself/themselves as official(s) of mymoneykarma &amp; shall not
@@ -99,10 +98,8 @@ const TermsModal: React.FC<Props> = ({ open, onClose }) => {
                     not required to be GST registered and he/she/entity does not have a GST number.
                   </li>
                   <li>
-                    If at the time of application, DSA does not provide GST details, then it is assumed that the DSA is
-                    not required to be GST registered and he/she/entity does not have a GST number.If subsequent to
-                    registering as mymoneykarma DSA, the DSA obtains GST registration, then the DSA must provide GST
-                    details to mymoneykarma via email to{' '}
+                    If subsequent to registering as mymoneykarma DSA, the DSA obtains GST registration, then the DSA
+                    must provide GST details to mymoneykarma via email to{' '}
                     <a href="/" onClick={handleAccountsClick}>
                       accounts@mymoneykarma.com
                     </a>
@@ -112,7 +109,7 @@ const TermsModal: React.FC<Props> = ({ open, onClose }) => {
                 </ul>
               </li>
               <li>
-                Payout
+                Payout:
                 <ul>
                   <li>
                     Payment of DSA commission shall be subject to submission of original invoices in the form and manner
